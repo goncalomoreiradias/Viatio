@@ -150,15 +150,15 @@ export default function Home() {
       </header>
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:h-[calc(100vh-80px)]">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:h-[calc(100vh-80px)] relative">
 
-        {/* Map View - Stacked on top for mobile (sticky), Right side for Desktop */}
-        <div className="w-full h-[40vh] lg:h-full lg:w-1/2 p-4 lg:p-6 sticky top-[73px] lg:top-0 z-30 lg:z-0 bg-bali-sand/80 backdrop-blur-sm lg:bg-transparent lg:backdrop-blur-none">
+        {/* Map View - Normal flow on mobile, sticky to full height on Desktop */}
+        <div className="w-full h-[45vh] lg:h-full lg:w-1/2 p-4 lg:p-6 lg:sticky lg:top-[73px] z-30 lg:z-0 bg-bali-sand/80 lg:bg-transparent">
           <MapSection days={itinerary.days} selectedDayId={selectedDayId} />
         </div>
 
-        {/* List View - Scrollable list below map on mobile, Left side on Desktop */}
-        <div className="w-full lg:w-1/2 pb-10 pt-2 lg:pt-6 px-4 lg:px-6 lg:h-full lg:overflow-y-auto">
+        {/* Desktop Left / Mobile Bottom - Scrollable Itinerary List */}
+        <div className="w-full lg:w-1/2 p-4 lg:p-8 overflow-y-visible lg:h-full relative z-10 lg:pl-0">
           {/* Day Filtering Controls */}
           <div className="mb-6 flex overflow-x-auto pb-2 gap-2 hide-scrollbar">
             <button
