@@ -7,10 +7,12 @@ import { Receipt, Users, Calculator, Plus, User, Trash2 } from "lucide-react";
 interface FinanceSectionProps {
     itinerary: Itinerary;
     onSave: (itinerary: Itinerary) => void;
+    currentUser: string;
 }
 
-export default function FinanceSection({ itinerary, onSave }: FinanceSectionProps) {
+export default function FinanceSection({ itinerary, onSave, currentUser }: FinanceSectionProps) {
     const expenses = itinerary.expenses || [];
+    const participants = itinerary.participants || [currentUser];
 
     // Quick summary calculations
     const totalSpent = expenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -21,8 +23,8 @@ export default function FinanceSection({ itinerary, onSave }: FinanceSectionProp
         return acc;
     }, {} as Record<string, number>);
 
-    const people = Object.keys(paidByTotals);
-    const totalPeople = Math.max(1, people.length);
+    // Use total exact participants rather than only those who have paid something
+    const totalPeople = Math.max(1, participants.length);
     const fairShare = totalSpent / totalPeople;
 
     const handleDelete = (id: string) => {
@@ -59,22 +61,29 @@ export default function FinanceSection({ itinerary, onSave }: FinanceSectionProp
             </div>
 
             {/* Who Paid What Component */}
-            {people.length > 0 && (
+            {participants.length > 0 && (
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                     <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                        <User size={18} className="text-bali-terra" /> Quem pagou o quê?
+                        <User size={18} className="text-bali-terra" /> Quem deve a quem?
                     </h3>
                     <div className="space-y-4">
-                        {people.map(person => {
-                            const paid = paidByTotals[person];
+                        {participants.map(person => {
+                            const paid = paidByTotals[person] || 0;
                             const balance = paid - fairShare;
+                            const isMe = person === currentUser;
+
+                            // To gracefully handle 0 balance due to floating point precision:
+                            const displayBalance = Math.abs(balance) < 0.01 ? 0 : balance;
+
                             return (
                                 <div key={person} className="flex justify-between items-center">
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">{person}</span>
+                                    <span className={`font-medium ${isMe ? 'text-bali-ocean font-bold' : 'text-gray-700 dark:text-gray-300'}`}>
+                                        {person} {isMe && "(Tu)"}
+                                    </span>
                                     <div className="text-right">
-                                        <p className="font-semibold">€{paid.toFixed(2)}</p>
-                                        <p className={`text-xs font-bold ${balance >= 0 ? 'text-green-500' : 'text-red-400'}`}>
-                                            {balance >= 0 ? `+ Recebe €${balance.toFixed(2)}` : `- Deve €${Math.abs(balance).toFixed(2)}`}
+                                        <p className="font-semibold text-gray-500 text-xs">Pagou: €{paid.toFixed(2)}</p>
+                                        <p className={`text-sm font-bold mt-0.5 ${displayBalance === 0 ? 'text-gray-400' : displayBalance > 0 ? 'text-green-500' : 'text-red-400'}`}>
+                                            {displayBalance === 0 ? `Tudo certo` : displayBalance > 0 ? `+ Recebe €${displayBalance.toFixed(2)}` : `- Deve €${Math.abs(displayBalance).toFixed(2)}`}
                                         </p>
                                     </div>
                                 </div>

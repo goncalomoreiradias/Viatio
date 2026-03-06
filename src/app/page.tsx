@@ -21,6 +21,7 @@ type ViewMode = "list" | "map";
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,19 +36,34 @@ export default function Home() {
   useEffect(() => {
     // Check if previously authenticated in this session
     const authStatus = sessionStorage.getItem("bali_auth");
-    if (authStatus === "true") {
+    const storedName = sessionStorage.getItem("bali_username");
+    if (authStatus === "true" && storedName) {
       setIsAuthenticated(true);
+      setUserName(storedName);
     }
     fetchItinerary();
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userName.trim()) {
+      alert("Por favor, introduz o teu nome.");
+      return;
+    }
+
     if (passwordInput === "Where to?" || passwordInput === "Where to") {
       setIsAuthenticated(true);
       sessionStorage.setItem("bali_auth", "true");
+      sessionStorage.setItem("bali_username", userName.trim());
+
+      // If we have an itinerary, ensure this user is in the participants list
+      if (itinerary && !itinerary.participants?.includes(userName.trim())) {
+        const updatedParticipants = [...(itinerary.participants || []), userName.trim()];
+        const updatedItinerary = { ...itinerary, participants: updatedParticipants };
+        await saveItinerary(updatedItinerary);
+      }
     } else {
-      alert("Incorrect password");
+      alert("Password incorreta.");
     }
   };
 
@@ -108,20 +124,28 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="glass-card p-8 max-w-sm w-full"
         >
-          <h1 className="text-3xl font-bold font-outfit text-[--color-bali-ocean] mb-6">Bali 🌴</h1>
+          <h1 className="text-3xl font-bold font-outfit text-bali-ocean mb-2">Bem-vindo a Bali 🌴</h1>
+          <p className="text-gray-500 mb-6 text-sm">Identifica-te para poderes gerir custos e planos.</p>
           <form onSubmit={handleLogin} className="space-y-4">
             <input
+              type="text"
+              placeholder="O teu Nome"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="w-full px-4 py-3 bg-white/50 border border-black/10 rounded-xl focus:ring-2 focus:ring-bali-ocean outline-none text-center font-medium"
+            />
+            <input
               type="password"
-              placeholder="Enter Password"
+              placeholder="Password da Viagem"
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
-              className="w-full px-4 py-3 bg-white/50 border border-black/10 rounded-xl focus:ring-2 focus:ring-[--color-bali-sage] outline-none text-center"
+              className="w-full px-4 py-3 bg-white/50 border border-black/10 rounded-xl focus:ring-2 focus:ring-bali-ocean outline-none text-center"
             />
             <button
               type="submit"
-              className="w-full py-3 bg-[--color-bali-sage] hover:bg-[--color-bali-ocean] text-white font-bold rounded-xl shadow-lg transition-all"
+              className="w-full py-3 bg-bali-sage hover:bg-bali-ocean text-white font-bold rounded-xl shadow-lg transition-all active:scale-95"
             >
-              Enter
+              Entrar
             </button>
           </form>
         </motion.div>
@@ -250,6 +274,7 @@ export default function Home() {
               <FinanceSection
                 itinerary={itinerary}
                 onSave={saveItinerary}
+                currentUser={userName}
               />
             </div>
           )}
@@ -284,6 +309,8 @@ export default function Home() {
       <AddExpenseSheet
         isOpen={isAddExpenseOpen}
         onClose={() => setIsAddExpenseOpen(false)}
+        participants={itinerary?.participants || [userName]}
+        currentUser={userName}
         onAdd={(expense) => {
           if (!itinerary) return;
           const currentExpenses = itinerary.expenses || [];
@@ -295,14 +322,14 @@ export default function Home() {
       {activeTab === "itinerary" ? (
         <button
           onClick={() => setIsAddLocationOpen(true)}
-          className="fixed bottom-24 sm:bottom-6 right-6 lg:bottom-10 lg:right-10 z-[50] w-14 h-14 sm:w-16 sm:h-16 bg-bali-terra text-white rounded-full shadow-2xl hover:shadow-[0_8px_30px_rgba(224,122,95,0.6)] flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-2 border-white/20"
+          className="fixed bottom-24 sm:bottom-6 right-6 lg:bottom-10 lg:right-10 z-[30] w-14 h-14 sm:w-16 sm:h-16 bg-bali-terra text-white rounded-full shadow-2xl hover:shadow-[0_8px_30px_rgba(224,122,95,0.6)] flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-2 border-white/20"
         >
           <Plus size={28} />
         </button>
       ) : (
         <button
           onClick={() => setIsAddExpenseOpen(true)}
-          className="fixed bottom-24 sm:bottom-6 right-6 lg:bottom-10 lg:right-10 z-[50] w-14 h-14 sm:w-16 sm:h-16 bg-bali-ocean text-white rounded-full shadow-2xl hover:shadow-[0_8px_30px_rgba(43,158,179,0.6)] flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-2 border-white/20"
+          className="fixed bottom-24 sm:bottom-6 right-6 lg:bottom-10 lg:right-10 z-[30] w-14 h-14 sm:w-16 sm:h-16 bg-bali-ocean text-white rounded-full shadow-2xl hover:shadow-[0_8px_30px_rgba(43,158,179,0.6)] flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-2 border-white/20"
         >
           <Plus size={28} />
         </button>

@@ -28,6 +28,7 @@ export interface DayPlan {
 export interface Itinerary {
   id: string;
   title: string;
+  participants?: string[];
   days: DayPlan[];
   expenses?: Expense[];
 }

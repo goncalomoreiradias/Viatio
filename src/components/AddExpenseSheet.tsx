@@ -8,35 +8,36 @@ import { motion, AnimatePresence } from "framer-motion";
 interface AddExpenseSheetProps {
     isOpen: boolean;
     onClose: () => void;
+    participants: string[];
+    currentUser: string;
     onAdd: (expense: Expense) => void;
 }
 
-export default function AddExpenseSheet({ isOpen, onClose, onAdd }: AddExpenseSheetProps) {
-    const [expense, setExpense] = useState<Partial<Expense>>({
-        description: "",
-        amount: 0,
-        paidBy: "",
-        date: new Date().toISOString().split('T')[0]
-    });
+export default function AddExpenseSheet({ isOpen, onClose, participants, currentUser, onAdd }: AddExpenseSheetProps) {
+    const [description, setDescription] = useState("");
+    const [amount, setAmount] = useState("");
+    const [paidBy, setPaidBy] = useState(currentUser);
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
     const handleSave = () => {
-        if (!expense.description || !expense.amount || !expense.paidBy) {
+        if (!description || !amount || !paidBy) {
             alert("Por favor preenche a descrição, o valor e quem pagou.");
             return;
         }
 
         onAdd({
-            ...expense,
             id: `exp-${Date.now()}`,
+            description,
+            amount: parseFloat(amount),
+            paidBy,
+            date
         } as Expense);
 
         // Reset form
-        setExpense({
-            description: "",
-            amount: 0,
-            paidBy: "",
-            date: new Date().toISOString().split('T')[0]
-        });
+        setDescription("");
+        setAmount("");
+        setPaidBy(currentUser);
+        setDate(new Date().toISOString().split('T')[0]);
         onClose();
     };
 
@@ -69,8 +70,8 @@ export default function AddExpenseSheet({ isOpen, onClose, onAdd }: AddExpenseSh
                             <input
                                 type="text"
                                 placeholder="Ex: Jantar no Sweet Orange"
-                                value={expense.description}
-                                onChange={(e) => setExpense({ ...expense, description: e.target.value })}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-bali-ocean outline-none transition-colors"
                                 autoFocus
                             />
@@ -85,22 +86,26 @@ export default function AddExpenseSheet({ isOpen, onClose, onAdd }: AddExpenseSh
                                         type="number"
                                         step="0.01"
                                         min="0"
-                                        value={expense.amount || ""}
-                                        onChange={(e) => setExpense({ ...expense, amount: parseFloat(e.target.value) || 0 })}
+                                        value={amount}
+                                        onChange={(e) => setAmount(e.target.value)}
                                         className="w-full bg-gray-50 dark:bg-gray-800 pl-8 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none font-bold text-lg"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quem pagou?</label>
-                                <input
-                                    type="text"
-                                    placeholder="Nome"
-                                    value={expense.paidBy || ""}
-                                    onChange={(e) => setExpense({ ...expense, paidBy: e.target.value })}
-                                    className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none"
-                                />
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                    Quem pagou?
+                                </label>
+                                <select
+                                    value={paidBy}
+                                    onChange={(e) => setPaidBy(e.target.value)}
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl focus:ring-2 focus:ring-bali-ocean outline-none transition"
+                                >
+                                    {participants.map(person => (
+                                        <option key={person} value={person}>{person} {person === currentUser ? "(Tu)" : ""}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
 
@@ -108,8 +113,8 @@ export default function AddExpenseSheet({ isOpen, onClose, onAdd }: AddExpenseSh
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data</label>
                             <input
                                 type="date"
-                                value={expense.date}
-                                onChange={(e) => setExpense({ ...expense, date: e.target.value })}
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
                                 className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none"
                             />
                         </div>

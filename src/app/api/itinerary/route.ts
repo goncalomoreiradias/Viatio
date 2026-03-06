@@ -56,6 +56,7 @@ export async function POST(request: Request) {
         where: { id: tripId },
         data: {
           title: newItinerary.title,
+          participants: newItinerary.participants || [],
           days: {
             create: newItinerary.days.map((day: any) => ({
               id: day.id,
