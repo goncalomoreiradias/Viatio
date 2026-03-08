@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, Plus, Receipt } from "lucide-react";
 import { Expense } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 
 interface AddExpenseSheetProps {
     isOpen: boolean;
@@ -14,6 +15,7 @@ interface AddExpenseSheetProps {
 }
 
 export default function AddExpenseSheet({ isOpen, onClose, participants, currentUser, onAdd }: AddExpenseSheetProps) {
+    const { t, language } = useI18n();
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState("");
     const [paidBy, setPaidBy] = useState(currentUser);
@@ -21,7 +23,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
 
     const handleSave = () => {
         if (!description || !amount || !paidBy) {
-            alert("Por favor preenche a descrição, o valor e quem pagou.");
+            alert(language === "en" ? "Please fill description, amount and who paid." : "Por favor preenche a descrição, o valor e quem pagou.");
             return;
         }
 
@@ -56,7 +58,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                     {/* Header */}
                     <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gradient-to-r from-brand-primary to-brand-secondary text-white">
                         <h2 className="text-xl font-bold flex items-center gap-2">
-                            <Receipt size={22} /> Nova Despesa
+                            <Receipt size={22} /> {t("exp.new")}
                         </h2>
                         <button onClick={onClose} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition">
                             <X size={20} />
@@ -66,10 +68,10 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                     {/* Form Content */}
                     <div className="flex-1 overflow-y-auto p-6 space-y-5">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Descrição</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t("dash.descOptional").replace(" (Opcional)", "").replace(" (Optional)", "")}</label>
                             <input
                                 type="text"
-                                placeholder="Ex: Jantar no Sweet Orange"
+                                placeholder={t("dash.descPlaceholder")}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-brand-primary outline-none transition-colors"
@@ -79,7 +81,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Valor (€)</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t("exp.amount")}</label>
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">€</span>
                                     <input
@@ -95,7 +97,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
 
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                                    Quem pagou?
+                                    {t("exp.whoPaid")}
                                 </label>
                                 <select
                                     value={paidBy}
@@ -103,14 +105,14 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                                     className="w-full px-4 py-3 bg-white border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none transition"
                                 >
                                     {participants.map(person => (
-                                        <option key={person} value={person}>{person} {person === currentUser ? "(Tu)" : ""}</option>
+                                        <option key={person} value={person}>{person} {person === currentUser ? (t("fin.you") ? "(" + t("fin.you") + ")" : "") : ""}</option>
                                     ))}
                                 </select>
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t("exp.date")}</label>
                             <input
                                 type="date"
                                 value={date}
@@ -127,7 +129,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                             className="w-full py-4 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
                         >
                             <Plus size={20} />
-                            Guardar Despesa
+                            {t("exp.save")}
                         </button>
                     </div>
                 </motion.div>

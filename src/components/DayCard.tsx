@@ -1,16 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 import { DayPlan, Location } from "@/types";
 import { MapPin, Navigation, Edit2, CheckCircle } from "lucide-react";
 
 interface DayCardProps {
     day: DayPlan;
-    onEditDay: (day: DayPlan) => void;
-    onToggleComplete: (dayId: string, locId: string) => void;
+    onEdit: (day: DayPlan) => void;
+    onToggleLocation: (dayId: string, locId: string) => void;
+    onAddLocation: (dayId: string) => void;
 }
 
-export default function DayCard({ day, onEditDay, onToggleComplete }: DayCardProps) {
+export default function DayCard({ day, onEdit, onToggleLocation, onAddLocation }: DayCardProps) {
+    const { t } = useI18n();
+
     // Animation variants
     const cardVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -33,12 +37,12 @@ export default function DayCard({ day, onEditDay, onToggleComplete }: DayCardPro
             <div className="bg-brand-primary p-6 text-white flex justify-between items-center z-10 relative">
                 <div>
                     <h2 className="text-2xl font-bold font-inter tracking-tight flex items-center gap-2">
-                        Dia {day.dayNumber}
+                        {t("nav.day")} {day.dayNumber}
                     </h2>
                     <p className="text-sm opacity-90 font-medium mt-1">{day.title}</p>
                 </div>
                 <button
-                    onClick={(e) => { e.stopPropagation(); onEditDay(day); }}
+                    onClick={(e) => { e.stopPropagation(); onEdit(day); }}
                     className="p-3 rounded-full hover:bg-white/20 transition-colors backdrop-blur-md bg-white/10"
                     aria-label="Edit Day"
                 >
@@ -51,11 +55,11 @@ export default function DayCard({ day, onEditDay, onToggleComplete }: DayCardPro
                     <motion.div
                         key={loc.id}
                         variants={itemVariants}
-                        onClick={() => onEditDay(day)}
+                        onClick={() => onEdit(day)}
                         className="flex items-start gap-4 p-4 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors group cursor-pointer border border-transparent hover:border-black/5 dark:hover:border-white/10"
                     >
                         <button
-                            onClick={(e) => { e.stopPropagation(); onToggleComplete(day.id, loc.id); }}
+                            onClick={(e) => { e.stopPropagation(); onToggleLocation(day.id, loc.id); }}
                             className={`mt-1 flex-shrink-0 transition-colors z-20 relative bg-white dark:bg-gray-900 rounded-full pb-0.5 ${loc.completed ? 'text-brand-accent' : 'text-gray-300 hover:text-brand-secondary'}`}
                         >
                             <CheckCircle size={24} className="bg-white dark:bg-gray-900 rounded-full" />
@@ -95,6 +99,6 @@ export default function DayCard({ day, onEditDay, onToggleComplete }: DayCardPro
 
             {/* Visual timeline connector - Fixed positioning to eliminate gap */}
             <div className="absolute left-[39px] top-[80px] bottom-[30px] w-[2px] bg-gray-200 dark:bg-gray-700 z-[5]"></div>
-        </motion.div>
+        </motion.div >
     );
 }

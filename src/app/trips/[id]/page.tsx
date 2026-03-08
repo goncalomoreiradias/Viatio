@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Itinerary, DayPlan } from "@/types";
+import { Trip, DayPlan, Location as TripLocation, Expense } from "@/types";
 import DayCard from "@/components/DayCard";
 import EditItinerarySheet from "@/components/EditItinerarySheet";
-import { List, Map as MapIcon, Loader2, Plus } from "lucide-react";
+import { ArrowLeft, Map as MapIcon, Loader2, Plus, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import AddLocationSheet from "@/components/AddLocationSheet";
 import AddExpenseSheet from "@/components/AddExpenseSheet";
@@ -12,10 +12,16 @@ import FinanceSection from "@/components/FinanceSection";
 import Navigation from "@/components/Navigation";
 import { use } from "react";
 import dynamic from "next/dynamic";
+import { format } from "date-fns";
+import { pt, enUS } from "date-fns/locale";
+import { useI18n } from "@/lib/i18n";
+import LanguageToggle from "@/components/LanguageToggle";
+import Link from "next/link";
+
 
 const MapSection = dynamic(() => import("@/components/MapSection"), {
   ssr: false,
-  loading: () => <div className="w-full h-full min-h-[400px] bg-brand-bg animate-pulse rounded-xl flex items-center justify-center text-gray-400">Loading map...</div>
+  loading: () => <div className="h-full w-full bg-gray-100 dark:bg-gray-800 animate-pulse flex items-center justify-center">Loading map...</div>
 });
 
 type ViewMode = "list" | "map";
@@ -23,56 +29,39 @@ type ViewMode = "list" | "map";
 export default function TripPage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
   const tripId = unwrappedParams.id;
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
-  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+  const [itinerary, setItinerary] = useState<any>(null); // Type loosened to allow inviteToken
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"itinerary" | "finance">("itinerary");
+  const [copiedLink, setCopiedLink] = useState(false);
+  const userName = "You"; // Temporary mock until session state is natively hydrated to the context
 
   // Edit State
   const [editingDay, setEditingDay] = useState<DayPlan | null>(null);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
+  const [newExpenseInitialParticipant, setNewExpenseInitialParticipant] = useState("");
 
+  // i18n
+  const { t, language } = useI18n();
+  const dateLocale = language === "pt" ? pt : enUS;
+
+  const [activeDayId, setActiveDayId] = useState<string | null>(null);
   useEffect(() => {
-    // Check if previously authenticated in this session
-    const authStatus = sessionStorage.getItem("bali_auth");
-    const storedName = sessionStorage.getItem("bali_username");
-    if (authStatus === "true" && storedName) {
-      setIsAuthenticated(true);
-      setUserName(storedName);
-    }
     fetchItinerary();
   }, []);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userName.trim()) {
-      alert("Por favor, introduz o teu nome.");
-      return;
-    }
-
-    if (passwordInput === "Where to?" || passwordInput === "Where to") {
-      setIsAuthenticated(true);
-      sessionStorage.setItem("bali_auth", "true");
-      sessionStorage.setItem("bali_username", userName.trim());
-
-      // If we have an itinerary, ensure this user is in the participants list
-      if (itinerary && !itinerary.participants?.includes(userName.trim())) {
-        const updatedParticipants = [...(itinerary.participants || []), userName.trim()];
-        const updatedItinerary = { ...itinerary, participants: updatedParticipants };
-        await saveItinerary(updatedItinerary);
-      }
-    } else {
-      alert("Password incorreta.");
-    }
-  };
 
   const fetchItinerary = async () => {
     try {
       const res = await fetch(`/api/trips/${tripId}`);
+      if (res.status === 401) {
+        window.location.href = `/login?callbackUrl=/trips/${tripId}`;
+        return;
+      }
+      if (res.status === 403) {
+        window.location.href = "/"; // Unauthorized for this trip
+        return;
+      }
       if (!res.ok) throw new Error("Trip not found");
       const data = await res.json();
       setItinerary(data);
@@ -83,13 +72,27 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
     }
   };
 
-  const saveItinerary = async (newItinerary: Itinerary) => {
+
+  const saveItinerary = async (newItinerary: Trip) => {
     try {
       setItinerary(newItinerary); // Optimistic UI update
       await fetch(`/api/trips/${tripId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newItinerary),
+        body: JSON.stringify({
+          ...newItinerary,
+          days: newItinerary.days.map((d: DayPlan) => {
+            return {
+              ...d,
+              locations: d.locations.map((loc: TripLocation) => {
+                return { ...loc };
+              }),
+            };
+          }),
+          expenses: newItinerary.expenses?.map((exp: Expense) => {
+            return { ...exp };
+          }),
+        }),
       });
     } catch (error) {
       console.error("Failed to save itinerary", error);
@@ -98,7 +101,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
 
   const handleDayEdit = (updatedDay: DayPlan) => {
     if (!itinerary) return;
-    const newDays = itinerary.days.map((d) =>
+    const newDays = itinerary.days.map((d: DayPlan) =>
       d.id === updatedDay.id ? updatedDay : d
     );
     saveItinerary({ ...itinerary, days: newDays });
@@ -106,11 +109,11 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
 
   const toggleComplete = (dayId: string, locId: string) => {
     if (!itinerary) return;
-    const newDays = itinerary.days.map(day => {
+    const newDays = itinerary.days.map((day: DayPlan) => {
       if (day.id === dayId) {
         return {
           ...day,
-          locations: day.locations.map(loc =>
+          locations: day.locations.map((loc: TripLocation) =>
             loc.id === locId ? { ...loc, completed: !loc.completed } : loc
           )
         };
@@ -120,42 +123,10 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
     saveItinerary({ ...itinerary, days: newDays });
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[--color-brand-bg] p-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8 max-w-sm w-full"
-        >
-          <h1 className="text-3xl font-bold font-outfit text-brand-primary mb-2">Login da Viagem</h1>
-          <p className="text-gray-500 mb-6 text-sm">Identifica-te para gerires os planos e custos.</p>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="text"
-              placeholder="O teu Nome"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="w-full px-4 py-3 bg-white/50 border border-black/10 rounded-xl focus:ring-2 focus:ring-bali-ocean outline-none text-center font-medium"
-            />
-            <input
-              type="password"
-              placeholder="Password da Viagem"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              className="w-full px-4 py-3 bg-white/50 border border-black/10 rounded-xl focus:ring-2 focus:ring-bali-ocean outline-none text-center"
-            />
-            <button
-              type="submit"
-              className="w-full py-3 bg-bali-sage hover:bg-bali-ocean text-white font-bold rounded-xl shadow-lg transition-all active:scale-95"
-            >
-              Entrar
-            </button>
-          </form>
-        </motion.div>
-      </div>
-    );
-  }
+  const handleAddLocationClick = (dayId: string) => {
+    // Optionally preserve dayId if your sheet wants it. For now, we just open the sheet.
+    setIsAddLocationOpen(true);
+  };
 
   if (loading || !itinerary) {
     return (
@@ -173,21 +144,45 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   return (
     <main className="min-h-screen bg-brand-bg relative pb-24 lg:pb-0">
       {/* Header */}
-      <header className="sticky top-0 z-40 glass border-b border-black/5 dark:border-white/5 py-4 px-6 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold font-outfit text-brand-dark dark:text-white flex items-center gap-2">
-              <button onClick={() => window.location.href = '/'} className="p-1 hover:bg-black/5 rounded-full transition-colors mr-2 text-brand-primary">
-                <List size={20} />
-              </button>
-              {itinerary.title}
-            </h1>
-          </div>
-          {/* Desktop Navigation */}
-          <div className="hidden sm:block">
-            <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-          </div>
+      <header className="relative z-10 p-6 pt-12 text-white bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+        <div className="flex items-center justify-between mb-4">
+          <Link href="/" className="p-2 bg-black/20 backdrop-blur-md rounded-full hover:bg-black/40 transition">
+            <ArrowLeft size={24} />
+          </Link>
+          <LanguageToggle />
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-4"
+        >
+          <div>
+            <h1 className="text-4xl font-extrabold font-outfit mb-2">{itinerary.title}</h1>
+            <p className="text-lg font-medium text-white/90">
+              {itinerary.startDate && itinerary.endDate
+                ? `${format(new Date(itinerary.startDate), "dd MMM", { locale: dateLocale })} - ${format(new Date(itinerary.endDate), "dd MMM yyyy", { locale: dateLocale })}`
+                : t("common.no_dates")}
+            </p>
+            <p className="text-sm text-white/70 mt-1">{t("common.participants")}: {itinerary.participants?.map((p: any) => p.name || p.email).join(", ") || t("common.no_participants")}</p>
+          </div>
+
+          {itinerary.inviteToken && (
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/trips/join/${itinerary.inviteToken}`;
+                navigator.clipboard.writeText(url);
+                setCopiedLink(true);
+                setTimeout(() => setCopiedLink(false), 2000);
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur border border-white/10 rounded-xl text-white font-bold text-sm transition-all"
+            >
+              {copiedLink ? <Check size={16} className="text-emerald-400" /> : <Plus size={16} />}
+              {copiedLink ? "Link Copied!" : "Invite Collaborators"}
+            </button>
+          )}
+        </motion.div>
       </header>
 
       {/* Main Content Area */}
@@ -212,9 +207,9 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                     : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 border border-transparent"
                     }`}
                 >
-                  All Days
+                  {t("common.all_days")}
                 </button>
-                {itinerary.days.map((day) => (
+                {itinerary.days.map((day: DayPlan) => (
                   <button
                     key={`filter-mob-${day.id}`}
                     onClick={() => setSelectedDayId(selectedDayId === day.id ? null : day.id)}
@@ -248,7 +243,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                 >
                   All Days
                 </button>
-                {itinerary.days.map((day) => (
+                {itinerary.days.map((day: DayPlan) => (
                   <button
                     key={`filter-desk-${day.id}`}
                     onClick={() => setSelectedDayId(selectedDayId === day.id ? null : day.id)}
@@ -265,13 +260,14 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
               {/* Day Cards */}
               <AnimatePresence mode="popLayout">
                 {itinerary.days
-                  .filter((day) => (selectedDayId ? day.id === selectedDayId : true))
-                  .map((day) => (
+                  .filter((day: DayPlan) => (selectedDayId ? day.id === selectedDayId : true))
+                  .map((day: DayPlan) => (
                     <DayCard
                       key={day.id}
                       day={day}
-                      onToggleComplete={toggleComplete}
-                      onEditDay={setEditingDay}
+                      onEdit={setEditingDay}
+                      onToggleLocation={toggleComplete}
+                      onAddLocation={handleAddLocationClick}
                     />
                   ))}
               </AnimatePresence>
@@ -306,7 +302,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
         days={itinerary?.days || []}
         onAdd={(dayId, location) => {
           if (!itinerary) return;
-          const newDays = itinerary.days.map(d =>
+          const newDays = itinerary.days.map((d: DayPlan) =>
             d.id === dayId ? { ...d, locations: [...d.locations, location] } : d
           );
           saveItinerary({ ...itinerary, days: newDays });

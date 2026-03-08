@@ -30,6 +30,8 @@ export interface Itinerary {
   title: string;
   description?: string;
   password?: string;
+  startDate?: string | Date;
+  endDate?: string | Date;
   participants?: string[];
   days: DayPlan[];
   expenses?: Expense[];

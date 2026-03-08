@@ -10,11 +10,27 @@ const itineraryData = itineraryJson as any;
 async function main() {
     console.log('Start seeding ...');
 
+    // Create an Admin user to own the seed trip
+    const adminUser = await prisma.user.upsert({
+        where: { email: 'admin@system.local' },
+        update: {},
+        create: {
+            email: 'admin@system.local',
+            name: 'System Admin',
+            role: 'ADMIN',
+            plan: 'YEARLY'
+        }
+    });
+
     // Create the main Trip
     const trip = await prisma.trip.create({
         data: {
             title: "Bali Expedition",
             description: "15-Day Expedition",
+            ownerId: adminUser.id,
+            participants: {
+                connect: [{ id: adminUser.id }]
+            },
             days: {
                 create: itineraryData.days.map((day: any) => ({
                     id: day.id,
