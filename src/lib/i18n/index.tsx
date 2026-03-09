@@ -25,6 +25,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const savedLang = localStorage.getItem("app_lang") as Language;
         if (savedLang === "en" || savedLang === "pt") {
+            // eslint-disable-next-line
             setLanguage(savedLang);
         }
     }, []);

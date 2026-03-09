@@ -1,4 +1,4 @@
-export default {
+const pt = {
     // Navigation
     "nav.itinerary": "Roteiro",
     "nav.finance": "Despesas",
@@ -84,5 +84,6 @@ export default {
     "auth.register_btn": "Criar Conta",
     "auth.has_account": "Já tens conta?",
     "auth.signin_link": "Entrar",
-    "auth.error": "Ocorreu um erro. Tenta novamente."
 };
+
+export default pt;
