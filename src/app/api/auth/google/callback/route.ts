@@ -5,18 +5,16 @@ import { OAuth2Client } from "google-auth-library";
 
 const prisma = new PrismaClient();
 
-const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-// The exact same redirect URI registered in the Google Console
-const redirectUri = process.env.NODE_ENV === "production"
-    ? "https://bali2026-git-main-goncalomoreiradias-projects.vercel.app/api/auth/google/callback"
-    : "http://localhost:3000/api/auth/google/callback";
-
-const client = new OAuth2Client(clientId, clientSecret, redirectUri);
-
 export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
+
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+        const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+        const redirectUri = `${url.origin}/api/auth/google/callback`;
+
+        const client = new OAuth2Client(clientId, clientSecret, redirectUri);
+
         const code = url.searchParams.get("code");
         const error = url.searchParams.get("error");
 

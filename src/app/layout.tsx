@@ -21,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.variable} ${inter.variable} font-sans antialiased text-foreground bg-background min-h-screen`}>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning className={`${outfit.variable} ${inter.variable} font-sans antialiased text-foreground bg-background min-h-screen`}>
         <I18nProvider>
           {children}
         </I18nProvider>

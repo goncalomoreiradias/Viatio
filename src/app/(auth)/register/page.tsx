@@ -41,30 +41,19 @@ export default function RegisterPage() {
             setLoading(false);
         }
     };
-    const handleGoogleAuth = async () => {
-        try {
-            setError("");
-            setLoading(true);
-            const res = await fetch("/api/auth/google", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: "goncalo.google@example.com",
-                    name: "Gonçalo Dias",
-                    googleId: "mock_google_id_12345"
-                })
-            });
-            if (res.ok) {
-                window.location.href = "/";
-            } else {
-                const data = await res.json();
-                setError(data.error);
-            }
-        } catch {
-            setError(t("auth.error"));
-        } finally {
-            setLoading(false);
+    const handleGoogleAuth = () => {
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+        if (!clientId) {
+            setError("Google Login is not configured yet. Missing Client ID.");
+            return;
         }
+
+        const redirectUri = `${window.location.origin}/api/auth/google/callback`;
+        const scope = "email profile";
+        const responseType = "code";
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}&access_type=offline&prompt=consent`;
+
+        window.location.href = authUrl;
     };
 
 
