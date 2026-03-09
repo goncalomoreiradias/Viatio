@@ -33,10 +33,10 @@ export default function RegisterPage() {
                 window.location.href = "/";
             } else {
                 const data = await res.json();
-                setError(data.error || t("auth.error"));
+                setError(data.error || "An error occurred. Please try again.");
             }
         } catch (err) {
-            setError(t("auth.error"));
+            setError("An error occurred. Please try again.");
         } finally {
             setLoading(false);
         }

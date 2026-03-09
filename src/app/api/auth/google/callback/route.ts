@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { setSession } from "@/lib/auth";
+import { signToken } from "@/lib/auth";
 import { OAuth2Client } from "google-auth-library";
 
 const prisma = new PrismaClient();
@@ -62,11 +62,21 @@ export async function GET(req: Request) {
             });
         }
 
-        // 4. Issue our proprietary Session JWT
-        await setSession(user.id, user.role, user.name || undefined);
+        // 4. Issue our proprietary Session JWT (Manually constructing cookie for Vercel V8 edge bugs)
+        const token = await signToken({ userId: user.id, role: user.role, name: user.name || undefined });
+        const cookieMaxAge = 7 * 24 * 60 * 60; // 7 days
+        const isProd = process.env.NODE_ENV === "production";
 
-        // 5. Redirect back to Application
-        return NextResponse.redirect(`${url.origin}/`);
+        const cookieString = `bali_session=${token}; HttpOnly; Path=/; Max-Age=${cookieMaxAge}; SameSite=Lax${isProd ? '; Secure' : ''}`;
+
+        // 5. Redirect back to Application with the Cookie forcefully attached to the Headers
+        return new Response(null, {
+            status: 302,
+            headers: {
+                "Location": `${url.origin}/`,
+                "Set-Cookie": cookieString
+            }
+        });
 
     } catch (error: any) {
         console.error("Google OAuth Exchange error:", error);
