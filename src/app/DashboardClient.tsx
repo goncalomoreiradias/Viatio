@@ -166,15 +166,17 @@ export default function DashboardClient({ session }: Props) {
                         <LanguageToggle />
                         <button
                             onClick={() => userPlan === "FREE" ? setIsUpgradeOpen(true) : setIsAIPlannerOpen(true)}
-                            className="hidden sm:flex px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary hover:shadow-xl text-white font-semibold rounded-2xl shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98] items-center gap-2"
+                            className="hidden sm:flex px-6 py-3 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-500/30 text-white font-black rounded-2xl transition-all active:scale-[0.98] items-center gap-2 border border-white/20 shadow-lg"
                         >
-                            <Sparkles size={20} /> Planear com AI
+                            <Sparkles size={18} className="animate-pulse" />
+                            <span className="text-sm tracking-tight">Planear com AI</span>
                         </button>
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="hidden sm:flex px-6 py-3 bg-brand-primary hover:bg-brand-secondary text-white font-semibold rounded-2xl shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98] items-center gap-2"
+                            className="hidden sm:flex px-6 py-3 bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-white font-black rounded-2xl shadow-lg transition-all active:scale-[0.98] items-center gap-2 border border-white/10"
                         >
-                            <Plus size={20} /> {t("dash.newTrip")}
+                            <Plus size={20} />
+                            <span className="text-sm tracking-tight">{t("dash.newTrip")}</span>
                         </button>
                     </div>
                 </div>

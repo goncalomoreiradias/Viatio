@@ -47,7 +47,9 @@ export async function POST(request: Request) {
         // 3. Call OpenRouter AI (Gemini 2.0 Flash)
         const apiKey = process.env.OPENROUTER_API_KEY;
         if (!apiKey) {
-            return NextResponse.json({ error: "AI service is not configured." }, { status: 500 });
+            return NextResponse.json({ 
+                error: "AI service is not configured. Please add 'OPENROUTER_API_KEY' to your Vercel Environment Variables and redeploy." 
+            }, { status: 500 });
         }
 
         const prompt = `You are a world-class travel planner. Create a detailed ${numberOfDays}-day travel itinerary for ${destination}.
