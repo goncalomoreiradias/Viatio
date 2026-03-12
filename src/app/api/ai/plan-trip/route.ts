@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
         // 2. Parse request
         const body = await request.json();
-        const { destination, startDate, endDate, budget, travelStyle, numberOfPeople } = body;
+        const { destination, startDate, endDate, budget, travelStyle, numberOfPeople, customRequirements } = body;
 
         if (!destination || !startDate || !endDate) {
             return NextResponse.json({ error: "Destination, start date, and end date are required." }, { status: 400 });
@@ -44,13 +44,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Trip must be between 1 and 30 days." }, { status: 400 });
         }
 
-        // 3. Call Gemini AI
-        const apiKey = process.env.GEMINI_API_KEY;
+        // 3. Call OpenRouter AI (Gemini 2.0 Flash)
+        const apiKey = process.env.OPENROUTER_API_KEY;
         if (!apiKey) {
             return NextResponse.json({ error: "AI service is not configured." }, { status: 500 });
         }
-
-        const ai = new GoogleGenAI({ apiKey });
 
         const prompt = `You are a world-class travel planner. Create a detailed ${numberOfDays}-day travel itinerary for ${destination}.
 
@@ -59,6 +57,7 @@ Context:
 - Budget per person: ${budget ? `€${budget}` : "flexible"}
 - Travel style: ${travelStyle || "balanced"}
 - Number of travelers: ${numberOfPeople || 2}
+- User custom requirements: ${customRequirements || "None"}
 
 Return ONLY a valid JSON object (no markdown, no code blocks, no extra text) with this exact structure:
 {
@@ -85,25 +84,46 @@ Return ONLY a valid JSON object (no markdown, no code blocks, no extra text) wit
 Requirements:
 - Include 3-5 locations per day
 - Use real, accurate GPS coordinates
-- Include a mix of activities matching the travel style
-- Provide real Google Maps URLs
-- Make day titles descriptive and engaging
+- Include a mix of activities matching the travel style and custom requirements
+- Provide REAL, high-quality Google Maps URLs. If specific place URL is unknown, use https://www.google.com/maps/search/?api=1&query=LOCATION_NAME+DESTINATION
+- Make day titles descriptive and engaging in Portuguese
+- The description and names of locations should be in Portuguese.
 - Tags must be one of: culture, nature, food, adventure, relaxation, nightlife, shopping`;
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
-            contents: prompt,
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "HTTP-Referer": `https://bali2026.vercel.app`, // Optional
+                "X-Title": `Bali Trip Planner`, // Optional
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "model": "google/gemini-2.0-flash-001",
+                "messages": [
+                    { "role": "user", "content": prompt }
+                ],
+                "response_format": { "type": "json_object" }
+            })
         });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error?.message || "OpenRouter API error");
+        }
+
+        const aiResult = await response.json();
+        const aiMessage = aiResult.choices[0].message.content;
 
         // 4. Parse AI response
         let itineraryData;
         try {
-            let rawText = response.text || "";
+            let rawText = aiMessage || "";
             // Strip markdown code fences if present
             rawText = rawText.replace(/```json\s*/gi, "").replace(/```\s*/gi, "").trim();
             itineraryData = JSON.parse(rawText);
         } catch (parseError) {
-            console.error("Failed to parse AI response:", response.text);
+            console.error("Failed to parse AI response:", aiMessage);
             return NextResponse.json({ error: "AI generated an invalid response. Please try again." }, { status: 500 });
         }
 
@@ -123,8 +143,8 @@ Requirements:
                             create: (day.locations || []).map((loc: any) => ({
                                 name: loc.name || "Unknown Location",
                                 description: loc.description || "",
-                                lat: loc.lat || 0,
-                                lng: loc.lng || 0,
+                                lat: parseFloat(loc.lat) || 0,
+                                lng: parseFloat(loc.lng) || 0,
                                 tag: loc.tag || null,
                                 mapsUrl: loc.mapsUrl || null,
                             }))

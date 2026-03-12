@@ -12,15 +12,21 @@ interface FinanceSectionProps {
 
 export default function FinanceSection({ itinerary, onSave, currentUser }: FinanceSectionProps) {
     const expenses = itinerary.expenses || [];
-    const participants = itinerary.participants || [currentUser];
+    
+    // Normalize participants to always be strings (names) for the logic, 
+    // but keep track of the original session name
+    const participants = (itinerary.participants || []).map((p: any) => typeof p === 'string' ? p : p.name || p.email);
+    
+    // If no participants found, fallback to current user
+    if (participants.length === 0) participants.push(currentUser);
 
     // Quick summary calculations
-    const totalSpent = expenses.reduce((sum, exp) => sum + (exp?.amount || 0), 0);
+    const totalSpent = expenses.reduce((sum, exp) => sum + (Number(exp?.amount) || 0), 0);
 
     // Calculate who paid what
     const paidByTotals = expenses.reduce((acc, exp) => {
         if (!exp || !exp.paidBy) return acc;
-        acc[exp.paidBy] = (acc[exp.paidBy] || 0) + (exp.amount || 0);
+        acc[exp.paidBy] = (acc[exp.paidBy] || 0) + (Number(exp.amount) || 0);
         return acc;
     }, {} as Record<string, number>);
 
@@ -37,6 +43,10 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
         }
     };
 
+    const formatCurrency = (val: number) => {
+        return isNaN(val) ? "0.00" : val.toFixed(2);
+    };
+
     return (
         <div className="flex flex-col gap-6 lg:gap-8 max-w-2xl mx-auto w-full pb-32">
             {/* Top Summary Cards */}
@@ -46,7 +56,7 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
                         <Calculator size={18} />
                         <span className="text-sm font-semibold uppercase tracking-wider">Total</span>
                     </div>
-                    <h2 className="text-3xl font-bold font-inter tracking-tight">€{totalSpent.toFixed(2)}</h2>
+                    <h2 className="text-3xl font-bold font-inter tracking-tight">€{formatCurrency(totalSpent)}</h2>
                 </div>
 
                 <div className="glass-card bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg border border-gray-100 dark:border-gray-700">
@@ -55,7 +65,7 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
                         <span className="text-sm font-semibold uppercase tracking-wider">Por Pessoa</span>
                     </div>
                     <h2 className="text-2xl font-bold font-inter tracking-tight text-brand-accent">
-                        €{fairShare.toFixed(2)}
+                        €{formatCurrency(fairShare)}
                     </h2>
                     {totalPeople > 1 && <p className="text-xs text-gray-400 mt-1">A dividir por {totalPeople}</p>}
                 </div>
@@ -68,7 +78,7 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
                         <User size={18} className="text-brand-secondary" /> Quem deve a quem?
                     </h3>
                     <div className="space-y-4">
-                        {participants.map(person => {
+                        {participants.map((person, idx) => {
                             const paid = paidByTotals[person] || 0;
                             const balance = paid - fairShare;
                             const isMe = person === currentUser;
@@ -77,14 +87,14 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
                             const displayBalance = Math.abs(balance) < 0.01 ? 0 : balance;
 
                             return (
-                                <div key={person} className="flex justify-between items-center">
+                                <div key={`${person}-${idx}`} className="flex justify-between items-center">
                                     <span className={`font-medium ${isMe ? 'text-brand-primary font-bold' : 'text-gray-700 dark:text-gray-300'}`}>
                                         {person} {isMe && "(Tu)"}
                                     </span>
                                     <div className="text-right">
-                                        <p className="font-semibold text-gray-500 text-xs">Pagou: €{paid.toFixed(2)}</p>
+                                        <p className="font-semibold text-gray-500 text-xs">Pagou: €{formatCurrency(paid)}</p>
                                         <p className={`text-sm font-bold mt-0.5 ${displayBalance === 0 ? 'text-gray-400' : displayBalance > 0 ? 'text-green-500' : 'text-red-400'}`}>
-                                            {displayBalance === 0 ? `Tudo certo` : displayBalance > 0 ? `+ Recebe €${displayBalance.toFixed(2)}` : `- Deve €${Math.abs(displayBalance).toFixed(2)}`}
+                                            {displayBalance === 0 ? `Tudo certo` : displayBalance > 0 ? `+ Recebe €${formatCurrency(displayBalance)}` : `- Deve €${formatCurrency(Math.abs(displayBalance))}`}
                                         </p>
                                     </div>
                                 </div>
@@ -121,7 +131,7 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="font-bold text-lg text-brand-primary">€{(exp.amount || 0).toFixed(2)}</span>
+                                        <span className="font-bold text-lg text-brand-primary">€{formatCurrency(exp.amount || 0)}</span>
                                         <button
                                             onClick={() => handleDelete(exp.id)}
                                             className="text-gray-300 hover:text-red-400 transition lg:opacity-0 lg:group-hover:opacity-100"

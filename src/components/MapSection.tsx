@@ -14,14 +14,14 @@ interface MapSectionProps {
 }
 
 // Inner component to handle automatic map bounds fitting
-function MapBounds({ locations, L }: { locations: any[], L: any }) { // Changed Location[] to any[] for flexibility, assuming it has lat/lng
+function MapBounds({ locations, L }: { locations: any[], L: any }) { 
     const map = useMap();
 
     useEffect(() => {
         if (locations.length > 0 && L && map) {
             try {
                 const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lng]));
-                map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+                map.fitBounds(bounds, { padding: [70, 70], maxZoom: 15 });
             } catch (e) {
                 console.error("Error fitting bounds", e);
             }
@@ -52,8 +52,8 @@ export default function MapSection({ days, selectedDayId }: MapSectionProps) {
 
     if (!L) {
         return (
-            <div className="w-full h-[300px] md:h-full bg-gray-100 dark:bg-gray-800 animate-pulse flex items-center justify-center rounded-xl">
-                <span className="text-gray-400">Loading map...</span>
+            <div className="w-full h-[300px] md:h-full bg-gray-100 dark:bg-gray-800/50 animate-pulse flex items-center justify-center rounded-2xl border border-gray-200 dark:border-gray-700">
+                <span className="text-gray-400 font-medium tracking-tight">A carregar mapa...</span>
             </div>
         );
     }
@@ -63,36 +63,39 @@ export default function MapSection({ days, selectedDayId }: MapSectionProps) {
         ? days.find(d => d.id === selectedDayId)?.locations || []
         : days.flatMap(d => d.locations);
 
-    // Default to Bali center
-    const centerLat = locationsToRender.length > 0 ? locationsToRender[0].lat : -8.409518;
-    const centerLng = locationsToRender.length > 0 ? locationsToRender[0].lng : 115.188919;
+    // Default to Bali center if no locations
+    const defaultCenter: [number, number] = [-8.409518, 115.188919];
+    const initialCenter: [number, number] = locationsToRender.length > 0 
+        ? [locationsToRender[0].lat, locationsToRender[0].lng] 
+        : defaultCenter;
 
     return (
-        <div className="w-full h-full min-h-[400px] rounded-xl overflow-hidden glass-card shadow-lg z-0 relative border border-white/20">
+        <div className="w-full h-full min-h-[400px] rounded-2xl overflow-hidden shadow-2xl z-0 relative border border-white/10 dark:border-white/5">
             <MapContainer
-                center={[centerLat, centerLng] as [number, number]}
-                zoom={selectedDayId ? 11 : 10}
+                center={initialCenter}
+                zoom={selectedDayId ? 13 : 11}
                 style={{ height: "100%", width: "100%", zIndex: 1 }}
                 zoomControl={false}
+                scrollWheelZoom={true}
             >
                 <MapBounds locations={locationsToRender} L={L} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
-                {locationsToRender.map((loc) => (
-                    <Marker key={loc.id} position={[loc.lat, loc.lng]}>
-                        <Popup className="font-sans">
-                            <div className="p-1">
-                                <h4 className="font-bold text-brand-primary m-0 mb-1">{loc.name}</h4>
-                                <p className="text-xs text-gray-600 m-0">{loc.description}</p>
+                {locationsToRender.map((loc, idx) => (
+                    <Marker key={`${loc.id}-${idx}`} position={[loc.lat, loc.lng]}>
+                        <Popup className="premium-popup">
+                            <div className="p-2 min-w-[150px]">
+                                <h4 className="font-extrabold text-brand-primary m-0 mb-1 font-outfit text-sm">{loc.name}</h4>
+                                <p className="text-xs text-gray-500 m-0 leading-relaxed line-clamp-2">{loc.description}</p>
                                 <a
                                     href={loc.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(loc.name)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="mt-2 inline-block text-xs font-semibold text-brand-secondary hover:underline"
+                                    className="mt-3 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-brand-secondary hover:text-brand-primary transition-all"
                                 >
-                                    Open in Maps
+                                    Ver no Google Maps →
                                 </a>
                             </div>
                         </Popup>
@@ -100,8 +103,8 @@ export default function MapSection({ days, selectedDayId }: MapSectionProps) {
                 ))}
             </MapContainer>
 
-            {/* Premium overlay gradient to brand the map */}
-            <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] z-10" />
+            {/* Subtle overlay for branding */}
+            <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_40px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_0_60px_rgba(0,0,0,0.2)] z-10" />
         </div>
     );
 }
