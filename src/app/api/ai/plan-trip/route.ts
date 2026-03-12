@@ -142,14 +142,22 @@ Requirements:
                         dayNumber: day.dayNumber,
                         title: day.title || `Day ${day.dayNumber}`,
                         locations: {
-                            create: (day.locations || []).map((loc: any) => ({
-                                name: loc.name || "Unknown Location",
-                                description: loc.description || "",
-                                lat: parseFloat(loc.lat) || 0,
-                                lng: parseFloat(loc.lng) || 0,
-                                tag: loc.tag || null,
-                                mapsUrl: loc.mapsUrl || null,
-                            }))
+                            create: (day.locations || []).map((loc: any) => {
+                                // Programmatic fallback for Google Maps URL
+                                let mapsUrl = loc.mapsUrl;
+                                if (!mapsUrl || !mapsUrl.startsWith("http")) {
+                                    mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${loc.name} ${destination}`)}`;
+                                }
+                                
+                                return {
+                                    name: loc.name || "Unknown Location",
+                                    description: loc.description || "",
+                                    lat: parseFloat(loc.lat) || 0,
+                                    lng: parseFloat(loc.lng) || 0,
+                                    tag: loc.tag || null,
+                                    mapsUrl: mapsUrl,
+                                };
+                            })
                         }
                     }))
                 }

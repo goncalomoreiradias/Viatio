@@ -71,21 +71,21 @@ export default function UpgradeModal({ isOpen, onClose, onUpgraded }: UpgradeMod
                     className="relative w-full max-w-md mx-4 sm:mx-0 bg-white dark:bg-gray-900 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden"
                 >
                     {/* Header */}
-                    <div className="relative bg-gradient-to-br from-brand-primary via-brand-secondary to-brand-accent p-8 text-center">
+                    <div className="relative bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 p-8 text-center border-b border-white/10">
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 p-2 bg-white/20 rounded-full hover:bg-white/30 transition text-white"
+                            className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition text-white border border-white/10"
                         >
                             <X size={20} />
                         </button>
 
-                        <div className="w-16 h-16 bg-white/20 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                            <Crown className="text-white" size={32} />
+                        <div className="w-16 h-16 bg-white/10 backdrop-blur-xl rounded-3xl flex items-center justify-center mx-auto mb-4 border border-white/20 shadow-inner">
+                            <Crown className="text-white animate-pulse" size={32} />
                         </div>
-                        <h2 className="text-2xl font-extrabold text-white font-outfit mb-1">
+                        <h2 className="text-2xl font-black text-white font-outfit mb-1 tracking-tight">
                             Funcionalidade Premium
                         </h2>
-                        <p className="text-white/80 text-sm">
+                        <p className="text-white/70 text-sm font-medium">
                             Ativa um plano para desbloquear o AI Trip Planner
                         </p>
                     </div>

@@ -34,9 +34,9 @@
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
       
-      --color-brand-primary: #F9FAFB;
-      --color-brand-secondary: #E2E8F0;
-      --color-brand-accent: #34D399;
+      --color-brand-primary: #6366F1; /* Vibrant Indigo - Great contrast with white */
+      --color-brand-secondary: #4F46E5; /* Deeper Indigo */
+      --color-brand-accent: #10B981; /* Emeral stays vibrant */
     }
   }
 
