@@ -60,67 +60,67 @@ export default function FinanceWidget({ itinerary, onSave, currentUser }: Financ
     return (
         <div className="flex flex-col gap-8 pb-32">
             {/* 1. Budget Tracker Card */}
-            <div className="glass-card bg-obsidian/40 border-white/5 p-8 rounded-[2.5rem] relative overflow-hidden group">
+            <div className="bg-surface border border-stroke p-8 rounded-[3rem] relative overflow-hidden group">
                 <div className="absolute -right-4 -top-4 opacity-[0.03] group-hover:scale-110 transition-transform">
-                    <PieChart size={160} />
+                    <PieChart size={160} className="text-text-high" />
                 </div>
                 
                 <div className="flex items-center justify-between mb-6">
                     <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">GASTO TOTAL</p>
-                        <h2 className="text-4xl font-black font-outfit text-white">€{formatCurrency(totalSpent)}</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-medium">GASTO TOTAL</p>
+                        <h2 className="text-4xl font-black font-outfit text-text-high">€{formatCurrency(totalSpent)}</h2>
                     </div>
                     {targetBudget > 0 && (
                         <div className="text-right space-y-1">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">ORÇAMENTO</p>
-                            <p className="font-black text-xl text-white/50">€{targetBudget}</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-medium">ORÇAMENTO</p>
+                            <p className="font-black text-xl text-text-medium opacity-50">€{targetBudget}</p>
                         </div>
                     )}
                 </div>
 
                 {targetBudget > 0 && (
                     <div className="space-y-4">
-                        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-canvas rounded-full overflow-hidden">
                             <motion.div 
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(100, budgetProgress)}%` }}
-                                className={`h-full transition-all duration-1000 ${isOverBudget ? 'bg-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.4)]' : 'bg-accent-emerald shadow-[0_0_20px_rgba(16,185,129,0.4)]'}`}
+                                className={`h-full transition-all duration-1000 ${isOverBudget ? 'bg-rose-500' : 'bg-emerald-500'}`}
                             />
                         </div>
                         <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
-                            <span className={isOverBudget ? 'text-rose-500' : 'text-accent-emerald'}>
+                            <span className={isOverBudget ? 'text-rose-500' : 'text-emerald-500'}>
                                 {isOverBudget ? 'Orçamento Excedido' : 'Dentro do Orçamento'}
                             </span>
-                            <span className="text-gray-500">{budgetProgress.toFixed(0)}% Utilizado</span>
+                            <span className="text-text-medium">{budgetProgress.toFixed(0)}% Utilizado</span>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* 2. Debt Optimization (Smart Netting) */}
-            <div className="bg-[#141820] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl">
-                <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-8 flex items-center gap-2 px-2">
-                    <Wallet size={14} className="text-accent-indigo" /> OTIMIZAÇÃO DE TRANSFERÊNCIAS
+            <div className="bg-surface border border-stroke rounded-[3rem] p-8 shadow-2xl">
+                <h3 className="text-[10px] font-black text-text-medium uppercase tracking-[0.3em] mb-8 flex items-center gap-2 px-2">
+                    <Wallet size={14} className="text-accent" /> OTIMIZAÇÃO DE TRANSFERÊNCIAS
                 </h3>
                 
                 {optimizedTransfers.length === 0 ? (
-                    <div className="text-center py-6 bg-white/5 rounded-3xl border border-dashed border-white/10">
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600">Tudo liquidado! Ninguém deve nada.</p>
+                    <div className="text-center py-6 bg-canvas rounded-[2rem] border border-dashed border-stroke">
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-text-medium opacity-50">Tudo liquidado! Ninguém deve nada.</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
                         {optimizedTransfers.map((t, idx) => (
                             <div key={idx} className="flex items-center justify-between group/transfer">
                                 <div className="flex items-center gap-3">
-                                    <span className="text-sm font-black text-white">{t.from}</span>
+                                    <span className="text-sm font-black text-text-high">{t.from}</span>
                                     <div className="flex flex-col items-center">
-                                        <ArrowRight size={14} className="text-accent-indigo" />
-                                        <span className="text-[8px] font-black text-gray-600 uppercase">PAGA A</span>
+                                        <ArrowRight size={14} className="text-accent" />
+                                        <span className="text-[8px] font-black text-text-medium uppercase">PAGA A</span>
                                     </div>
-                                    <span className="text-sm font-black text-white">{t.to}</span>
+                                    <span className="text-sm font-black text-text-high">{t.to}</span>
                                 </div>
-                                <div className="px-5 py-2.5 bg-accent-indigo/10 border border-accent-indigo/20 rounded-full">
-                                    <span className="text-sm font-black text-accent-indigo">€{formatCurrency(t.amount)}</span>
+                                <div className="px-5 py-2.5 bg-accent/10 border border-accent/20 rounded-full">
+                                    <span className="text-sm font-black text-accent">€{formatCurrency(t.amount)}</span>
                                 </div>
                             </div>
                         ))}
@@ -131,42 +131,42 @@ export default function FinanceWidget({ itinerary, onSave, currentUser }: Financ
             {/* 3. Category Breakdown */}
             <div className="grid grid-cols-2 gap-4">
                 {Object.entries(categoryTotals).map(([cat, amount]) => (
-                    <div key={cat} className="bg-white/5 border border-white/5 p-5 rounded-[1.5rem] flex flex-col gap-2">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{cat}</span>
-                        <span className="text-xl font-black text-white">€{formatCurrency(amount)}</span>
+                    <div key={cat} className="bg-surface border border-stroke p-5 rounded-[1.5rem] flex flex-col gap-2 shadow-sm">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-text-medium">{cat}</span>
+                        <span className="text-xl font-black text-text-high">€{formatCurrency(amount)}</span>
                     </div>
                 ))}
             </div>
 
             {/* 4. Detailed History */}
             <div className="space-y-6">
-                <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-4 px-4 flex items-center gap-2">
-                    <Receipt size={14} className="text-accent-cobalt" /> HISTÓRICO DE DESPESAS
+                <h3 className="text-[10px] font-black text-text-medium uppercase tracking-[0.3em] mb-4 px-4 flex items-center gap-2">
+                    <Receipt size={14} className="text-accent" /> HISTÓRICO DE DESPESAS
                 </h3>
                 
                 <div className="space-y-4">
                     {expenses.length === 0 ? (
-                        <div className="text-center py-20 bg-white/5 rounded-[2.5rem] border border-dashed border-white/10">
-                             <p className="text-gray-500 font-black uppercase tracking-widest text-[10px]">Sem movimentos.</p>
+                        <div className="text-center py-20 bg-surface rounded-[3rem] border border-dashed border-stroke">
+                             <p className="text-text-medium font-black uppercase tracking-widest text-[10px] opacity-40">Sem movimentos.</p>
                         </div>
                     ) : (
                         [...expenses].reverse().map((exp) => (
-                            <div key={exp.id} className="bg-[#141820] rounded-[2rem] p-6 flex justify-between items-center shadow-xl border border-white/5 hover:border-accent-cobalt/30 transition-all group">
+                            <div key={exp.id} className="bg-surface rounded-3xl p-6 flex justify-between items-center shadow-xl border border-stroke hover:border-accent/20 transition-all group">
                                 <div className="flex items-center gap-5">
-                                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xl grayscale group-hover:grayscale-0 transition-all">
+                                    <div className="w-12 h-12 rounded-2xl bg-canvas flex items-center justify-center text-xl grayscale group-hover:grayscale-0 transition-all">
                                         {exp.category === "Transporte" ? "🚗" : exp.category === "Comida" ? "🍴" : exp.category === "Lazer" ? "🎭" : exp.category === "Alojamento" ? "🏨" : "📦"}
                                     </div>
                                     <div className="space-y-1">
-                                        <h4 className="font-black text-white tracking-tight text-base">{exp.description}</h4>
+                                        <h4 className="font-black text-text-high tracking-tight text-base">{exp.description}</h4>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-accent-cobalt">{exp.paidBy}</span>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-700">• {new Date(exp.date).toLocaleDateString()}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-accent">{exp.paidBy}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-text-low">• {new Date(exp.date).toLocaleDateString()}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <span className="font-black text-xl text-white">€{formatCurrency(exp.amount)}</span>
-                                    <button onClick={() => handleDelete(exp.id)} className="p-3 text-gray-600 hover:text-rose-500 hover:bg-rose-500/10 rounded-full transition-all active:scale-90">
+                                    <span className="font-black text-xl text-text-high">€{formatCurrency(exp.amount)}</span>
+                                    <button onClick={() => handleDelete(exp.id)} className="p-3 text-text-low hover:text-rose-500 hover:bg-rose-500/10 rounded-full transition-all active:scale-90">
                                         <Trash2 size={18} />
                                     </button>
                                 </div>

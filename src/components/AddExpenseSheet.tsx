@@ -71,19 +71,19 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                     onDragEnd={(_, info) => {
                         if (info.offset.y > 150) onClose();
                     }}
-                    className="glass bg-slate-900 w-full max-w-md max-h-[92vh] sm:rounded-[2.5rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border-t border-x border-white/10 sm:border"
+                    className="bg-surface w-full max-w-md max-h-[92vh] sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border-t border-x border-stroke sm:border"
                 >
                     {/* Drag Handle Indicator */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full sm:hidden z-30" />
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-canvas/20 rounded-full sm:hidden z-50" />
                     {/* Header */}
-                    <div className="px-8 py-7 pt-10 sm:pt-7 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-accent-indigo to-accent-magenta text-white shadow-lg">
+                    <div className="px-8 py-7 pt-10 sm:pt-7 border-b border-stroke flex justify-between items-center bg-accent text-canvas shadow-lg">
                         <div className="space-y-1">
-                            <h2 className="text-xl font-black uppercase tracking-widest font-outfit leading-tight text-white flex items-center gap-3">
+                            <h2 className="text-xl font-black uppercase tracking-tighter font-outfit leading-tight text-canvas flex items-center gap-3">
                                 <Plus size={22} /> {t("exp.new")}
                             </h2>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Otimiza as tuas despesas em grupo</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-canvas/70">Otimiza as tuas despesas em grupo</p>
                         </div>
-                        <button onClick={onClose} className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all active:scale-90 border border-white/10 shadow-xl">
+                        <button onClick={onClose} className="p-3 bg-canvas/10 hover:bg-canvas/20 rounded-full transition-all active:scale-90 border border-canvas/10 shadow-xl">
                             <X size={20} />
                         </button>
                     </div>
@@ -92,7 +92,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                     <div className="flex-1 overflow-y-auto p-8 space-y-8 hide-scrollbar">
                         {/* Category Selector */}
                         <div className="space-y-3">
-                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                 CATEGORIA
                             </label>
                             <div className="flex flex-wrap gap-2">
@@ -102,8 +102,8 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                                         type="button"
                                         onClick={() => setCategory(cat.id)}
                                         className={`px-4 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border flex items-center gap-2 ${category === cat.id 
-                                            ? "bg-accent-cobalt border-accent-cobalt text-white shadow-xl scale-105" 
-                                            : "bg-white/5 border-white/10 text-gray-500 hover:text-white"
+                                            ? "bg-accent border-accent text-canvas shadow-xl scale-105" 
+                                            : "bg-surface border-stroke text-text-medium hover:text-text-high"
                                         }`}
                                     >
                                         <span>{cat.icon}</span>
@@ -114,7 +114,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                         </div>
 
                         <div className="space-y-3">
-                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                 DESCRIÇÃO
                             </label>
                             <input
@@ -122,7 +122,7 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                                 placeholder={t("dash.descPlaceholder")}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-6 py-4.5 focus:border-accent-indigo outline-none transition-all font-black text-white placeholder:text-gray-700 tracking-tight"
+                                className="input-surface w-full p-6 text-[15px] font-black"
                                 autoFocus
                             />
                         </div>
@@ -133,33 +133,33 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                                     VALOR (€)
                                 </label>
                                 <div className="relative">
-                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-gray-600">€</span>
+                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-text-medium/50">€</span>
                                     <input
                                         type="number"
                                         step="0.01"
                                         min="0"
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
-                                        className="w-full bg-white/5 pl-12 pr-6 py-4.5 rounded-[1.5rem] border border-white/10 focus:border-accent-indigo outline-none font-black text-white text-xl tracking-tight"
+                                        className="input-surface w-full pl-12 pr-6 py-6 text-xl"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-3">
-                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                     PAGO POR
                                 </label>
                                 <div className="relative">
                                     <select
                                         value={paidBy}
                                         onChange={(e) => setPaidBy(e.target.value)}
-                                        className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-6 py-4.5 focus:border-accent-indigo outline-none transition-all font-black text-white text-sm appearance-none"
+                                        className="input-surface w-full p-6 text-sm appearance-none"
                                     >
                                         {participants.map(person => (
-                                            <option key={person} value={person} className="bg-obsidian text-white">{person} {person === currentUser ? (t("fin.you") ? "(" + t("fin.you") + ")" : "") : ""}</option>
+                                            <option key={person} value={person} className="bg-surface text-text-high">{person} {person === currentUser ? (t("fin.you") ? "(" + t("fin.you") + ")" : "") : ""}</option>
                                         ))}
                                     </select>
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-text-medium opacity-50">
                                         <Users size={16} />
                                     </div>
                                 </div>
@@ -167,23 +167,23 @@ export default function AddExpenseSheet({ isOpen, onClose, participants, current
                         </div>
 
                         <div className="space-y-3">
-                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                 DATA DA DESPESA
                             </label>
                             <input
                                 type="date"
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-6 py-4.5 focus:border-accent-indigo outline-none transition-all font-black text-white font-mono"
+                                className="input-surface w-full p-6 font-mono"
                             />
                         </div>
                     </div>
 
                     {/* Footer */}
-                    <div className="p-8 border-t border-white/5 bg-obsidian pb-12 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+                    <div className="p-8 border-t border-stroke bg-surface pb-12 shadow-2xl">
                         <button
                             onClick={handleSave}
-                            className="w-full py-5 bg-gradient-to-br from-accent-indigo to-accent-magenta text-white font-black rounded-full shadow-[0_20px_50px_-10px_rgba(139,92,246,0.4)] flex items-center justify-center gap-3 transition-all active:scale-[0.97] uppercase tracking-[0.2em] text-base border border-white/20"
+                            className="w-full btn-primary py-5 text-base"
                         >
                             <Plus size={22} />
                             GUARDAR DESPESA

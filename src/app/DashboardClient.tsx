@@ -212,14 +212,14 @@ export default function DashboardClient({ session }: Props) {
     const [activeTripMenu, setActiveTripMenu] = useState<string | null>(null);
 
     return (
-        <main className="min-h-screen bg-[#0D0D0D] relative pb-24 selection:bg-accent-cobalt selection:text-white">
+        <main className="min-h-screen bg-canvas relative pb-24 selection:bg-accent/20 selection:text-accent">
             {/* Premium Dynamic Header */}
             <motion.header 
                 style={{ height: headerHeight, backgroundColor: headerBg }}
-                className="sticky top-0 z-40 backdrop-blur-xl border-b border-white/5 overflow-hidden"
+                className="sticky top-0 z-40 backdrop-blur-md border-b border-stroke overflow-hidden transition-colors"
             >
                 {/* Micro-pattern overlay */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(var(--text-high)_1px,transparent_1px)] [background-size:20px_20px]" />
                 
                 <motion.div 
                     style={{ padding: headerPadding }}
@@ -231,10 +231,10 @@ export default function DashboardClient({ session }: Props) {
                                 style={{ opacity: subtitleOpacity }}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="inline-flex items-center gap-2 px-3 py-1 bg-accent-cobalt/10 border border-accent-cobalt/20 rounded-full"
+                                className="inline-flex items-center gap-2 px-3 py-1 bg-accent/5 border border-accent/10 rounded-full"
                             >
-                                <span className="w-1.5 h-1.5 bg-accent-cobalt rounded-full animate-pulse" />
-                                <span className="text-[10px] font-black text-accent-cobalt tracking-[0.2em] uppercase">
+                                <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+                                <span className="text-[10px] font-black text-text-medium tracking-[0.2em] uppercase">
                                     {t("dash.hello")}, {session.name || t("common.viajante")}
                                 </span>
                             </motion.div>
@@ -242,13 +242,13 @@ export default function DashboardClient({ session }: Props) {
                             <div className="relative">
                                 <motion.h1
                                     style={{ scale: titleScale, originX: 0 }}
-                                    className="text-3xl sm:text-7xl font-black font-outfit text-white tracking-tight leading-[0.9] whitespace-nowrap"
+                                    className="text-3xl sm:text-7xl font-black font-outfit text-text-high tracking-tight leading-[0.9] whitespace-nowrap"
                                 >
-                                    Viatio <span className="hidden sm:inline text-transparent bg-clip-text bg-gradient-to-r from-accent-cobalt to-accent-magenta">{t("dash.dashboard")}</span>
+                                    Viatio <span className="hidden sm:inline text-transparent bg-clip-text bg-gradient-to-r from-accent to-text-medium">{t("dash.dashboard")}</span>
                                 </motion.h1>
                                 <motion.p 
                                     style={{ opacity: subtitleOpacity }}
-                                    className="text-text-secondary text-xs sm:text-lg font-medium max-w-xl mt-2 sm:mt-4 line-clamp-1 sm:line-clamp-none"
+                                    className="text-text-medium text-xs sm:text-lg font-medium max-w-xl mt-2 sm:mt-4 line-clamp-1 sm:line-clamp-none"
                                 >
                                     {t("dash.optimizedAI")}
                                 </motion.p>
@@ -256,16 +256,16 @@ export default function DashboardClient({ session }: Props) {
                         </div>
 
                         <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end mt-2 md:mt-0">
-                            <div className="neumorphic-inset p-1 rounded-2xl flex items-center gap-0.5 bg-black/20 flex-1 md:flex-none">
+                            <div className="bg-surface/50 border border-stroke p-1 rounded-2xl flex items-center gap-0.5 flex-1 md:flex-none">
                                 <button 
                                     onClick={() => setViewMode("personal")}
-                                    className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "personal" ? "bg-white text-obsidian shadow-xl" : "text-text-muted hover:text-white"}`}
+                                    className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "personal" ? "bg-accent text-canvas shadow-xl" : "text-text-medium hover:text-text-high"}`}
                                 >
                                     {t("dash.personal")}
                                 </button>
                                 <button 
                                     onClick={() => setViewMode("group")}
-                                    className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "group" ? "bg-white text-obsidian shadow-xl" : "text-text-muted hover:text-white"}`}
+                                    className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "group" ? "bg-accent text-canvas shadow-xl" : "text-text-medium hover:text-text-high"}`}
                                 >
                                     {t("dash.group")}
                                 </button>
@@ -284,29 +284,29 @@ export default function DashboardClient({ session }: Props) {
                     </div>
                 ) : filteredTrips.length === 0 ? (
                     <div className="space-y-12">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="text-center py-24 px-10 border-2 border-dashed border-white/5 rounded-[3rem] bg-white/[0.02]"
-                        >
-                            <div className="w-24 h-24 bg-accent-cobalt/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
-                                <Plane size={48} className="text-accent-cobalt" />
-                            </div>
-                            <h3 className="text-3xl font-black text-text-primary mb-4 uppercase tracking-tight">{t("dash.noTrips")}</h3>
-                            <p className="text-text-secondary mb-10 max-w-md mx-auto font-medium">
-                                {t("dash.noTripsDesc")}
-                            </p>
-                            <button
-                                onClick={() => setIsCreateModalOpen(true)}
-                                className="px-10 py-5 bg-accent-cobalt text-white font-black rounded-full shadow-2xl shadow-accent-cobalt/40 transition-all active:scale-95 uppercase tracking-widest text-xs border border-white/20"
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="text-center py-24 px-10 border border-stroke rounded-[3rem] bg-surface/50"
                             >
-                                {t("dash.createFirstTrip")}
-                            </button>
-                        </motion.div>
+                                <div className="w-24 h-24 bg-accent/5 rounded-full flex items-center justify-center mx-auto mb-8">
+                                    <Plane size={48} className="text-accent" />
+                                </div>
+                                <h3 className="text-3xl font-black text-text-high mb-4 uppercase tracking-tight">{t("dash.noTrips")}</h3>
+                                <p className="text-text-medium mb-10 max-w-md mx-auto font-medium">
+                                    {t("dash.noTripsDesc")}
+                                </p>
+                                <button
+                                    onClick={() => setIsCreateModalOpen(true)}
+                                    className="btn-primary"
+                                >
+                                    {t("dash.createFirstTrip")}
+                                </button>
+                            </motion.div>
 
                         {/* Sales Templates */}
                         <div className="space-y-8">
-                            <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] text-center">{t("dash.featuredTemplates")}</h4>
+                            <h4 className="text-[10px] font-black text-text-medium uppercase tracking-[0.4em] text-center">{t("dash.featuredTemplates")}</h4>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {templates.map((tpl, i) => (
                                     <motion.div
@@ -315,13 +315,13 @@ export default function DashboardClient({ session }: Props) {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.1 }}
-                                        className="bg-[#1A1A1A] rounded-[2rem] p-8 border border-white/5 group hover:border-white/20 transition-all cursor-pointer shadow-2xl hover:shadow-accent-cobalt/5"
+                                        className="bg-surface rounded-[2rem] p-8 border border-stroke group hover:border-accent transition-all cursor-pointer shadow-md"
                                     >
                                         <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tpl.color} flex items-center justify-center text-2xl mb-6 shadow-xl`}>
                                             {tpl.icon}
                                         </div>
-                                        <h5 className="text-xl font-black text-text-primary mb-2 tracking-tight group-hover:text-accent-cobalt transition-colors">{tpl.name}</h5>
-                                        <p className="text-sm text-text-secondary font-medium leading-relaxed">{tpl.desc}</p>
+                                        <h5 className="text-xl font-black text-text-high mb-2 tracking-tight group-hover:text-accent transition-colors">{tpl.name}</h5>
+                                        <p className="text-sm text-text-medium font-medium leading-relaxed">{tpl.desc}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -340,89 +340,89 @@ export default function DashboardClient({ session }: Props) {
                             return (
                                 <div key={trip.id} className="relative">
                                     <Link href={`/trips/${trip.id}`}>
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 30 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: i * 0.05 }}
-                                            onTap={() => setActiveTripMenu(null)}
-                                            onContextMenu={(e) => {
-                                                e.preventDefault();
-                                                setActiveTripMenu(trip.id);
-                                            }}
-                                            whileTap={{ scale: 0.98 }}
-                                            className="group relative bg-[#1A1A1A] rounded-[2rem] p-8 md:p-10 shadow-2xl border border-white/5 transition-all h-full flex flex-col overflow-hidden cursor-pointer"
-                                        >
-                                            {/* Background Decor */}
-                                            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all duration-700 group-hover:rotate-12 pointer-events-none">
-                                                <Plane size={120} className="text-accent-cobalt -rotate-45" />
-                                            </div>
-
-                                            <div className="relative z-10 flex-1 space-y-6">
-                                                <div className="flex justify-between items-start gap-4">
-                                                    <div className="space-y-2">
-                                                        <h2 className="text-2xl md:text-3xl font-black font-outfit text-text-primary leading-tight group-hover:text-accent-cobalt transition-colors duration-300 tracking-tight line-clamp-2">
-                                                            {trip.title}
-                                                        </h2>
-                                                        <div className="flex items-center gap-2">
-                                                            <Calendar size={12} className="text-text-muted" />
-                                                            <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">{t("dash.updatedRecently")}</span>
-                                                        </div>
-                                                    </div>
-                                                    <button 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            setActiveTripMenu(activeTripMenu === trip.id ? null : trip.id);
-                                                        }}
-                                                        className="p-2 hover:bg-white/5 rounded-xl text-text-secondary hover:text-white transition-all relative z-20"
-                                                    >
-                                                        <MoreVertical size={20} />
-                                                    </button>
-                                                </div>
-                                                
-                                                {/* Progress Bar with Clamp for fluid spacing */}
-                                                <div className="space-y-2">
-                                                    <div className="flex justify-between items-end">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-text-muted">{t("dash.progress")}</span>
-                                                        <span className="text-[9px] font-black text-accent-cobalt">{prog}%</span>
-                                                    </div>
-                                                    <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                                                        <motion.div 
-                                                            initial={{ width: 0 }}
-                                                            animate={{ width: `${prog}%` }}
-                                                            className="h-full bg-accent-cobalt shadow-[0_0_15px_rgba(46,91,255,0.5)]"
-                                                        />
-                                                    </div>
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 30 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: i * 0.05 }}
+                                                onTap={() => setActiveTripMenu(null)}
+                                                onContextMenu={(e) => {
+                                                    e.preventDefault();
+                                                    setActiveTripMenu(trip.id);
+                                                }}
+                                                whileTap={{ scale: 0.98 }}
+                                                className="group relative bg-surface rounded-[2rem] p-8 md:p-10 shadow-lg border border-stroke transition-all h-full flex flex-col overflow-hidden cursor-pointer"
+                                            >
+                                                {/* Background Decor */}
+                                                <div className="absolute top-0 right-0 p-10 opacity-[0.02] group-hover:opacity-[0.05] transition-all duration-700 group-hover:rotate-12 pointer-events-none">
+                                                    <Plane size={120} className="text-accent -rotate-45" />
                                                 </div>
 
-                                                {trip.description && (
-                                                    <p className="text-text-secondary text-xs font-medium leading-relaxed line-clamp-2 pr-4">
-                                                        {trip.description}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            <div className="relative z-10 pt-8 mt-auto flex items-center justify-between border-t border-white/5">
-                                                <div className="flex -space-x-2">
-                                                    {/* Mock Avatars */}
-                                                    {(trip.participants?.length || 1) > 1 ? (
-                                                        [1, 2].map(n => (
-                                                            <div key={n} className="w-8 h-8 rounded-full bg-accent-indigo border-2 border-[#1A1A1A] flex items-center justify-center text-[9px] font-black text-white">
-                                                                P{n}
+                                                <div className="relative z-10 flex-1 space-y-6">
+                                                    <div className="flex justify-between items-start gap-4">
+                                                        <div className="space-y-2">
+                                                            <h2 className="text-2xl md:text-3xl font-black font-outfit text-text-high leading-tight group-hover:text-accent transition-colors duration-300 tracking-tight line-clamp-2">
+                                                                {trip.title}
+                                                            </h2>
+                                                            <div className="flex items-center gap-2">
+                                                                <Calendar size={12} className="text-text-medium" />
+                                                                <span className="text-[10px] font-black uppercase tracking-widest text-text-medium">{t("dash.updatedRecently")}</span>
                                                             </div>
-                                                        ))
-                                                    ) : (
-                                                        <div className="w-8 h-8 rounded-full bg-accent-cobalt border-2 border-[#1A1A1A] flex items-center justify-center text-[9px] font-black text-white">
-                                                            {t("fin.you")}
                                                         </div>
+                                                        <button 
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                setActiveTripMenu(activeTripMenu === trip.id ? null : trip.id);
+                                                            }}
+                                                            className="p-2 hover:bg-accent/5 rounded-xl text-text-medium hover:text-text-high transition-all relative z-20"
+                                                        >
+                                                            <MoreVertical size={20} />
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    {/* Progress Bar with Clamp for fluid spacing */}
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between items-end">
+                                                            <span className="text-[9px] font-black uppercase tracking-widest text-text-medium">{t("dash.progress")}</span>
+                                                            <span className="text-[9px] font-black text-accent">{prog}%</span>
+                                                        </div>
+                                                        <div className="h-1 w-full bg-stroke rounded-full overflow-hidden">
+                                                            <motion.div 
+                                                                initial={{ width: 0 }}
+                                                                animate={{ width: `${prog}%` }}
+                                                                className="h-full bg-accent"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {trip.description && (
+                                                        <p className="text-text-medium text-xs font-medium leading-relaxed line-clamp-2 pr-4">
+                                                            {trip.description}
+                                                        </p>
                                                     )}
                                                 </div>
-                                                
-                                                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-accent-cobalt group-hover:translate-x-1 transition-transform">
-                                                    {t("dash.openDetails")} <ArrowRight size={12} />
+
+                                                <div className="relative z-10 pt-8 mt-auto flex items-center justify-between border-t border-stroke">
+                                                    <div className="flex -space-x-2">
+                                                        {/* Mock Avatars */}
+                                                        {(trip.participants?.length || 1) > 1 ? (
+                                                            [1, 2].map(n => (
+                                                                <div key={n} className="w-8 h-8 rounded-full bg-accent text-canvas border-2 border-surface flex items-center justify-center text-[9px] font-black">
+                                                                    P{n}
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <div className="w-8 h-8 rounded-full bg-accent text-canvas border-2 border-surface flex items-center justify-center text-[9px] font-black">
+                                                                {t("fin.you")}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-accent group-hover:translate-x-1 transition-transform">
+                                                        {t("dash.openDetails")} <ArrowRight size={12} />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </motion.div>
+                                            </motion.div>
                                     </Link>
 
                                     {/* Context Menu / Management Menu */}
@@ -469,13 +469,13 @@ export default function DashboardClient({ session }: Props) {
             <div className="sm:hidden fixed bottom-10 left-0 right-0 px-8 flex justify-between items-center z-50">
                 <button
                     onClick={() => userPlan === "FREE" ? setIsUpgradeOpen(true) : setIsAIPlannerOpen(true)}
-                    className="w-16 h-16 bg-gradient-to-br from-accent-magenta via-accent-indigo to-accent-cobalt text-white rounded-full shadow-[0_20px_40px_-10px_rgba(139,92,246,0.5)] flex items-center justify-center transition-all active:scale-90 border border-white/20"
+                    className="w-16 h-16 btn-ai"
                 >
                     <Sparkles size={28} />
                 </button>
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="w-16 h-16 bg-white text-obsidian rounded-full shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] flex items-center justify-center transition-all active:scale-90 border border-white/10"
+                    className="w-16 h-16 bg-accent text-canvas rounded-full shadow-2xl flex items-center justify-center transition-all active:scale-90 border border-canvas"
                 >
                     <Plus size={32} />
                 </button>
@@ -492,7 +492,7 @@ export default function DashboardClient({ session }: Props) {
                 {session.role === "ADMIN" && (
                     <button
                         onClick={() => router.push("/admin")}
-                        className="px-6 py-2 text-sm font-semibold text-brand-secondary bg-brand-secondary/10 hover:bg-brand-secondary/20 rounded-full transition-colors"
+                        className="px-6 py-2 text-sm font-semibold text-text-medium hover:text-text-high transition-colors"
                     >
                         {t("dash.adminDashboard")}
                     </button>
@@ -511,13 +511,13 @@ export default function DashboardClient({ session }: Props) {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 40 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className="glass bg-obsidian/95 relative sm:rounded-[2.5rem] rounded-[2rem] p-10 max-w-md w-full shadow-2xl border border-white/10"
+                        className="glass bg-surface relative sm:rounded-[2.5rem] rounded-[2rem] p-10 max-w-md w-full shadow-2xl border border-stroke"
                     >
-                        <h2 className="text-3xl font-black font-outfit text-white mb-8 tracking-tight uppercase leading-none">{t("dash.newDestination")}</h2>
+                        <h2 className="text-3xl font-black font-outfit text-text-high mb-8 tracking-tight uppercase leading-none">{t("dash.newDestination")}</h2>
 
                         <form onSubmit={handleCreateTrip} className="space-y-8">
                             <div className="space-y-3">
-                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                     {t("dash.whereTo")}
                                 </label>
                                 <input
@@ -526,19 +526,19 @@ export default function DashboardClient({ session }: Props) {
                                     placeholder={t("ai.placeholder.destination")}
                                     value={newTripTitle}
                                     onChange={(e) => setNewTripTitle(e.target.value)}
-                                    className="w-full px-6 py-4.5 bg-white/5 border border-white/10 rounded-full focus:border-accent-cobalt outline-none transition-all font-black text-white placeholder:text-gray-800 text-lg tracking-tight"
+                                    className="input-surface w-full p-6 text-xl font-black"
                                 />
                             </div>
 
                             <div className="space-y-3">
-                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                     {t("dash.shortNotes")}
                                 </label>
                                 <textarea
                                     placeholder={t("dash.shortNotesPlaceholder")}
                                     value={newTripDesc}
                                     onChange={(e) => setNewTripDesc(e.target.value)}
-                                    className="w-full px-6 py-4.5 bg-white/5 border border-white/10 rounded-[2rem] focus:border-accent-cobalt outline-none transition-all min-h-[120px] resize-none font-medium text-white placeholder:text-gray-800"
+                                    className="input-surface w-full min-h-[120px] resize-none font-medium leading-relaxed rounded-[2rem]"
                                 />
                             </div>
 
@@ -547,14 +547,14 @@ export default function DashboardClient({ session }: Props) {
                                     type="button"
                                     disabled={isCreating}
                                     onClick={() => setIsCreateModalOpen(false)}
-                                    className="flex-1 py-4.5 bg-white/5 hover:bg-white/10 text-gray-400 font-black rounded-full transition-all uppercase tracking-widest text-[10px] border border-white/5"
+                                    className="flex-1 py-4.5 text-text-medium font-black rounded-full transition-all uppercase tracking-widest text-[10px]"
                                 >
                                     {t("dash.cancel")}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isCreating}
-                                    className="flex-1 py-4.5 bg-gradient-to-br from-accent-cobalt to-accent-indigo text-white font-black rounded-full shadow-[0_20px_40px_-10px_rgba(46,91,255,0.4)] transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-[10px] border border-white/20 active:scale-95"
+                                    className="btn-primary flex-1"
                                 >
                                     {isCreating ? <Loader2 size={18} className="animate-spin" /> : t("dash.createTrip")}
                                 </button>

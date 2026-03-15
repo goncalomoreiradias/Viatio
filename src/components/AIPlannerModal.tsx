@@ -137,12 +137,12 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                     onDragStart={() => {
                         document.body.style.overflow = "hidden";
                     }}
-                    className="fixed bottom-0 left-0 right-0 w-full max-w-full sm:max-w-lg sm:left-1/2 sm:-translate-x-1/2 glass bg-slate-900 sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[90dvh] sm:h-auto sm:max-h-[85vh] border-t border-x border-white/10 sm:border z-[9999]"
+                    className="fixed bottom-0 left-0 right-0 w-full max-w-full sm:max-w-lg sm:left-1/2 sm:-translate-x-1/2 glass bg-surface sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[90dvh] sm:h-auto sm:max-h-[85vh] border-t border-x border-stroke sm:border z-[9999]"
                 >
                     {/* Compact Sticky Header */}
-                    <div className="shrink-0 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] p-5 sm:p-6 relative shadow-xl overflow-hidden sticky top-0 z-[100] backdrop-blur-xl border-b border-white/10 touch-action-none">
+                    <div className="shrink-0 bg-accent p-5 sm:p-6 relative shadow-xl overflow-hidden sticky top-0 z-[100] backdrop-blur-md border-b border-stroke touch-action-none">
                         {/* Decorative glow */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -rotate-45 translate-x-12 -translate-y-12" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-canvas/10 blur-3xl -rotate-45 translate-x-12 -translate-y-12" />
                         
                         <button
                             onClick={() => {
@@ -150,25 +150,25 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                 onClose();
                             }}
                             disabled={loading}
-                            className="absolute top-4 right-5 p-2 bg-white/10 backdrop-blur-xl rounded-full hover:bg-white/20 transition-all text-white disabled:opacity-50 border border-white/20 z-20 active:scale-95 group"
+                            className="absolute top-4 right-5 p-2 bg-canvas/10 backdrop-blur-md rounded-full hover:bg-canvas/20 transition-all text-canvas disabled:opacity-50 border border-canvas/20 z-20 active:scale-95 group"
                         >
                             <X size={16} className="group-hover:rotate-90 transition-transform" />
                         </button>
                         
                         <div className="flex items-center gap-3.5">
-                            <div className="w-10 h-10 bg-white/10 backdrop-blur-2xl rounded-xl flex items-center justify-center shadow-inner border border-white/10">
-                                <Sparkles className="text-white animate-pulse" size={20} />
+                            <div className="w-10 h-10 bg-canvas/10 backdrop-blur-md rounded-xl flex items-center justify-center shadow-inner border border-canvas/10">
+                                <Sparkles className="text-canvas animate-pulse" size={20} />
                             </div>
                             <div className="space-y-0">
-                                <h2 className="text-lg sm:text-xl font-black text-text-primary font-outfit tracking-tighter uppercase whitespace-normal leading-none">{t("ai.title")}</h2>
-                                <p className="text-text-secondary text-[8px] font-black uppercase tracking-[0.2em]">{t("ai.subtitle")}</p>
+                                <h2 className="text-lg sm:text-xl font-black text-canvas font-outfit tracking-tighter uppercase whitespace-normal leading-none">{t("ai.title")}</h2>
+                                <p className="text-canvas/70 text-[8px] font-black uppercase tracking-[0.2em]">{t("ai.subtitle")}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto scrollbar-hide">
                         {phase === "generating" ? (
-                            <div className="px-[5%] py-10 sm:py-16 flex flex-col items-center justify-center min-h-[450px] text-center bg-obsidian">
+                            <div className="px-[5%] py-10 sm:py-16 flex flex-col items-center justify-center min-h-[450px] text-center bg-canvas">
                                 <motion.div
                                     animate={{ 
                                         rotate: [0, 360], 
@@ -178,19 +178,19 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                                     className="relative mb-12"
                                 >
-                                    <div className="absolute inset-0 bg-accent-cobalt/30 blur-[40px] rounded-full animate-pulse" />
-                                    <Sparkles size={80} className="text-accent-indigo relative z-10 drop-shadow-[0_0_20px_rgba(99,102,241,0.8)]" />
+                                    <div className="absolute inset-0 bg-accent/30 blur-[40px] rounded-full animate-pulse" />
+                                    <Sparkles size={80} className="text-accent relative z-10 drop-shadow-[0_0_20px_var(--accent)]" />
                                 </motion.div>
-                                <h3 className="text-2xl sm:text-3xl font-black text-text-primary mb-4 font-outfit tracking-tight leading-tight uppercase px-4">
+                                <h3 className="text-2xl sm:text-3xl font-black text-text-high mb-4 font-outfit tracking-tight leading-tight uppercase px-4">
                                     {t("ai.generating")}
                                 </h3>
-                                <p className="text-text-secondary text-[10px] sm:text-sm max-w-xs leading-relaxed font-black uppercase tracking-[0.15em]">
+                                <p className="text-text-medium text-[10px] sm:text-sm max-w-xs leading-relaxed font-black uppercase tracking-[0.15em]">
                                     {t("ai.generatingDesc")}
                                 </p>
                                 <div className="mt-12 w-full max-w-xs sm:max-w-sm">
-                                    <div className="h-2.5 bg-white/5 rounded-full overflow-hidden border border-white/10 shadow-inner">
+                                    <div className="h-2.5 bg-stroke rounded-full overflow-hidden shadow-inner">
                                         <motion.div
-                                            className="h-full bg-gradient-to-r from-[#D946EF] via-[#8B5CF6] to-[#6366F1] rounded-full shadow-[0_0_20px_rgba(139,92,246,0.5)]"
+                                            className="h-full bg-accent rounded-full shadow-[0_0_20px_var(--accent)]"
                                             initial={{ width: "0%" }}
                                             animate={{ width: "98%" }}
                                             transition={{ duration: 30, ease: "circOut" }}
@@ -212,45 +212,45 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
 
                                 {/* Destination */}
                                 <div className="space-y-3">
-                                    <label className="flex items-center gap-2 text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] px-2 leading-none">
-                                        <MapPin size={12} className="text-accent-cobalt" /> {t("ai.destination")}
+                                    <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
+                                        <MapPin size={12} className="text-accent" /> {t("ai.destination")}
                                     </label>
                                     <input
                                         type="text"
                                         placeholder={t("ai.placeholder.destination")}
                                         value={destination}
                                         onChange={(e) => setDestination(e.target.value)}
-                                        className="w-full bg-white/[0.07] border border-white/12 focus:border-accent-cobalt focus:shadow-[0_0_30px_rgba(59,130,246,0.15)] rounded-2xl px-6 py-5 outline-none font-black transition-all text-text-primary placeholder:text-text-dim text-[15px] max-w-full"
+                                        className="input-surface w-full p-6 text-[15px] font-black"
                                     />
                                 </div>
 
                                 {/* Date Range - Liquid Grid */}
                                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-5">
                                     <div className="space-y-2.5">
-                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] px-1 leading-none">
-                                            <Calendar size={10} className="text-accent-cobalt" /> {t("ai.start")}
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-medium uppercase tracking-[0.2em] px-1 leading-none">
+                                            <Calendar size={10} className="text-accent" /> {t("ai.start")}
                                         </label>
                                         <div className="relative group">
-                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-focus-within:text-accent-cobalt transition-colors" />
+                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors" />
                                             <input
                                                 type="date"
                                                 value={startDate}
                                                 onChange={(e) => setStartDate(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/12 focus:border-accent-cobalt rounded-2xl pl-12 pr-4 py-4.5 outline-none font-black transition-all text-text-primary text-[14px] appearance-none"
+                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm appearance-none"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2.5">
-                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] px-1 leading-none">
-                                            <Calendar size={10} className="text-accent-indigo" /> {t("ai.end")}
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-medium uppercase tracking-[0.2em] px-1 leading-none">
+                                            <Calendar size={10} className="text-accent" /> {t("ai.end")}
                                         </label>
                                         <div className="relative group">
-                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-focus-within:text-accent-indigo transition-colors" />
+                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors" />
                                             <input
                                                 type="date"
                                                 value={endDate}
                                                 onChange={(e) => setEndDate(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/12 focus:border-accent-indigo rounded-2xl pl-12 pr-4 py-4.5 outline-none font-black transition-all text-text-primary text-[14px] appearance-none"
+                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm appearance-none"
                                             />
                                         </div>
                                     </div>
@@ -259,26 +259,26 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                 {/* Budget & People - Liquid Grid */}
                                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-5">
                                     <div className="space-y-2.5">
-                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] px-1 leading-none">
-                                            <Wallet size={10} className="text-emerald-500" /> {t("ai.budget")}
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-medium uppercase tracking-[0.2em] px-1 leading-none">
+                                            <Wallet size={10} className="text-accent" /> {t("ai.budget")}
                                         </label>
                                         <div className="relative group">
-                                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted font-black text-xs group-focus-within:text-emerald-500 transition-colors">€</span>
+                                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium font-black text-xs group-focus-within:text-accent transition-colors">€</span>
                                             <input
                                                 type="number"
                                                 placeholder={t("ai.placeholder.budget")}
                                                 value={budget}
                                                 onChange={(e) => setBudget(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/12 focus:border-accent-cobalt rounded-2xl pl-12 pr-4 py-4.5 outline-none font-black text-text-primary text-[14px] placeholder:text-text-dim"
+                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2.5">
-                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] px-1 leading-none">
-                                            <Users size={10} className="text-accent-cobalt" /> {t("ai.guests")}
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-text-medium uppercase tracking-[0.2em] px-1 leading-none">
+                                            <Users size={10} className="text-accent" /> {t("ai.guests")}
                                         </label>
                                         <div className="relative group">
-                                            <Users size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-focus-within:text-accent-cobalt transition-colors" />
+                                            <Users size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors" />
                                             <input
                                                 type="number"
                                                 min="1"
@@ -293,7 +293,7 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                                         if (!isNaN(parsed)) setNumberOfPeople(parsed);
                                                     }
                                                 }}
-                                                className="w-full bg-white/[0.07] border border-white/12 focus:border-accent-cobalt rounded-2xl pl-12 pr-4 py-4.5 outline-none font-black text-text-primary text-[14px] appearance-none"
+                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm appearance-none"
                                             />
                                         </div>
                                     </div>
@@ -315,8 +315,8 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
 
                                 {/* Travel Style - Horizontal Smooth Slider */}
                                 <div className="space-y-4">
-                                    <label className="flex items-center gap-2 text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] px-1">
-                                        <Compass size={10} className="text-fuchsia-500" /> {t("ai.travelStyle")}
+                                    <label className="flex items-center gap-2 text-[9px] font-black text-text-medium uppercase tracking-[0.2em] px-1">
+                                        <Compass size={10} className="text-accent" /> {t("ai.travelStyle")}
                                     </label>
                                     <div className="flex gap-2.5 overflow-x-auto pb-4 pt-1 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
                                         {travelStyles.map((style) => (
@@ -331,8 +331,8 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                                     );
                                                 }}
                                                 className={`shrink-0 py-3 px-5 rounded-xl text-[10px] font-black tracking-wider uppercase transition-all border whitespace-nowrap ${travelStyle.includes(style.value)
-                                                    ? "bg-accent-cobalt text-white border-accent-cobalt shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-105"
-                                                    : "bg-white/5 text-text-muted border-white/10 hover:border-white/20 hover:text-text-primary"
+                                                    ? "bg-accent text-canvas border-accent shadow-md scale-105"
+                                                    : "bg-surface text-text-medium border-stroke hover:border-accent hover:text-text-high"
                                                     }`}
                                             >
                                                 {language === 'en' ? style.labelEn : style.label}
@@ -359,11 +359,11 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                     </div>
 
                     {/* Fixed Sticky Footer for CTA with Glassmorphism */}
-                    <div className="shrink-0 p-6 sm:p-8 bg-slate-900/80 backdrop-blur-2xl border-t border-white/10 pb-12 sm:pb-8 sticky bottom-0 z-[100]">
+                    <div className="shrink-0 p-6 sm:p-8 bg-surface/80 backdrop-blur-md border-t border-stroke pb-12 sm:pb-8 sticky bottom-0 z-[100]">
                         <button
                             onClick={handleSubmit}
                             disabled={loading || phase === "generating"}
-                            className="w-full py-5 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] text-white font-black rounded-2xl flex items-center justify-center gap-4 transition-all hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.5)] active:scale-[0.98] text-[14px] uppercase tracking-widest border border-white/20 disabled:opacity-50 group shadow-2xl"
+                            className="w-full btn-ai"
                         >
                             <Sparkles size={20} className={`${loading ? "animate-spin" : "group-hover:rotate-12 transition-transform duration-300"}`} />
                             {loading ? "Planning..." : t("ai.generateBtn")}

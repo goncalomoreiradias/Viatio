@@ -68,7 +68,7 @@ export default function UpgradeModal({ isOpen, onClose, onUpgraded }: UpgradeMod
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 100, scale: 0.95 }}
                     transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                    className="glass bg-obsidian/95 relative w-full max-w-md mx-4 sm:mx-0 sm:rounded-[2.5rem] rounded-t-[2.5rem] shadow-2xl overflow-hidden border border-white/10"
+                    className="bg-surface relative w-full max-w-md mx-4 sm:mx-0 sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl overflow-hidden border border-stroke"
                 >
                     {/* Header */}
                     <div className="relative bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 p-10 text-center border-b border-white/10 shadow-xl overflow-hidden">
@@ -96,30 +96,30 @@ export default function UpgradeModal({ isOpen, onClose, onUpgraded }: UpgradeMod
                     <div className="p-8 space-y-8">
                         {/* Feature highlights */}
                         <div className="space-y-4">
-                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 group hover:border-amber-500/30 transition-all">
-                                <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-amber-500/20">
-                                    <Sparkles size={18} className="text-amber-500" />
+                            <div className="flex items-center gap-4 bg-canvas p-4 rounded-2xl border border-stroke group hover:border-accent/30 transition-all">
+                                <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-accent/20">
+                                    <Sparkles size={18} className="text-accent" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-text-primary tracking-tight uppercase">Itinerários Mágicos</p>
-                                    <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-0.5">Gerados por AI com locais reais</p>
+                                    <p className="text-sm font-black text-text-high tracking-tight uppercase">Itinerários Mágicos</p>
+                                    <p className="text-[10px] text-text-medium font-bold uppercase tracking-widest mt-0.5">Gerados por AI com locais reais</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 group hover:border-amber-500/30 transition-all">
-                                <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-amber-500/20">
-                                    <Key size={18} className="text-amber-500" />
+                            <div className="flex items-center gap-4 bg-canvas p-4 rounded-2xl border border-stroke group hover:border-accent/30 transition-all">
+                                <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-accent/20">
+                                    <Key size={18} className="text-accent" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-text-primary tracking-tight uppercase">Exploração Total</p>
-                                    <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-0.5">GPS e Links Google Maps incluídos</p>
+                                    <p className="text-sm font-black text-text-high tracking-tight uppercase">Exploração Total</p>
+                                    <p className="text-[10px] text-text-medium font-bold uppercase tracking-widest mt-0.5">GPS e Links Google Maps incluídos</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Coupon form */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] px-2 flex items-center gap-2">
-                                <Key size={14} className="text-amber-500" /> TENS UM CÓDIGO?
+                            <h3 className="text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 flex items-center gap-2">
+                                <Key size={14} className="text-accent" /> TENS UM CÓDIGO?
                             </h3>
                             <form onSubmit={handleRedeem} className="flex gap-3">
                                 <input
@@ -128,12 +128,12 @@ export default function UpgradeModal({ isOpen, onClose, onUpgraded }: UpgradeMod
                                     required
                                     value={couponCode}
                                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                    className="flex-grow bg-white/5 border border-white/10 focus:border-amber-500 rounded-full px-6 py-4 outline-none font-mono font-black uppercase tracking-widest transition-all text-sm text-text-primary placeholder:text-text-dim"
+                                    className="input-surface flex-grow p-4 text-sm font-mono"
                                 />
                                 <button
                                     type="submit"
                                     disabled={loading || !couponCode}
-                                    className="px-8 bg-gradient-to-br from-amber-400 to-orange-500 text-white font-black rounded-full flex items-center gap-2 transition-all disabled:opacity-50 hover:to-amber-500 active:scale-95 shadow-lg border border-white/10 uppercase tracking-widest text-xs"
+                                    className="px-8 bg-gradient-to-br from-amber-400 to-orange-500 text-canvas font-black rounded-full flex items-center gap-2 transition-all disabled:opacity-50 hover:to-amber-500 active:scale-95 shadow-lg border border-white/10 uppercase tracking-widest text-xs"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={18} /> : "Ativar"}
                                 </button>
@@ -163,9 +163,9 @@ export default function UpgradeModal({ isOpen, onClose, onUpgraded }: UpgradeMod
                         {/* View Plans button */}
                         <button
                             onClick={() => { onClose(); router.push("/pricing"); }}
-                            className="w-full py-5 bg-white/5 text-text-primary font-black rounded-full flex items-center justify-center gap-3 hover:bg-white/10 transition-all border border-white/5 active:scale-[0.98] uppercase tracking-[0.2em] text-xs"
+                            className="w-full py-5 bg-canvas text-text-high font-black rounded-full flex items-center justify-center gap-3 hover:bg-stroke transition-all border border-stroke active:scale-[0.98] uppercase tracking-[0.2em] text-xs"
                         >
-                            VER PLANOS <ArrowRight size={18} className="text-amber-500" />
+                            VER PLANOS <ArrowRight size={18} className="text-accent" />
                         </button>
                     </div>
                 </motion.div>
