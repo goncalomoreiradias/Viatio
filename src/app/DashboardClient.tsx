@@ -7,6 +7,7 @@ import { Loader2, Plus, Plane, MapPin, Calendar, Users, Sparkles } from "lucide-
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 import LanguageToggle from "@/components/LanguageToggle";
+import AIPlannerTrigger from "@/components/AIPlannerTrigger";
 import { useRouter } from "next/navigation";
 import AIPlannerModal from "@/components/AIPlannerModal";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -140,124 +141,239 @@ export default function DashboardClient({ session }: Props) {
     //     );
     // }
 
+    const [viewMode, setViewMode] = useState<"personal" | "group">("personal");
+
+    // Filtered Trips
+    const filteredTrips = trips.filter(trip => {
+        const isGroup = (trip.participants?.length || 0) > 1;
+        return viewMode === "group" ? isGroup : !isGroup;
+    });
+
+    // Preparation Progress Calculation (Mock logic for now: based on locations vs duration)
+    const getProgress = (trip: Trip) => {
+        const anyTrip = trip as any;
+        const totalLocations = anyTrip.utils?.totalLocations || (trip.days?.reduce((sum, d) => sum + d.locations.length, 0) || 0);
+        const hasExpenses = (trip.expenses?.length || 0) > 0;
+        let progress = Math.min(100, (totalLocations / 10) * 100);
+        if (hasExpenses) progress = Math.min(100, progress + 20);
+        return Math.round(progress);
+    };
+
+    const templates = [
+        { title: "Safari de Luxo", desc: "Explora o Serengeti com conforto total.", icon: "🦁", color: "from-amber-500 to-orange-600" },
+        { title: "Backpacking Europa", desc: "A rota definitiva pelas capitais europeias.", icon: "🎒", color: "from-blue-500 to-indigo-600" },
+        { title: "Escapadinha em Roma", desc: "História, massa e vinhos inesquecíveis.", icon: "🇮🇹", color: "from-rose-500 to-magenta-600" }
+    ];
+
     return (
-        <main className="min-h-screen bg-obsidian relative pb-24 selection:bg-accent-cobalt selection:text-white">
+        <main className="min-h-screen bg-[#0D0D0D] relative pb-24 selection:bg-accent-cobalt selection:text-white">
             {/* Premium Header */}
-            <header className="sticky top-0 z-40 glass border-b border-white/5 pt-16 pb-8 px-8 sm:px-12 shadow-2xl">
+            <header className="sticky top-0 z-40 glass border-b border-white/5 pt-16 pb-12 px-8 sm:px-12 shadow-2xl">
                 {/* Micro-pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
                 
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
-                    <div className="space-y-1">
-                        <motion.p
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="text-[10px] font-black text-accent-cobalt tracking-[0.3em] uppercase"
-                        >
-                            {t("dash.hello")}, {session.name || "Viajante"}
-                        </motion.p>
-                        <motion.h1
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="text-4xl sm:text-6xl font-black font-outfit text-white tracking-tight"
-                        >
-                            {t("dash.yourTrips")}
-                        </motion.h1>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:items-center">
-                        <div className="neumorphic-inset p-1 rounded-2xl flex items-center gap-1">
+                <div className="max-w-7xl mx-auto flex flex-col gap-10 relative z-10">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div className="space-y-4 max-w-2xl">
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="inline-flex items-center gap-2 px-3 py-1 bg-accent-cobalt/10 border border-accent-cobalt/20 rounded-full"
+                            >
+                                <span className="w-1.5 h-1.5 bg-accent-cobalt rounded-full animate-pulse" />
+                                <span className="text-[10px] font-black text-accent-cobalt tracking-[0.2em] uppercase">
+                                    {t("dash.hello")}, {session.name || "Viajante"}
+                                </span>
+                            </motion.div>
+                            <motion.h1
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="text-4xl sm:text-7xl font-black font-outfit text-white tracking-tight leading-[0.9]"
+                            >
+                                Planeie, Colabore e Viaje <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cobalt to-accent-magenta">sem Stress.</span>
+                            </motion.h1>
+                            <p className="text-gray-400 text-lg font-medium max-w-xl">
+                                A sua viagem definitiva, otimizada por IA e gerida em grupo. Centralize itinerários, despesas e memórias num só lugar.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="neumorphic-inset p-1.5 rounded-2xl flex items-center gap-1 bg-black/20">
+                                <button 
+                                    onClick={() => setViewMode("personal")}
+                                    className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "personal" ? "bg-white text-obsidian shadow-xl" : "text-gray-500 hover:text-white"}`}
+                                >
+                                    Pessoais
+                                </button>
+                                <button 
+                                    onClick={() => setViewMode("group")}
+                                    className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "group" ? "bg-white text-obsidian shadow-xl" : "text-gray-500 hover:text-white"}`}
+                                >
+                                    Viagens de Grupo
+                                </button>
+                            </div>
                             <LanguageToggle />
                         </div>
-                        
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4">
                         <button
                             onClick={() => userPlan === "FREE" ? setIsUpgradeOpen(true) : setIsAIPlannerOpen(true)}
-                            className="px-6 py-3.5 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] hover:scale-[1.04] hover:shadow-[0_20px_40px_-10px_rgba(139,92,246,0.5)] text-white font-black rounded-full transition-all active:scale-[0.96] items-center gap-2 border border-white/20 shadow-2xl group flex"
+                            className="px-8 py-5 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] hover:scale-[1.05] hover:shadow-[0_25px_50px_-12px_rgba(139,92,246,0.6)] text-white font-black rounded-full transition-all active:scale-[0.96] items-center gap-3 border border-white/20 shadow-2xl group flex flex-1 sm:flex-none justify-center"
                         >
-                            <Sparkles size={18} className="group-hover:rotate-12 transition-transform" />
-                            <span className="text-xs uppercase tracking-widest">Planear com AI</span>
+                            <Sparkles size={22} className="group-hover:rotate-12 transition-transform" />
+                            <span className="text-sm uppercase tracking-[0.2em]">CRIAR COM IA MÁGICA</span>
                         </button>
                         
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="px-6 py-3.5 bg-white text-obsidian hover:bg-gray-100 font-black rounded-full shadow-2xl transition-all active:scale-[0.96] items-center gap-2 border border-white/10 flex"
+                            className="px-8 py-5 bg-white text-obsidian hover:bg-gray-100 font-black rounded-full shadow-2xl transition-all active:scale-[0.96] items-center gap-3 border border-white/10 flex flex-1 sm:flex-none justify-center"
                         >
-                            <Plus size={20} />
-                            <span className="text-xs uppercase tracking-widest">{t("dash.newTrip")}</span>
+                            <Plus size={24} />
+                            <span className="text-sm uppercase tracking-[0.2em]">{t("dash.newTrip")}</span>
                         </button>
                     </div>
                 </div>
             </header>
 
             {/* Main Content Area */}
-            <div className="max-w-7xl mx-auto px-8 sm:px-12 py-12">
+            <div className="max-w-7xl mx-auto px-8 sm:px-12 py-16">
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
-                        <Loader2 size={40} className="text-brand-primary animate-spin" />
+                        <Loader2 size={40} className="text-accent-cobalt animate-spin" />
                     </div>
-                ) : trips.length === 0 ? (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="text-center py-20 px-6 border-2 border-dashed border-gray-300 dark:border-gray-800 rounded-3xl"
-                    >
-                        <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <MapPin size={40} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t("dash.noTrips")}</h3>
-                        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                            {t("dash.noTripsDesc")}
-                        </p>
-                        <button
-                            onClick={() => setIsCreateModalOpen(true)}
-                            className="sm:hidden px-8 py-4 bg-brand-primary text-white font-bold rounded-2xl shadow-xl shadow-brand-primary/20 transition-all active:scale-[0.98]"
+                ) : filteredTrips.length === 0 ? (
+                    <div className="space-y-12">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-center py-24 px-10 border-2 border-dashed border-white/5 rounded-[3rem] bg-white/[0.02]"
                         >
-                            {t("dash.createFirst")}
-                        </button>
-                    </motion.div>
+                            <div className="w-24 h-24 bg-accent-cobalt/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
+                                <Plane size={48} className="text-accent-cobalt" />
+                            </div>
+                            <h3 className="text-3xl font-black text-white mb-4 uppercase tracking-tight">{t("dash.noTrips")}</h3>
+                            <p className="text-gray-500 mb-10 max-w-md mx-auto font-medium">
+                                Parece que ainda não tens planos para a tua próxima aventura. Começa agora ou inspira-te com um dos nossos templates!
+                            </p>
+                            <button
+                                onClick={() => setIsCreateModalOpen(true)}
+                                className="px-10 py-5 bg-accent-cobalt text-white font-black rounded-full shadow-2xl shadow-accent-cobalt/40 transition-all active:scale-95 uppercase tracking-widest text-xs border border-white/20"
+                            >
+                                Criar Primeira Viagem
+                            </button>
+                        </motion.div>
+
+                        {/* Sales Templates */}
+                        <div className="space-y-8">
+                            <h4 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.4em] text-center">Templates em Destaque</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {templates.map((tpl, i) => (
+                                    <motion.div
+                                        key={tpl.title}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="bg-[#1A1A1A] rounded-[2rem] p-8 border border-white/5 group hover:border-white/20 transition-all cursor-pointer"
+                                    >
+                                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tpl.color} flex items-center justify-center text-2xl mb-6 shadow-xl`}>
+                                            {tpl.icon}
+                                        </div>
+                                        <h5 className="text-xl font-black text-white mb-2 tracking-tight group-hover:text-accent-cobalt transition-colors">{tpl.title}</h5>
+                                        <p className="text-sm text-gray-500 font-medium leading-relaxed">{tpl.desc}</p>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {trips.map((trip, i) => (
-                            <Link href={`/trips/${trip.id}`} key={trip.id}>
-                                <motion.div
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.05 }}
-                                    whileHover={{ y: -8, scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="group relative bg-[#141820] rounded-[2.5rem] p-8 shadow-2xl hover:shadow-accent-cobalt/20 border border-white/5 transition-all h-full flex flex-col overflow-hidden"
-                                >
-                                    {/* Plane Glow Effect */}
-                                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-20 transition-all duration-500 group-hover:scale-110">
-                                        <Plane size={100} className="text-accent-cobalt -rotate-45 translate-x-4 -translate-y-4 filter blur-[1px]" />
-                                    </div>
-                                    <div className="absolute -top-20 -right-20 w-40 h-40 bg-accent-cobalt/10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="space-y-12">
+                        {/* Premium AI Trigger */}
+                        <div className="max-w-4xl mx-auto">
+                            <AIPlannerTrigger onClick={() => userPlan === "FREE" ? setIsUpgradeOpen(true) : setIsAIPlannerOpen(true)} />
+                        </div>
 
-                                    <div className="relative z-10 flex-1 space-y-4">
-                                        <h2 className="text-2xl sm:text-3xl font-black font-outfit text-white leading-tight group-hover:text-accent-cobalt transition-colors duration-300">
-                                            {trip.title}
-                                        </h2>
-                                        {trip.description && (
-                                            <p className="text-gray-400 text-sm font-medium leading-relaxed line-clamp-3">
-                                                {trip.description}
-                                            </p>
-                                        )}
-                                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {filteredTrips.map((trip, i) => {
+                            const prog = getProgress(trip);
+                            return (
+                                <Link href={`/trips/${trip.id}`} key={trip.id}>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        whileHover={{ y: -10, scale: 1.02 }}
+                                        className="group relative bg-[#1A1A1A] rounded-[3rem] p-10 shadow-2xl border border-white/5 transition-all h-full flex flex-col overflow-hidden"
+                                    >
+                                        {/* Background Decor */}
+                                        <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-20 transition-all duration-700 group-hover:rotate-12">
+                                            <Plane size={120} className="text-accent-cobalt -rotate-45" />
+                                        </div>
 
-                                    <div className="relative z-10 pt-8 mt-8 border-t border-white/5 flex items-center justify-between">
-                                        <div className="px-4 py-2 bg-obsidian/50 rounded-full border border-white/5 flex items-center gap-2">
-                                            <Users size={14} className="text-accent-cobalt" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">
-                                                {trip.participants?.length || 1} {t("dash.participants")}
-                                            </span>
+                                        <div className="relative z-10 flex-1 space-y-6">
+                                            <div className="space-y-2">
+                                                <h2 className="text-3xl font-black font-outfit text-white leading-[1.1] group-hover:text-accent-cobalt transition-colors duration-300 tracking-tight">
+                                                    {trip.title}
+                                                </h2>
+                                                <div className="flex items-center gap-2">
+                                                    <Calendar size={12} className="text-gray-600" />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Planeado Recently</span>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Progress Bar */}
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between items-end">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Preparação</span>
+                                                    <span className="text-[10px] font-black text-accent-cobalt">{prog}%</span>
+                                                </div>
+                                                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                    <motion.div 
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${prog}%` }}
+                                                        className="h-full bg-accent-cobalt shadow-[0_0_15px_rgba(46,91,255,0.5)]"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {trip.description && (
+                                                <p className="text-gray-500 text-sm font-medium leading-relaxed line-clamp-2">
+                                                    {trip.description}
+                                                </p>
+                                            )}
                                         </div>
-                                        <div className="w-10 h-10 rounded-full bg-accent-cobalt/10 flex items-center justify-center group-hover:bg-accent-cobalt group-hover:text-white transition-all text-accent-cobalt">
-                                            <Plane size={18} />
+
+                                        <div className="relative z-10 pt-10 mt-auto flex items-center justify-between">
+                                            <div className="flex -space-x-3">
+                                                {/* Mock Avatars for Group Trips */}
+                                                {(trip.participants?.length || 1) > 1 ? (
+                                                    [1, 2, 3].map(n => (
+                                                        <div key={n} className="w-9 h-9 rounded-full bg-accent-indigo border-4 border-[#1A1A1A] flex items-center justify-center text-[10px] font-black text-white">
+                                                            P{n}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="w-9 h-9 rounded-full bg-accent-cobalt border-4 border-[#1A1A1A] flex items-center justify-center text-[10px] font-black text-white">
+                                                        ME
+                                                    </div>
+                                                )}
+                                                { (trip.participants?.length || 0) > 3 && (
+                                                    <div className="w-9 h-9 rounded-full bg-white/10 border-4 border-[#1A1A1A] flex items-center justify-center text-[10px] font-black text-gray-400">
+                                                        +{(trip.participants?.length || 0) - 3}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="px-6 py-2.5 bg-accent-cobalt/10 rounded-full border border-accent-cobalt/20 group-hover:bg-accent-cobalt group-hover:text-white transition-all">
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Abrir Viagem</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            </Link>
-                        ))}
+                                    </motion.div>
+                                </Link>
+                            );
+                        })}
+                        </div>
                     </div>
                 )}
             </div>

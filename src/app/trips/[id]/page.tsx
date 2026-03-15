@@ -17,6 +17,7 @@ import { pt, enUS } from "date-fns/locale";
 import { useI18n } from "@/lib/i18n";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
+import CollaborationModule from "@/components/CollaborationModule";
 
 
 const MapSection = dynamic(() => import("@/components/MapSection"), {
@@ -174,16 +175,28 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
           >
             <div className="space-y-3">
               <h1 className="text-4xl sm:text-6xl font-black font-outfit text-white tracking-tight leading-tight">{itinerary.title}</h1>
-              <div className="flex flex-wrap items-center gap-4">
-                <p className="px-4 py-1.5 bg-accent-cobalt/10 text-accent-cobalt rounded-full text-xs font-black uppercase tracking-widest border border-accent-cobalt/20">
+              <div className="flex flex-wrap items-center gap-6">
+                <p className="px-5 py-2 bg-accent-cobalt/10 text-accent-cobalt rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-accent-cobalt/20 shadow-lg backdrop-blur-md">
                     {itinerary.startDate && itinerary.endDate
                     ? `${format(new Date(itinerary.startDate), "dd MMM", { locale: dateLocale })} - ${format(new Date(itinerary.endDate), "dd MMM yyyy", { locale: dateLocale })}`
                     : t("common.no_dates")}
                 </p>
-                <p className="text-sm font-bold text-gray-400 flex items-center gap-2">
-                    <Users size={14} className="text-accent-cobalt" />
-                    {t("common.participants")}: {itinerary.participants?.map((p: any) => p.name || p.email).join(", ") || t("common.no_participants")}
-                </p>
+                <div className="lg:scale-90 lg:origin-left">
+                  <CollaborationModule 
+                    participants={(itinerary.participants || []).map((p: any, i: number) => ({
+                      id: p.id || `p-${i}`,
+                      name: p.name || p.email.split('@')[0],
+                      role: i === 0 ? "Owner" : "Editor",
+                      online: i % 2 === 0
+                    }))}
+                    onInvite={() => {
+                      const url = `${window.location.origin}/trips/join/${itinerary.inviteToken}`;
+                      navigator.clipboard.writeText(url);
+                      setCopiedLink(true);
+                      setTimeout(() => setCopiedLink(false), 2000);
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
@@ -345,14 +358,14 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
       {activeTab === "itinerary" ? (
         <button
           onClick={() => setIsAddLocationOpen(true)}
-          className="fixed bottom-24 sm:bottom-10 right-8 lg:bottom-12 lg:right-12 z-[30] w-16 h-16 bg-accent-cobalt text-white rounded-full shadow-[0_20px_50px_-10px_rgba(46,91,255,0.5)] flex items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/20 group"
+          className="fixed bottom-24 sm:bottom-10 right-8 lg:bottom-12 lg:right-12 z-[100] w-16 h-16 bg-accent-cobalt text-white rounded-full shadow-[0_20px_60px_-10px_rgba(46,91,255,0.7)] flex items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/30 group"
         >
           <Plus size={32} className="group-hover:rotate-90 transition-transform duration-300" />
         </button>
       ) : (
         <button
           onClick={() => setIsAddExpenseOpen(true)}
-          className="fixed bottom-24 sm:bottom-10 right-8 lg:bottom-12 lg:right-12 z-[30] w-16 h-16 bg-accent-indigo text-white rounded-full shadow-[0_20px_50px_-10px_rgba(99,102,241,0.5)] flex items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/20 group"
+          className="fixed bottom-24 sm:bottom-10 right-8 lg:bottom-12 lg:right-12 z-[100] w-16 h-16 bg-accent-indigo text-white rounded-full shadow-[0_20px_60px_-10px_rgba(99,102,241,0.7)] flex items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/30 group"
         >
           <Plus size={32} className="group-hover:rotate-90 transition-transform duration-300" />
         </button>

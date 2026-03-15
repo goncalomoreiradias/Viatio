@@ -28,7 +28,10 @@ export async function POST(request: Request) {
 
         // 2. Parse request
         const body = await request.json();
-        const { destination, startDate, endDate, budget, travelStyle, numberOfPeople, customRequirements, mapsListUrl } = body;
+        const { destination, startDate, endDate, budget, travelStyle, numberOfPeople, customRequirements, mapsListUrl, language } = body;
+
+        const isPT = language === "pt";
+        const langName = isPT ? "Portuguese (pt-PT)" : "English (En-US)";
 
         if (!destination || !startDate || !endDate) {
             return NextResponse.json({ error: "Destination, start date, and end date are required." }, { status: 400 });
@@ -52,7 +55,8 @@ export async function POST(request: Request) {
             }, { status: 500 });
         }
 
-        const prompt = `You are a world-class travel planner. Create a detailed ${numberOfDays}-day travel itinerary for ${destination}.
+        const prompt = `You are a world-class travel architect and expert strategist. Your goal is to design a high-converting, localized travel experience that feels exclusive and perfectly optimized.
+Create a detailed ${numberOfDays}-day luxury/optimized travel itinerary for ${destination}.
 
 Context:
 - Travel dates: ${startDate} to ${endDate}
@@ -62,21 +66,24 @@ Context:
 - User custom requirements: ${customRequirements || "None"}
 - Google Maps List Link (USER PROVIDED): ${mapsListUrl || "Not provided"}
 
-IMPORTANT INSTRUCTION FOR GOOGLE MAPS LIST:
-If a Google Maps List Link is provided, you MUST analyze the potential locations it might contain (based on the context of the destination and user requirements) and prioritize including those spots or similar high-quality spots in the itinerary. If the list seems to have few points, complement them with more amazing locations to fill the ${numberOfDays} days.
+LANGUAGE REQUIREMENT:
+You MUST return all content in ${langName}. This includes the trip title, description, day titles, and location descriptions. Use professional, engaging, and premium language.
 
-Return ONLY a valid JSON object (no markdown, no code blocks, no extra text) with this exact structure:
+IMPORTANT INSTRUCTION FOR GOOGLE MAPS LIST:
+If a Google Maps List Link is provided, analyze the potential locations it might contain and prioritize including those spots or similar high-quality spots. Complement them with more amazing locations to fill the ${numberOfDays} days.
+
+Return ONLY a valid JSON object (no markdown, no code blocks) with this exact structure:
 {
-  "title": "A catchy trip title (e.g. 'Bali Cultural Adventure')",
-  "description": "A 1-2 sentence trip description",
+  "title": "A high-converting trip title",
+  "description": "A compelling 1-2 sentence trip description",
   "days": [
     {
       "dayNumber": 1,
-      "title": "Day theme title (e.g. 'Arrival & Ubud Exploration')",
+      "title": "Architectural day theme",
       "locations": [
         {
           "name": "Location Name",
-          "description": "What to do here and why it's special (2-3 sentences)",
+          "description": "Detailed architectural/travel insight (2-3 sentences)",
           "lat": -8.5069,
           "lng": 115.2625,
           "tag": "culture|nature|food|adventure|relaxation|nightlife|shopping",
@@ -90,11 +97,8 @@ Return ONLY a valid JSON object (no markdown, no code blocks, no extra text) wit
 Requirements:
 - Include 3-5 locations per day
 - Use real, accurate GPS coordinates
-- Include a mix of activities matching the travel style and custom requirements
-- Provide REAL, high-quality Google Maps URLs. If specific place URL is unknown, use https://www.google.com/maps/search/?api=1&query=LOCATION_NAME+DESTINATION
-- Make day titles descriptive and engaging in Portuguese
-- The description and names of locations should be in Portuguese.
-- Tags must be one of: culture, nature, food, adventure, relaxation, nightlife, shopping`;
+- Provide REAL, high-quality Google Maps search URLs: https://www.google.com/maps/search/?api=1&query=LOCATION_NAME+DESTINATION
+- Tags must be exactly: culture, nature, food, adventure, relaxation, nightlife, shopping`;
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",

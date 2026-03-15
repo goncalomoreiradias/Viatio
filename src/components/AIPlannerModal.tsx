@@ -22,7 +22,7 @@ const travelStyles = [
 
 export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps) {
     const router = useRouter();
-    const { t } = useI18n();
+    const { t, language } = useI18n();
     const [destination, setDestination] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -70,6 +70,7 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                     numberOfPeople,
                     customRequirements,
                     mapsListUrl,
+                    language, // Added language parameter
                 }),
             });
 

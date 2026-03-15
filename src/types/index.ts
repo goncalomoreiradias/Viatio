@@ -35,6 +35,7 @@ export interface Itinerary {
   participants?: string[];
   days: DayPlan[];
   expenses?: Expense[];
+  budget?: number; // Target budget
 }
 
 export type Trip = Itinerary;
