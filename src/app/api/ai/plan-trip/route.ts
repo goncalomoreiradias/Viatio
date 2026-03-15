@@ -104,7 +104,7 @@ Requirements:
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
-                "HTTP-Referer": `https://bali2026.vercel.app`, // Optional
+                "HTTP-Referer": `https://viatio.app`, // Optional
                 "X-Title": `Bali Trip Planner`, // Optional
                 "Content-Type": "application/json"
             },
