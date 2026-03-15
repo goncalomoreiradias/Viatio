@@ -81,47 +81,55 @@ export async function POST(request: Request) {
                     : "Provide detailed and engaging descriptions.";
 
                 const mapsInstruction = mapsListUrl 
-                    ? `IMPORTANT: The user provided a Google Maps List: ${mapsListUrl}. You MUST analyze these locations and prioritize including them or similar spots in the itinerary. This is a primary data source.`
+                    ? `IMPORTANT DATA SOURCE: The user provided a Google Maps List (${mapsListUrl}). You MUST analyze these locations and prioritize them. 
+                       - Treat all locations in the list as mandatory or highly preferred.
+                       - If there are too many for the timeframe, select the most relevant ones.
+                       - Group locations from this list that are in the same geographic area to optimize the route.`
                     : "";
 
-                const prompt = `You are an Adaptive Travel Genius, the world's most sophisticated and intelligent travel architect. Design an elite ${numberOfDays}-day itinerary for ${destination}.
+                const prompt = `You are the "Viatio AI Architect", a world-class travel engineering expert and luxury consultant specializing in high-density, high-efficiency itineraries.
 
-INTELLIGENCE & DENSITY:
-1. FLUID ACTIVITY COUNT: Do NOT use a fixed number of locations. Analyze the complexity of each activity. 
-   - If a day involves a time-intensive trek, long-distance travel, or deep relaxation, 1-2 locations is perfect.
-   - If a day is for city exploration or cultural discovery, 4-6 locations may be appropriate if they are geographically clustered.
-   - Quality and Logical Flow always supersede quantity.
-2. EXPERT LOGISTICS: Ensure every transition between locations is physically possible and optimized.
-3. TIME ESTIMATES: Every location MUST have a "timeSlot" (e.g., "09:00 - 11:00").
-4. PERSONA: You are elite, professional, and obsessed with the best user experience.
+OBJECTIVE: Design an elite ${numberOfDays}-day "1-shot" complete itinerary for ${destination}. 
+
+STRICT PLANNING RULES (The 1-Shot Rule):
+1. MANDATORY DENSITY: Each day MUST have at least 4-5 points of interest, covering "Morning", "Lunch", "Afternoon 1", "Afternoon 2", and "Dinner/Night" blocks.
+2. TIME REALISM: No single activity window should exceed 2h30, unless it is a major landmark (e.g., Vatican, Louvre, or a long trek).
+3. BUFFER & TRANSITIONS: Calculate logical travel times between points. Every activity MUST start with a 15-30 min "Note" regarding the transition from the previous location.
+4. GEOGRAPHIC CLUSTERING: Group activities by neighborhood or zone. Do NOT cross the city more than twice a day.
+5. ADAPTIVE LOGIC: Only provide fewer locations if the user specifically asked for "Relaxed" or if an activity is inherently long (e.g., a 6-hour hike).
+6. COMPLETE EXPERIENCE: Always include specific suggestions for breakfast/coffee and dinner to ensure a seamless "1-shot" day.
+
+DATA PROCESSING:
+${mapsInstruction}
+
+LANGUAGE & LOCALIZATION:
+- All output MUST be in ${langName}. If Portuguese, use flawless "Português de Portugal" (PT-PT).
 
 Context:
 - Dates: ${startDate} to ${endDate}
 - Budget: ${budget ? `€${budget}` : "flexible"}
 - Style: ${travelStyle || "balanced"}
 - Travelers: ${numberOfPeople || 2}
-- Custom Req: ${customRequirements || "None"}
-${mapsInstruction}
-
-LANGUAGE: All output MUST be in ${langName}.
+- Custom Requirements: ${customRequirements || "None"}
 
 ${concisenessInstruction}
 
-Return ONLY a valid JSON object:
+Return ONLY a valid JSON object in this format:
 {
-  "title": "Elite Journey Title",
-  "description": "Executive summary of the trip strategy",
+  "title": "Elite Portfolio Title",
+  "description": "Sophisticated executive summary of the strategy",
   "days": [
     {
       "dayNumber": 1,
-      "title": "Daily Theme",
+      "title": "Daily Architectural Theme",
       "locations": [
         {
           "name": "Location Name",
           "timeSlot": "HH:MM - HH:MM",
-          "description": "Professional insight",
+          "description": "Appealing, short insight with transportation buffer note",
           "lat": 0.0,
           "lng": 0.0,
+          "category": "Cultura|Gastronomia|Lazer|Transporte|Natureza",
           "tag": "culture|nature|food|adventure|relaxation|nightlife|shopping",
           "mapsUrl": "https://www.google.com/maps/search/?api=1&query=LOC+DEST"
         }
