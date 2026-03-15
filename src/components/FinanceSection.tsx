@@ -50,34 +50,41 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
     return (
         <div className="flex flex-col gap-6 lg:gap-8 max-w-2xl mx-auto w-full pb-32">
             {/* Top Summary Cards */}
-            <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-brand-primary to-brand-secondary rounded-2xl p-5 text-white shadow-xl shadow-brand-primary/10">
-                    <div className="flex items-center gap-2 text-white/80 mb-2">
-                        <Calculator size={18} />
-                        <span className="text-sm font-semibold uppercase tracking-wider">Total</span>
+            <div className="grid grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-accent-cobalt to-accent-indigo rounded-[2rem] p-8 text-white shadow-[0_20px_40px_-10px_rgba(46,91,255,0.4)] relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                        <Calculator size={80} />
                     </div>
-                    <h2 className="text-3xl font-bold font-inter tracking-tight">€{formatCurrency(totalSpent)}</h2>
+                    <div className="flex items-center gap-2 text-white/70 mb-3 relative z-10">
+                        <Calculator size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">{"TOTAL"}</span>
+                    </div>
+                    <h2 className="text-4xl font-black font-outfit tracking-tight relative z-10">€{formatCurrency(totalSpent)}</h2>
                 </div>
 
-                <div className="glass-card bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg border border-gray-100 dark:border-gray-700">
-                    <div className="flex items-center gap-2 text-gray-400 mb-2">
-                        <Users size={18} />
-                        <span className="text-sm font-semibold uppercase tracking-wider">Por Pessoa</span>
+                <div className="glass-card bg-[#141820]/80 rounded-[2rem] p-8 shadow-2xl border border-white/5 flex flex-col justify-center">
+                    <div className="flex items-center gap-2 text-gray-500 mb-3">
+                        <Users size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">CADA UM</span>
                     </div>
-                    <h2 className="text-2xl font-bold font-inter tracking-tight text-brand-accent">
+                    <h2 className="text-3xl font-black font-outfit tracking-tight text-white group">
                         €{formatCurrency(fairShare)}
                     </h2>
-                    {totalPeople > 1 && <p className="text-xs text-gray-400 mt-1">A dividir por {totalPeople}</p>}
+                    {totalPeople > 1 && (
+                        <div className="mt-2 px-3 py-1 bg-white/5 rounded-full w-fit border border-white/5">
+                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Dividido por {totalPeople}</span>
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* Who Paid What Component */}
             {participants.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                    <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                        <User size={18} className="text-brand-secondary" /> Quem deve a quem?
+                <div className="bg-[#141820] rounded-[2rem] p-8 shadow-2xl border border-white/5">
+                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-8 flex items-center gap-2 p-1">
+                        <User size={14} className="text-accent-indigo" /> QUEM DEVE A QUEM?
                     </h3>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {participants.map((person, idx) => {
                             const paid = paidByTotals[person] || 0;
                             const balance = paid - fairShare;
@@ -87,14 +94,21 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
                             const displayBalance = Math.abs(balance) < 0.01 ? 0 : balance;
 
                             return (
-                                <div key={`${person}-${idx}`} className="flex justify-between items-center">
-                                    <span className={`font-medium ${isMe ? 'text-brand-primary font-bold' : 'text-gray-700 dark:text-gray-300'}`}>
-                                        {person} {isMe && "(Tu)"}
-                                    </span>
+                                <div key={`${person}-${idx}`} className="flex justify-between items-center group/person">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs ${isMe ? 'bg-accent-cobalt text-white' : 'bg-white/5 text-gray-400'}`}>
+                                            {person.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <span className={`text-sm font-black tracking-tight ${isMe ? 'text-white' : 'text-gray-300'}`}>
+                                                {person} {isMe && "(Tu)"}
+                                            </span>
+                                            <p className="font-black text-[9px] uppercase tracking-widest text-gray-600">Pagou: €{formatCurrency(paid)}</p>
+                                        </div>
+                                    </div>
                                     <div className="text-right">
-                                        <p className="font-semibold text-gray-500 text-xs">Pagou: €{formatCurrency(paid)}</p>
-                                        <p className={`text-sm font-bold mt-0.5 ${displayBalance === 0 ? 'text-gray-400' : displayBalance > 0 ? 'text-green-500' : 'text-red-400'}`}>
-                                            {displayBalance === 0 ? `Tudo certo` : displayBalance > 0 ? `+ Recebe €${formatCurrency(displayBalance)}` : `- Deve €${formatCurrency(Math.abs(displayBalance))}`}
+                                        <p className={`text-sm font-black tracking-tight ${displayBalance === 0 ? 'text-gray-500' : displayBalance > 0 ? 'text-accent-emerald' : 'text-red-400'}`}>
+                                            {displayBalance === 0 ? `TUDO CERTO` : displayBalance > 0 ? `+ RECEBE €${formatCurrency(displayBalance)}` : `- DEVE €${formatCurrency(Math.abs(displayBalance))}`}
                                         </p>
                                     </div>
                                 </div>
@@ -106,37 +120,37 @@ export default function FinanceSection({ itinerary, onSave, currentUser }: Finan
 
             {/* Transaction List */}
             <div>
-                <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-4 px-1 flex items-center gap-2">
-                    <Receipt size={18} className="text-brand-primary" /> Lista de Despesas
+                <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6 px-4 flex items-center gap-2">
+                    <Receipt size={14} className="text-accent-cobalt" /> LISTA DE DESPESAS
                 </h3>
 
                 {expenses.length === 0 ? (
-                    <div className="text-center py-10 bg-white/50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-                        <Receipt className="mx-auto text-gray-300 mb-3" size={32} />
-                        <p className="text-gray-500 font-medium tracking-tight">Ainda não há despesas registadas.</p>
+                    <div className="text-center py-16 bg-white/5 rounded-[2rem] border border-dashed border-white/10">
+                        <Receipt className="mx-auto text-gray-700 mb-4 opacity-50" size={48} />
+                        <p className="text-gray-500 font-black uppercase tracking-widest text-[10px]">Ainda não há despesas registadas.</p>
                     </div>
                 ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {[...expenses].reverse().map((exp) => {
                             if (!exp) return null;
                             const expDate = exp.date ? new Date(exp.date).toLocaleDateString() : 'Sem data';
 
                             return (
-                                <div key={exp.id || Math.random().toString()} className="bg-white dark:bg-gray-800 rounded-xl p-4 flex justify-between items-center shadow-sm border border-gray-100 dark:border-gray-700 group hover:border-gray-200 transition">
-                                    <div className="flex-1">
-                                        <h4 className="font-semibold text-gray-800 dark:text-gray-100">{exp.description || 'Despesa'}</h4>
-                                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                                            <span className="font-medium bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-sm">{exp.paidBy || 'Desconhecido'}</span>
-                                            <span>• {expDate}</span>
-                                        </p>
+                                <div key={exp.id || Math.random().toString()} className="bg-[#141820] rounded-[1.5rem] p-6 flex justify-between items-center shadow-2xl border border-white/5 group hover:border-accent-cobalt/20 transition-all active:scale-[0.98]">
+                                    <div className="flex-1 space-y-2">
+                                        <h4 className="font-black text-white tracking-tight text-lg">{exp.description || 'Despesa'}</h4>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-white/5 px-3 py-1 rounded-full text-gray-400 border border-white/5">{exp.paidBy || 'Desconhecido'}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 opacity-50">{expDate}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="font-bold text-lg text-brand-primary">€{formatCurrency(exp.amount || 0)}</span>
+                                    <div className="flex items-center gap-6">
+                                        <span className="font-black text-2xl text-accent-cobalt tracking-tight">€{formatCurrency(exp.amount || 0)}</span>
                                         <button
                                             onClick={() => handleDelete(exp.id)}
-                                            className="text-gray-300 hover:text-red-400 transition lg:opacity-0 lg:group-hover:opacity-100"
+                                            className="p-3 text-gray-600 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all active:scale-90"
                                         >
-                                            <Trash2 size={18} />
+                                            <Trash2 size={20} />
                                         </button>
                                     </div>
                                 </div>

@@ -58,90 +58,103 @@ export default function AddLocationSheet({ isOpen, onClose, days, onAdd }: AddLo
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: "100%", opacity: 0 }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="bg-white dark:bg-gray-900 w-full max-w-md max-h-[90vh] sm:rounded-2xl rounded-t-3xl shadow-2xl flex flex-col overflow-hidden"
+                    className="glass bg-obsidian/95 w-full max-w-md max-h-[92vh] sm:rounded-[2.5rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-white/10"
                 >
                     {/* Header */}
-                    <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gradient-to-r from-brand-primary to-brand-secondary text-white">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            <MapPin size={22} /> Add New Activity
-                        </h2>
-                        <button onClick={onClose} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition">
+                    <div className="px-8 py-7 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-accent-cobalt to-accent-indigo text-white shadow-lg">
+                        <div className="space-y-1">
+                            <h2 className="text-xl font-black uppercase tracking-widest font-outfit leading-tight text-white flex items-center gap-3">
+                                <Plus size={22} /> NOVA ATIVIDADE
+                            </h2>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Adiciona uma paragem mágica</p>
+                        </div>
+                        <button onClick={onClose} className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all active:scale-90 border border-white/10 shadow-xl">
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Form Content */}
-                    <div className="flex-1 overflow-y-auto p-6 space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Location Name</label>
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8 hide-scrollbar">
+                        <div className="space-y-3">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                NOME DO LOCAL
+                            </label>
                             <input
                                 type="text"
-                                placeholder="e.g. Potato Head Beach Club"
+                                placeholder="Ex: Potato Head Beach Club"
                                 value={location.name}
                                 onChange={(e) => setLocation({ ...location, name: e.target.value })}
-                                className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-brand-primary outline-none transition-colors"
+                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-6 py-4.5 focus:border-accent-cobalt outline-none transition-all font-black text-white placeholder:text-gray-700 tracking-tight"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Assign to Day</label>
+                        <div className="space-y-3">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                ATRIBUIR AO DIA
+                            </label>
                             <select
                                 value={selectedDayId}
                                 onChange={(e) => setSelectedDayId(e.target.value)}
-                                className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-brand-primary outline-none transition-colors"
+                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-6 py-4.5 focus:border-accent-cobalt outline-none transition-all font-black text-white text-sm appearance-none"
                             >
                                 {days.map(d => (
-                                    <option key={d.id} value={d.id}>Day {d.dayNumber} - {d.title}</option>
+                                    <option key={d.id} value={d.id} className="bg-obsidian text-white">Dia {d.dayNumber} - {d.title}</option>
                                 ))}
                             </select>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tag</label>
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-3">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                    TAG
+                                </label>
                                 <select
                                     value={location.tag || ""}
                                     onChange={(e) => setLocation({ ...location, tag: e.target.value })}
-                                    className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none"
+                                    className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-5 py-4.5 focus:border-accent-cobalt outline-none transition-all font-black text-gray-400 text-[10px] uppercase tracking-widest appearance-none text-center"
                                 >
-                                    <option value="">No Tag</option>
-                                    <option value="Must Go">Must Go</option>
-                                    <option value="Opcional">Opcional</option>
-                                    <option value="Food">Food</option>
-                                    <option value="Photo Op">Photo Op</option>
+                                    <option value="" className="bg-obsidian">Sem Tag</option>
+                                    <option value="Must Go" className="bg-obsidian">Must Go</option>
+                                    <option value="Opcional" className="bg-obsidian">Opcional</option>
+                                    <option value="Food" className="bg-obsidian">Food</option>
+                                    <option value="Photo Op" className="bg-obsidian">Photo Op</option>
                                 </select>
                             </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Maps URL</label>
+                            <div className="space-y-3">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                    MAPS URL
+                                </label>
                                 <input
                                     type="text"
                                     placeholder="https://..."
                                     value={location.mapsUrl || ""}
                                     onChange={(e) => setLocation({ ...location, mapsUrl: e.target.value })}
-                                    className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none"
+                                    className="w-full bg-emerald-500/5 border border-emerald-500/10 rounded-[1.5rem] px-5 py-4.5 focus:border-emerald-500 outline-none transition-all font-bold text-emerald-400 placeholder:text-emerald-900/50 text-sm"
                                 />
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Short Description</label>
+                        <div className="space-y-3">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                NOTAS (OPCIONAL)
+                            </label>
                             <textarea
-                                placeholder="Optional notes or details..."
+                                placeholder="Detalhes ou dicas rápidas..."
                                 value={location.description || ""}
                                 onChange={(e) => setLocation({ ...location, description: e.target.value })}
-                                className="w-full bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none resize-none h-24"
+                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-6 py-4.5 focus:border-accent-cobalt outline-none transition-all font-medium text-white placeholder:text-gray-700 resize-none h-32 text-sm"
                             />
                         </div>
                     </div>
 
                     {/* Footer */}
-                    <div className="p-5 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+                    <div className="p-8 border-t border-white/5 bg-obsidian pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
                         <button
                             onClick={handleSave}
-                            className="w-full py-4 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
+                            className="w-full py-5 bg-gradient-to-br from-accent-cobalt to-accent-indigo text-white font-black rounded-full shadow-[0_20px_50px_-10px_rgba(46,91,255,0.4)] flex items-center justify-center gap-3 transition-all active:scale-[0.97] uppercase tracking-[0.2em] text-base border border-white/20"
                         >
-                            <Plus size={20} />
-                            Add Activity
+                            <Plus size={22} />
+                            ADICIONAR AO ROTEIRO
                         </button>
                     </div>
                 </motion.div>

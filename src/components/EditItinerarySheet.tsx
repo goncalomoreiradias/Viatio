@@ -48,13 +48,13 @@ function SortableLocationItem({ loc, handleLocationChange, removeLocation }: Sor
         <div
             ref={setNodeRef}
             style={style}
-            className={`p-4 bg-gray-50 dark:bg-gray-800 rounded-xl relative group border ${isDragging ? 'border-brand-primary shadow-lg' : 'border-transparent hover:border-gray-200 dark:hover:border-gray-700'} transition`}
+            className={`p-6 bg-[#141820] rounded-[2rem] relative group border-[2px] ${isDragging ? 'border-accent-cobalt shadow-[0_20px_40px_-10px_rgba(46,91,255,0.4)] z-50 scale-105' : 'border-white/5 hover:border-white/10'} transition-all`}
         >
             <button
                 onClick={() => removeLocation(loc.id)}
-                className="absolute -top-2 -right-2 bg-red-100 text-red-600 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition shadow-sm z-10"
+                className="absolute -top-3 -right-3 bg-red-500/10 text-red-500 p-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl z-20 hover:bg-red-500 hover:text-white border border-red-500/20 active:scale-90"
             >
-                <Trash2 size={14} />
+                <Trash2 size={16} />
             </button>
 
             <div className="flex gap-2 mb-3">
@@ -65,21 +65,21 @@ function SortableLocationItem({ loc, handleLocationChange, removeLocation }: Sor
                 >
                     <GripVertical size={16} />
                 </div>
-                <div className="flex-1 space-y-3">
-                    <div className="flex gap-2">
+                <div className="flex-1 space-y-4">
+                    <div className="flex gap-3">
                         <input
                             type="text"
-                            placeholder="Location Name"
+                            placeholder="Nome do Local"
                             value={loc.name}
                             onChange={(e) => handleLocationChange(loc.id, "name", e.target.value)}
-                            className="flex-1 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg border-none focus:ring-1 focus:ring-gray-300 outline-none shadow-sm font-medium"
+                            className="flex-1 bg-white/5 px-4 py-3 rounded-xl border border-white/10 focus:border-accent-cobalt outline-none shadow-sm font-black text-white placeholder:text-gray-700 transition-all"
                         />
                         <select
                             value={loc.tag || ""}
                             onChange={(e) => handleLocationChange(loc.id, "tag", e.target.value)}
-                            className="bg-white dark:bg-gray-900 px-3 py-2 rounded-lg border-none focus:ring-1 focus:ring-gray-300 outline-none shadow-sm text-sm"
+                            className="bg-white/5 px-4 py-3 rounded-xl border border-white/10 focus:border-accent-cobalt outline-none shadow-sm text-[10px] font-black uppercase tracking-widest text-gray-400 appearance-none min-w-[100px] text-center"
                         >
-                            <option value="">No Tag</option>
+                            <option value="">Sem Tag</option>
                             <option value="Must Go">Must Go</option>
                             <option value="Opcional">Opcional</option>
                             <option value="Food">Food</option>
@@ -87,39 +87,41 @@ function SortableLocationItem({ loc, handleLocationChange, removeLocation }: Sor
                         </select>
                     </div>
 
-                    <input
-                        type="text"
-                        placeholder="Description (Optional)"
+                    <textarea
+                        placeholder="Descrição (Opcional)"
                         value={loc.description || ""}
                         onChange={(e) => handleLocationChange(loc.id, "description", e.target.value)}
-                        className="w-full bg-white dark:bg-gray-900 px-3 py-2 rounded-lg border-none focus:ring-1 focus:ring-gray-300 outline-none shadow-sm text-sm"
+                        rows={2}
+                        className="w-full bg-white/5 px-4 py-3 rounded-xl border border-white/10 focus:border-accent-cobalt outline-none shadow-sm text-sm text-gray-300 placeholder:text-gray-700 resize-none transition-all"
                     />
 
                     <input
                         type="text"
-                        placeholder="Specific Maps URL (Optional)"
+                        placeholder="Google Maps URL (Opcional)"
                         value={loc.mapsUrl || ""}
                         onChange={(e) => handleLocationChange(loc.id, "mapsUrl", e.target.value)}
-                        className="w-full bg-white dark:bg-gray-900 px-3 py-2 rounded-lg border-none focus:ring-1 focus:ring-gray-300 outline-none shadow-sm text-sm"
+                        className="w-full bg-emerald-500/5 px-4 py-3 rounded-xl border border-emerald-500/10 focus:border-emerald-500 outline-none shadow-sm text-[10px] font-bold text-emerald-400 placeholder:text-emerald-900/40 transition-all font-mono"
                     />
 
-                    <div className="flex gap-3">
-                        <div className="flex-1">
-                            <label className="text-[10px] uppercase text-gray-500 font-bold px-1">Lat</label>
+                    <div className="flex gap-4">
+                        <div className="flex-1 space-y-1">
+                            <label className="text-[9px] uppercase text-gray-600 font-black tracking-widest px-1">Latitude</label>
                             <input
                                 type="number"
+                                step="any"
                                 value={loc.lat || 0}
                                 onChange={(e) => handleLocationChange(loc.id, "lat", parseFloat(e.target.value))}
-                                className="w-full bg-white dark:bg-gray-900 px-3 py-2 text-xs rounded-lg border-none outline-none shadow-sm font-mono"
+                                className="w-full bg-white/5 px-4 py-3 text-xs rounded-xl border border-white/10 outline-none shadow-sm font-mono text-white focus:border-accent-indigo transition-all"
                             />
                         </div>
-                        <div className="flex-1">
-                            <label className="text-[10px] uppercase text-gray-500 font-bold px-1">Lng</label>
+                        <div className="flex-1 space-y-1">
+                            <label className="text-[9px] uppercase text-gray-600 font-black tracking-widest px-1">Longitude</label>
                             <input
                                 type="number"
+                                step="any"
                                 value={loc.lng || 0}
                                 onChange={(e) => handleLocationChange(loc.id, "lng", parseFloat(e.target.value))}
-                                className="w-full bg-white dark:bg-gray-900 px-3 py-2 text-xs rounded-lg border-none outline-none shadow-sm font-mono"
+                                className="w-full bg-white/5 px-4 py-3 text-xs rounded-xl border border-white/10 outline-none shadow-sm font-mono text-white focus:border-accent-indigo transition-all"
                             />
                         </div>
                     </div>
@@ -204,38 +206,42 @@ export default function EditItinerarySheet({ day, isOpen, onClose, onSave }: Edi
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: "100%", opacity: 0 }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="bg-white dark:bg-gray-900 w-full max-w-lg max-h-[90vh] sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col overflow-hidden"
+                    className="glass bg-obsidian/95 w-full max-w-lg max-h-[92vh] sm:rounded-[2.5rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-white/10"
                 >
                     {/* Header */}
-                    <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gradient-to-r from-brand-secondary to-brand-primary text-white">
-                        <h2 className="text-xl font-bold">Edit Day {day.dayNumber}</h2>
-                        <button onClick={onClose} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition">
+                    <div className="px-8 py-7 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-accent-cobalt to-accent-indigo text-white shadow-lg">
+                        <div className="space-y-1">
+                            <h2 className="text-2xl font-black uppercase tracking-widest font-outfit leading-tight text-white">Editar Dia {day.dayNumber}</h2>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Refina o teu itinerário</p>
+                        </div>
+                        <button onClick={onClose} className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all active:scale-90 border border-white/10 shadow-xl">
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Scrollable Content */}
-                    <div className="flex-1 overflow-y-auto p-5 space-y-6">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                                Day Title
+                    <div className="flex-1 overflow-y-auto p-8 space-y-10 hide-scrollbar">
+                        <div className="space-y-4">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                Título do Dia
                             </label>
                             <input
                                 type="text"
                                 value={editedDay.title}
                                 onChange={(e) => setEditedDay({ ...editedDay, title: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border-none rounded-xl focus:ring-2 focus:ring-brand-secondary outline-none transition"
+                                className="w-full px-6 py-4.5 bg-white/5 border border-white/10 rounded-[1.5rem] focus:border-accent-indigo outline-none transition-all font-black text-white text-lg tracking-tight shadow-inner"
+                                placeholder="Ex: Explorar Templos de Ubud"
                             />
                         </div>
 
                         <div>
-                            <div className="flex justify-between items-center mb-3">
-                                <h3 className="font-semibold text-gray-800 dark:text-gray-200">Locations ({locations.length})</h3>
+                            <div className="flex justify-between items-center mb-6 px-2">
+                                <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">LOCAIS ({locations.length})</h3>
                                 <button
                                     onClick={addLocation}
-                                    className="text-sm font-medium text-brand-secondary flex items-center gap-1 hover:text-brand-primary transition"
+                                    className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-cobalt flex items-center gap-2 hover:text-white transition-all bg-accent-cobalt/10 px-4 py-2 rounded-full border border-accent-cobalt/20 shadow-lg active:scale-95"
                                 >
-                                    <Plus size={16} /> Add Stop
+                                    <Plus size={14} /> ADICIONAR PARAGEM
                                 </button>
                             </div>
 
@@ -264,13 +270,13 @@ export default function EditItinerarySheet({ day, isOpen, onClose, onSave }: Edi
                     </div>
 
                     {/* Footer */}
-                    <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+                    <div className="p-8 border-t border-white/5 bg-obsidian pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
                         <button
                             onClick={handleSave}
-                            className="w-full py-4 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                            className="w-full py-5 bg-gradient-to-br from-accent-cobalt to-accent-indigo hover:to-accent-cobalt text-white font-black rounded-full shadow-[0_20px_50px_-10px_rgba(46,91,255,0.4)] flex items-center justify-center gap-3 transition-all active:scale-[0.97] uppercase tracking-[0.2em] text-base border border-white/20"
                         >
-                            <Save size={20} />
-                            Save Changes
+                            <Save size={22} />
+                            GUARDAR ALTERAÇÕES
                         </button>
                     </div>
                 </motion.div>

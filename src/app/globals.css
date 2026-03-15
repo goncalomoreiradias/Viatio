@@ -1,90 +1,121 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-bg: #F8F9FA;
-  --color-brand-primary: #111827;
-  --color-brand-secondary: #4F46E5;
+  --color-brand-primary: #2E5BFF;
+  --color-brand-secondary: #6366F1;
   --color-brand-accent: #10B981;
-  --color-brand-dark: #000000;
-
-  --color-glass-bg: rgba(255, 255, 255, 0.75);
-  --color-glass-border: rgba(255, 255, 255, 0.4);
+  --color-obsidian: #0A0D14;
+  --color-charcoal-light: #141820;
+  --color-accent-cobalt: #2E5BFF;
+  --color-accent-indigo: #6366F1;
+  --color-accent-magenta: #D946EF;
+  --color-accent-emerald: #10B981;
+  --color-accent-amber: #F59E0B;
 }
 
 @layer base {
   :root {
-    --background: #FFFFFF;
-    --foreground: #111827; /* Near black for max contrast on white */
-    --glass-background: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+    /* High Fidelity Dark Mode as Default */
+    --background: #0A0D14; /* Deep Obsidian Blue */
+    --foreground: #FFFFFF;
     
-    /* Brand Refinements */
-    --color-brand-primary: #111827;
-    --color-brand-secondary: #0F172A; /* Deeper navy */
-    --color-brand-accent: #059669; /* Slightly darker emerald for readability */
+    --widget-bg: #141820;
+    --widget-border: rgba(255, 255, 255, 0.05);
+    
+    --accent-cobalt: #2E5BFF;
+    --accent-indigo: #6366F1;
+    --accent-magenta: #D946EF;
+    
+    --feedback-coral: #F43F5E;
+    --feedback-emerald: #064E3B;
+    
+    --glass-background: rgba(20, 24, 32, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
   }
 
-  /* Dark Mode: Applied to all screens */
-  @media (prefers-color-scheme: dark) {
+  /* Light mode fallback (though user wants dark as focus) */
+  @media (prefers-color-scheme: light) {
     :root {
-      --background: #000000; /* Pure black for premium feel */
-      --foreground: #F9FAFB; /* Near white for max contrast */
-      --glass-background: rgba(15, 23, 42, 0.7);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
-      
-      --color-brand-primary: #6366F1; /* Vibrant Indigo - Great contrast with white */
-      --color-brand-secondary: #4F46E5; /* Deeper Indigo */
-      --color-brand-accent: #10B981; /* Emeral stays vibrant */
+      --background: #F8F9FA;
+      --foreground: #0A0D14;
+      --widget-bg: #FFFFFF;
+      --widget-border: rgba(0, 0, 0, 0.05);
+      --glass-background: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(0, 0, 0, 0.08);
+      --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
     }
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-x: hidden;
   }
 }
 
 @layer utilities {
   .glass {
     background: var(--glass-background);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
   }
 
   .glass-card {
     background: var(--glass-background);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
-    border-radius: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Soft Neumorphism for Buttons/Inputs */
+  .neumorphic-inset {
+    background: var(--widget-bg);
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.02);
+  }
+
+  .neumorphic-flat {
+    background: var(--widget-bg);
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.4),
+                -4px -4px 10px rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--widget-border);
+  }
+
+  /* Hide scrollbar */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
-/* Custom scrollbar for webkit */
+/* Custom premium scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(129, 178, 154, 0.5);
-  /* bali-sage */
+  background: var(--accent-cobalt);
+  opacity: 0.3;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(129, 178, 154, 0.8);
+  background: var(--accent-indigo);
 }

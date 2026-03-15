@@ -80,27 +80,55 @@ export default function MapSection({ days, selectedDayId }: MapSectionProps) {
             >
                 <MapBounds locations={locationsToRender} L={L} />
                 <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 />
-                {locationsToRender.map((loc, idx) => (
-                    <Marker key={`${loc.id}-${idx}`} position={[loc.lat, loc.lng]}>
-                        <Popup className="premium-popup">
-                            <div className="p-2 min-w-[150px]">
-                                <h4 className="font-extrabold text-brand-primary m-0 mb-1 font-outfit text-sm">{loc.name}</h4>
-                                <p className="text-xs text-gray-500 m-0 leading-relaxed line-clamp-2">{loc.description}</p>
-                                <a
-                                    href={loc.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(loc.name)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="mt-3 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-brand-secondary hover:text-brand-primary transition-all"
-                                >
-                                    Ver no Google Maps →
-                                </a>
+                {locationsToRender.map((loc, idx) => {
+                    const customIcon = L.divIcon({
+                        className: 'custom-pin-icon',
+                        html: `
+                            <div class="relative group">
+                                <div class="w-8 h-8 bg-accent-cobalt rounded-full border-4 border-white shadow-[0_0_20px_rgba(46,91,255,0.6)] flex items-center justify-center relative z-10 animate-fade-in group-hover:scale-110 transition-transform">
+                                    <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
+                                </div>
+                                <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-1.5 bg-accent-cobalt/40 blur-[4px] rounded-full z-0"></div>
+                                <div class="absolute inset-0 w-full h-full bg-accent-cobalt/20 rounded-full blur-[15px] animate-pulse"></div>
                             </div>
-                        </Popup>
-                    </Marker>
-                ))}
+                        `,
+                        iconSize: [32, 40],
+                        iconAnchor: [16, 32],
+                        popupAnchor: [0, -32]
+                    });
+
+                    return (
+                        <Marker 
+                            key={`${loc.id}-${idx}`} 
+                            position={[loc.lat, loc.lng]}
+                            icon={customIcon}
+                        >
+                            <Popup className="premium-popup">
+                                <div className="p-4 min-w-[200px] bg-obsidian border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-cobalt to-accent-indigo" />
+                                    <h4 className="font-black text-white m-0 mb-2 font-outfit text-base tracking-tight leading-tight">{loc.name}</h4>
+                                    <p className="text-xs text-gray-400 m-0 leading-relaxed line-clamp-3 font-medium">{loc.description}</p>
+                                    <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                                        <a
+                                            href={loc.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(loc.name)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-accent-cobalt hover:text-white transition-colors"
+                                        >
+                                            Ver no Maps →
+                                        </a>
+                                        <div className="px-2 py-1 bg-white/5 rounded-md text-[8px] font-black text-gray-500 uppercase tracking-widest">
+                                            {loc.tag || 'Visit'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    );
+                })}
             </MapContainer>
 
             {/* Subtle overlay for branding */}

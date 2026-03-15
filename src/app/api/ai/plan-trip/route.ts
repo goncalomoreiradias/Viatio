@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
         // 2. Parse request
         const body = await request.json();
-        const { destination, startDate, endDate, budget, travelStyle, numberOfPeople, customRequirements } = body;
+        const { destination, startDate, endDate, budget, travelStyle, numberOfPeople, customRequirements, mapsListUrl } = body;
 
         if (!destination || !startDate || !endDate) {
             return NextResponse.json({ error: "Destination, start date, and end date are required." }, { status: 400 });
@@ -60,6 +60,10 @@ Context:
 - Travel style: ${travelStyle || "balanced"}
 - Number of travelers: ${numberOfPeople || 2}
 - User custom requirements: ${customRequirements || "None"}
+- Google Maps List Link (USER PROVIDED): ${mapsListUrl || "Not provided"}
+
+IMPORTANT INSTRUCTION FOR GOOGLE MAPS LIST:
+If a Google Maps List Link is provided, you MUST analyze the potential locations it might contain (based on the context of the destination and user requirements) and prioritize including those spots or similar high-quality spots in the itinerary. If the list seems to have few points, complement them with more amazing locations to fill the ${numberOfDays} days.
 
 Return ONLY a valid JSON object (no markdown, no code blocks, no extra text) with this exact structure:
 {

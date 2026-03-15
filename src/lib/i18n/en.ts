@@ -84,6 +84,7 @@ const en = {
     "auth.register_btn": "Create Account",
     "auth.has_account": "Already have an account?",
     "auth.signin_link": "Sign In",
+    "auth.back": "Back",
 };
 
 export default en;

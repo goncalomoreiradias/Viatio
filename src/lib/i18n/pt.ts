@@ -84,6 +84,7 @@ const pt = {
     "auth.register_btn": "Criar Conta",
     "auth.has_account": "Já tens conta?",
     "auth.signin_link": "Entrar",
+    "auth.back": "Voltar",
 };
 
 export default pt;

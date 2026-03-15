@@ -10,27 +10,29 @@ export default function Navigation({ activeTab, onTabChange }: NavigationProps) 
   const { t } = useI18n();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 pb-safe z-50 flex justify-around items-center h-20 px-6 sm:h-24 sm:static sm:border-0 sm:bg-transparent sm:justify-start sm:gap-4 sm:p-0 sm:pb-0 transition-colors">
+    <div className="glass bg-obsidian/80 border-t sm:border border-white/10 pb-safe z-50 flex justify-around items-center h-20 px-8 sm:h-auto sm:w-fit sm:mx-auto sm:rounded-full sm:p-2 sm:mb-12 shadow-2xl backdrop-blur-2xl">
       <button
         onClick={() => onTabChange("itinerary")}
-        className={`flex flex-col sm:flex-row items-center gap-1 sm:gap-2 px-6 sm:px-5 py-2 sm:py-2.5 rounded-2xl sm:rounded-full transition-all flex-1 sm:flex-none justify-center relative group ${activeTab === "itinerary"
-          ? "text-brand-primary bg-gray-100 dark:bg-white/10 sm:bg-white sm:shadow-lg sm:dark:bg-gray-800 font-black"
-          : "text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 font-bold"
+        className={`flex flex-col sm:flex-row items-center gap-2 px-8 sm:px-6 py-2.5 sm:py-3 rounded-2xl sm:rounded-full transition-all flex-1 sm:flex-none justify-center relative group active:scale-90 ${activeTab === "itinerary"
+          ? "text-white bg-accent-cobalt shadow-[0_10px_30px_-5px_rgba(46,91,255,0.6)] "
+          : "text-gray-500 hover:text-white font-bold"
           }`}
       >
-        <Map size={24} className={`sm:w-5 sm:h-5 transition-transform group-active:scale-95 ${activeTab === "itinerary" ? "scale-110" : ""}`} />
-        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest mt-1 sm:mt-0">{t("nav.itinerary")}</span>
+        <Map size={22} className={`sm:w-5 sm:h-5 transition-transform ${activeTab === "itinerary" ? "scale-110 rotate-3" : "group-hover:rotate-6"}`} />
+        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest leading-none">{t("nav.itinerary")}</span>
       </button>
+
+      <div className="w-[1px] h-6 bg-white/5 mx-2 hidden sm:block"></div>
 
       <button
         onClick={() => onTabChange("finance")}
-        className={`flex flex-col sm:flex-row items-center gap-1 sm:gap-2 px-6 sm:px-5 py-2 sm:py-2.5 rounded-2xl sm:rounded-full transition-all flex-1 sm:flex-none justify-center relative group ${activeTab === "finance"
-          ? "text-brand-primary bg-gray-100 dark:bg-white/10 sm:bg-white sm:shadow-lg sm:dark:bg-gray-800 font-black"
-          : "text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 font-bold"
+        className={`flex flex-col sm:flex-row items-center gap-2 px-8 sm:px-6 py-2.5 sm:py-3 rounded-2xl sm:rounded-full transition-all flex-1 sm:flex-none justify-center relative group active:scale-90 ${activeTab === "finance"
+          ? "text-white bg-accent-indigo shadow-[0_10px_30px_-5px_rgba(99,102,241,0.6)]"
+          : "text-gray-500 hover:text-white font-bold"
           }`}
       >
-        <Wallet size={24} className={`sm:w-5 sm:h-5 transition-transform group-active:scale-95 ${activeTab === "finance" ? "scale-110" : ""}`} />
-        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest mt-1 sm:mt-0">{t("nav.finance")}</span>
+        <Wallet size={22} className={`sm:w-5 sm:h-5 transition-transform ${activeTab === "finance" ? "scale-110 -rotate-3" : "group-hover:-rotate-6"}`} />
+        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest leading-none">{t("nav.finance")}</span>
       </button>
     </div>
   );

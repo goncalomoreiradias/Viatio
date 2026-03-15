@@ -141,15 +141,18 @@ export default function DashboardClient({ session }: Props) {
     // }
 
     return (
-        <main className="min-h-screen bg-brand-bg relative pb-24">
+        <main className="min-h-screen bg-obsidian relative pb-24 selection:bg-accent-cobalt selection:text-white">
             {/* Premium Header */}
-            <header className="sticky top-0 z-40 glass dark:bg-gray-950/80 dark:border-white/5 border-b border-black/5 pt-16 pb-6 px-8 sm:px-12 shadow-sm">
-                <div className="max-w-7xl mx-auto flex justify-between items-end">
-                    <div>
+            <header className="sticky top-0 z-40 glass border-b border-white/5 pt-16 pb-8 px-8 sm:px-12 shadow-2xl">
+                {/* Micro-pattern overlay */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
+                
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
+                    <div className="space-y-1">
                         <motion.p
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="text-sm font-semibold text-brand-secondary tracking-widest uppercase mb-1"
+                            className="text-[10px] font-black text-accent-cobalt tracking-[0.3em] uppercase"
                         >
                             {t("dash.hello")}, {session.name || "Viajante"}
                         </motion.p>
@@ -157,26 +160,30 @@ export default function DashboardClient({ session }: Props) {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl sm:text-5xl font-bold font-outfit text-brand-dark dark:text-white tracking-tight"
+                            className="text-4xl sm:text-6xl font-black font-outfit text-white tracking-tight"
                         >
                             {t("dash.yourTrips")}
                         </motion.h1>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-end gap-3 sm:gap-4 md:items-center">
-                        <LanguageToggle />
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:items-center">
+                        <div className="neumorphic-inset p-1 rounded-2xl flex items-center gap-1">
+                            <LanguageToggle />
+                        </div>
+                        
                         <button
                             onClick={() => userPlan === "FREE" ? setIsUpgradeOpen(true) : setIsAIPlannerOpen(true)}
-                            className="hidden sm:flex px-6 py-3 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-500/30 text-white font-black rounded-2xl transition-all active:scale-[0.98] items-center gap-2 border border-white/20 shadow-lg"
+                            className="px-6 py-3.5 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] hover:scale-[1.04] hover:shadow-[0_20px_40px_-10px_rgba(139,92,246,0.5)] text-white font-black rounded-full transition-all active:scale-[0.96] items-center gap-2 border border-white/20 shadow-2xl group flex"
                         >
-                            <Sparkles size={18} className="animate-pulse" />
-                            <span className="text-sm tracking-tight">Planear com AI</span>
+                            <Sparkles size={18} className="group-hover:rotate-12 transition-transform" />
+                            <span className="text-xs uppercase tracking-widest">Planear com AI</span>
                         </button>
+                        
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="hidden sm:flex px-6 py-3 bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-white font-black rounded-2xl shadow-lg transition-all active:scale-[0.98] items-center gap-2 border border-white/10"
+                            className="px-6 py-3.5 bg-white text-obsidian hover:bg-gray-100 font-black rounded-full shadow-2xl transition-all active:scale-[0.96] items-center gap-2 border border-white/10 flex"
                         >
                             <Plus size={20} />
-                            <span className="text-sm tracking-tight">{t("dash.newTrip")}</span>
+                            <span className="text-xs uppercase tracking-widest">{t("dash.newTrip")}</span>
                         </button>
                     </div>
                 </div>
@@ -213,32 +220,39 @@ export default function DashboardClient({ session }: Props) {
                         {trips.map((trip, i) => (
                             <Link href={`/trips/${trip.id}`} key={trip.id}>
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    whileHover={{ y: -5, scale: 1.02 }}
+                                    transition={{ delay: i * 0.05 }}
+                                    whileHover={{ y: -8, scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className="group relative bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-sm hover:shadow-2xl hover:shadow-brand-secondary/10 border border-gray-100 dark:border-gray-800 transition-all h-full flex flex-col overflow-hidden"
+                                    className="group relative bg-[#141820] rounded-[2.5rem] p-8 shadow-2xl hover:shadow-accent-cobalt/20 border border-white/5 transition-all h-full flex flex-col overflow-hidden"
                                 >
-                                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <Plane size={80} className="text-brand-secondary -rotate-45 translate-x-4 -translate-y-4" />
+                                    {/* Plane Glow Effect */}
+                                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-20 transition-all duration-500 group-hover:scale-110">
+                                        <Plane size={100} className="text-accent-cobalt -rotate-45 translate-x-4 -translate-y-4 filter blur-[1px]" />
                                     </div>
+                                    <div className="absolute -top-20 -right-20 w-40 h-40 bg-accent-cobalt/10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                                    <div className="relative z-10 flex-1">
-                                        <h2 className="text-2xl font-bold font-outfit text-brand-dark dark:text-white mb-2 group-hover:text-brand-secondary transition-colors line-clamp-2">
+                                    <div className="relative z-10 flex-1 space-y-4">
+                                        <h2 className="text-2xl sm:text-3xl font-black font-outfit text-white leading-tight group-hover:text-accent-cobalt transition-colors duration-300">
                                             {trip.title}
                                         </h2>
                                         {trip.description && (
-                                            <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 mb-6">
+                                            <p className="text-gray-400 text-sm font-medium leading-relaxed line-clamp-3">
                                                 {trip.description}
                                             </p>
                                         )}
                                     </div>
 
-                                    <div className="relative z-10 pt-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 font-medium">
-                                        <div className="flex items-center gap-1.5">
-                                            <Users size={16} />
-                                            <span>{trip.participants?.length || 1} {t("dash.participants")}</span>
+                                    <div className="relative z-10 pt-8 mt-8 border-t border-white/5 flex items-center justify-between">
+                                        <div className="px-4 py-2 bg-obsidian/50 rounded-full border border-white/5 flex items-center gap-2">
+                                            <Users size={14} className="text-accent-cobalt" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">
+                                                {trip.participants?.length || 1} {t("dash.participants")}
+                                            </span>
+                                        </div>
+                                        <div className="w-10 h-10 rounded-full bg-accent-cobalt/10 flex items-center justify-center group-hover:bg-accent-cobalt group-hover:text-white transition-all text-accent-cobalt">
+                                            <Plane size={18} />
                                         </div>
                                     </div>
                                 </motion.div>
@@ -250,23 +264,25 @@ export default function DashboardClient({ session }: Props) {
 
             {/* Mobile FAB */}
             {/* Mobile FABs */}
-            <button
-                onClick={() => userPlan === "FREE" ? setIsUpgradeOpen(true) : setIsAIPlannerOpen(true)}
-                className="sm:hidden fixed bottom-8 left-8 z-[50] w-16 h-16 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full shadow-2xl shadow-brand-primary/40 flex items-center justify-center transition-all hover:scale-105 active:scale-95 border border-white/20"
-            >
-                <Sparkles size={28} />
-            </button>
-            <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="sm:hidden fixed bottom-8 right-8 z-[50] w-16 h-16 bg-brand-primary text-white rounded-full shadow-2xl shadow-brand-primary/40 flex items-center justify-center transition-all hover:scale-105 active:scale-95 border border-white/20"
-            >
-                <Plus size={32} />
-            </button>
+            <div className="sm:hidden fixed bottom-10 left-0 right-0 px-8 flex justify-between items-center z-50">
+                <button
+                    onClick={() => userPlan === "FREE" ? setIsUpgradeOpen(true) : setIsAIPlannerOpen(true)}
+                    className="w-16 h-16 bg-gradient-to-br from-accent-magenta via-accent-indigo to-accent-cobalt text-white rounded-full shadow-[0_20px_40px_-10px_rgba(139,92,246,0.5)] flex items-center justify-center transition-all active:scale-90 border border-white/20"
+                >
+                    <Sparkles size={28} />
+                </button>
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="w-16 h-16 bg-white text-obsidian rounded-full shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] flex items-center justify-center transition-all active:scale-90 border border-white/10"
+                >
+                    <Plus size={32} />
+                </button>
+            </div>
 
-            <div className="mt-12 text-center pb-8 flex flex-col items-center">
+            <div className="mt-20 text-center pb-12 flex flex-col items-center gap-6">
                 <button
                     onClick={handleLogout}
-                    className="px-6 py-2 text-sm font-semibold text-rose-500 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-400 rounded-full transition-colors mb-4"
+                    className="px-8 py-3 text-xs font-black uppercase tracking-[0.3em] text-rose-500 bg-rose-500/5 hover:bg-rose-500/10 rounded-full border border-rose-500/10 transition-all active:scale-95"
                 >
                     Sair / Logout
                 </button>
@@ -283,55 +299,62 @@ export default function DashboardClient({ session }: Props) {
 
             {/* Create Modal */}
             {isCreateModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 bg-black/60 backdrop-blur-md"
                         onClick={() => !isCreating && setIsCreateModalOpen(false)}
                     />
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.9, y: 40 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className="relative bg-white dark:bg-gray-900 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10"
+                        className="glass bg-obsidian/95 relative sm:rounded-[2.5rem] rounded-[2rem] p-10 max-w-md w-full shadow-2xl border border-white/10"
                     >
-                        <h2 className="text-2xl font-bold font-outfit text-brand-dark dark:text-white mb-6">{t("dash.createTitle")}</h2>
+                        <h2 className="text-3xl font-black font-outfit text-white mb-8 tracking-tight uppercase leading-none">Novo Destino</h2>
 
-                        <form onSubmit={handleCreateTrip} className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t("dash.destinationTitle")}</label>
+                        <form onSubmit={handleCreateTrip} className="space-y-8">
+                            <div className="space-y-3">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                    Onde vamos?
+                                </label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder={t("dash.destPlaceholder")}
+                                    placeholder="Ex: Bali, Indonésia"
                                     value={newTripTitle}
                                     onChange={(e) => setNewTripTitle(e.target.value)}
-                                    className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-brand-secondary outline-none transition-all"
+                                    className="w-full px-6 py-4.5 bg-white/5 border border-white/10 rounded-full focus:border-accent-cobalt outline-none transition-all font-black text-white placeholder:text-gray-800 text-lg tracking-tight"
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t("dash.descOptional")}</label>
+                            <div className="space-y-3">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                    Notas Curtas (Opcional)
+                                </label>
                                 <textarea
-                                    placeholder={t("dash.descPlaceholder")}
+                                    placeholder="Breve descrição da aventura..."
                                     value={newTripDesc}
                                     onChange={(e) => setNewTripDesc(e.target.value)}
-                                    className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-brand-secondary outline-none transition-all min-h-[100px] resize-none"
+                                    className="w-full px-6 py-4.5 bg-white/5 border border-white/10 rounded-[2rem] focus:border-accent-cobalt outline-none transition-all min-h-[120px] resize-none font-medium text-white placeholder:text-gray-800"
                                 />
                             </div>
 
-                            <div className="pt-4 flex gap-3">
+                            <div className="pt-4 flex gap-4">
                                 <button
                                     type="button"
+                                    disabled={isCreating}
                                     onClick={() => setIsCreateModalOpen(false)}
-                                    className="flex-1 py-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-white font-bold rounded-2xl transition-all"
+                                    className="flex-1 py-4.5 bg-white/5 hover:bg-white/10 text-gray-400 font-black rounded-full transition-all uppercase tracking-widest text-[10px] border border-white/5"
                                 >
                                     {t("dash.cancel")}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isCreating}
-                                    className="flex-1 py-4 bg-brand-primary hover:bg-brand-secondary disabled:opacity-70 text-white font-bold rounded-2xl shadow-xl shadow-brand-primary/20 transition-all flex items-center justify-center gap-2"
+                                    className="flex-1 py-4.5 bg-gradient-to-br from-accent-cobalt to-accent-indigo text-white font-black rounded-full shadow-[0_20px_40px_-10px_rgba(46,91,255,0.4)] transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-[10px] border border-white/20 active:scale-95"
                                 >
-                                    {isCreating ? <Loader2 size={20} className="animate-spin" /> : t("dash.createBtn")}
+                                    {isCreating ? <Loader2 size={18} className="animate-spin" /> : "Criar Viagem"}
                                 </button>
                             </div>
                         </form>
