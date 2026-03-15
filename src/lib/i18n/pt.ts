@@ -103,6 +103,25 @@ const pt = {
     "landing.features.sync.desc": "Adeus folhas de Excel. Orçamentos divididos ao cêntimo, automaticamente.",
     "landing.features.maps.title": "Mapas Colaborativos",
     "landing.features.maps.desc": "Planeie visualmente com amigos num mapa interativo em tempo real.",
+
+    // AI Architect Refined
+    "ai.title": "AI Trip Architect",
+    "ai.subtitle": "desenha viagens únicas",
+    "ai.destination": "DESTINO",
+    "ai.start": "INÍCIO",
+    "ai.end": "FIM",
+    "ai.budget": "ORÇAMENTO",
+    "ai.guests": "PESSOAS",
+    "ai.googleMaps": "LINK GOOGLE MAPS (OPCIONAL)",
+    "ai.travelStyle": "ESTILO DE VIAGEM",
+    "ai.customNeeds": "NECESSIDADES PERSONALIZADAS",
+    "ai.placeholder.destination": "Ex: Bali, Indonésia",
+    "ai.placeholder.budget": "1500",
+    "ai.placeholder.maps": "Cola o teu link aqui",
+    "ai.placeholder.needs": "Ex: Praias desertas, evitar multidões...",
+    "ai.generateBtn": "GERAR ROTEIRO",
+    "ai.generating": "A Criar Magia...",
+    "ai.generatingDesc": "A desenhar o teu itinerário perfeito com detalhes exclusivos para ti.",
 };
 
 export default pt;

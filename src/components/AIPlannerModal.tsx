@@ -113,22 +113,32 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                     drag="y"
                     dragConstraints={{ top: 0 }}
                     dragElastic={0.2}
-                    onDragEnd={(_, info) => {
-                        if (info.offset.y > 150) onClose();
+                    onDragStart={() => {
+                        document.body.style.overflow = "hidden";
                     }}
-                    className="relative w-full max-w-lg glass bg-slate-900 sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto sm:max-h-[90vh] border-t border-x border-white/10 sm:border"
+                    onDragEnd={(_, info) => {
+                        if (info.offset.y > 150) {
+                            document.body.style.overflow = "auto";
+                            onClose();
+                        }
+                    }}
+                    className="relative w-full max-w-full sm:max-w-lg glass bg-slate-900 sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto sm:max-h-[85vh] border-t border-x border-white/10 sm:border touch-action-pan-y"
                 >
                     {/* Drag Handle Indicator */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full sm:hidden z-30" />
-                    {/* Compact Header */}
-                    <div className="shrink-0 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] p-4 sm:p-6 relative shadow-xl overflow-hidden">
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full sm:hidden z-[110]" />
+                    
+                    {/* Sticky Header */}
+                    <div className="shrink-0 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] p-6 sm:p-7 relative shadow-xl overflow-hidden sticky top-0 z-[100] backdrop-blur-xl border-b border-white/10">
                         {/* Decorative glow */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -rotate-45 translate-x-12 -translate-y-12" />
                         
                         <button
-                            onClick={onClose}
+                            onClick={() => {
+                                document.body.style.overflow = "auto";
+                                onClose();
+                            }}
                             disabled={loading}
-                            className="absolute top-4 right-4 p-2.5 bg-white/10 backdrop-blur-xl rounded-full hover:bg-white/20 transition-all text-white disabled:opacity-50 border border-white/20 z-20 active:scale-95 group"
+                            className="absolute top-5 right-5 p-2.5 bg-white/10 backdrop-blur-xl rounded-full hover:bg-white/20 transition-all text-white disabled:opacity-50 border border-white/20 z-20 active:scale-95 group"
                         >
                             <X size={18} className="group-hover:rotate-90 transition-transform" />
                         </button>
@@ -138,15 +148,15 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                                 <Sparkles className="text-white animate-pulse" size={24} />
                             </div>
                             <div className="space-y-0.5">
-                                <h2 className="text-xl sm:text-2xl font-black text-white font-outfit tracking-tighter uppercase">AI Trip Architect</h2>
-                                <p className="text-white/60 text-[9px] font-black uppercase tracking-[0.2em]">{t("dash.hello")}, design unique journeys</p>
+                                <h2 className="text-xl sm:text-2xl font-black text-white font-outfit tracking-tighter uppercase whitespace-normal leading-none">{t("ai.title")}</h2>
+                                <p className="text-white/60 text-[9px] font-black uppercase tracking-[0.2em]">{t("ai.subtitle")}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto hide-scrollbar">
                         {phase === "generating" ? (
-                            <div className="p-10 sm:p-16 flex flex-col items-center justify-center min-h-[450px] text-center bg-obsidian">
+                            <div className="px-[5%] py-10 sm:py-16 flex flex-col items-center justify-center min-h-[450px] text-center bg-obsidian">
                                 <motion.div
                                     animate={{ 
                                         rotate: [0, 360], 
@@ -159,13 +169,13 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                                     <div className="absolute inset-0 bg-accent-cobalt/30 blur-[40px] rounded-full animate-pulse" />
                                     <Sparkles size={80} className="text-accent-indigo relative z-10 drop-shadow-[0_0_20px_rgba(99,102,241,0.8)]" />
                                 </motion.div>
-                                <h3 className="text-3xl font-black text-white mb-4 font-outfit tracking-tight leading-tight uppercase tracking-widest">
-                                    A Criar Magia...
+                                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 font-outfit tracking-tight leading-tight uppercase tracking-widest px-4">
+                                    {t("ai.generating")}
                                 </h3>
-                                <p className="text-gray-400 text-sm max-w-xs leading-relaxed font-black uppercase tracking-[0.15em] opacity-80">
-                                    A desenhar o teu itinerário perfeito com detalhes exclusivos para ti.
+                                <p className="text-gray-400 text-[10px] sm:text-sm max-w-xs leading-relaxed font-black uppercase tracking-[0.15em] opacity-80">
+                                    {t("ai.generatingDesc")}
                                 </p>
-                                <div className="mt-12 w-full max-w-sm">
+                                <div className="mt-12 w-full max-w-xs sm:max-w-sm">
                                     <div className="h-2.5 bg-white/5 rounded-full overflow-hidden border border-white/10 shadow-inner">
                                         <motion.div
                                             className="h-full bg-gradient-to-r from-[#D946EF] via-[#8B5CF6] to-[#6366F1] rounded-full shadow-[0_0_20px_rgba(139,92,246,0.5)]"
@@ -177,12 +187,12 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                                 </div>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+                            <form onSubmit={handleSubmit} className="px-[5%] py-8 space-y-8 overflow-x-hidden">
                                 {error && (
                                     <motion.div 
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm font-bold rounded-2xl text-center shadow-sm"
+                                        className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[11px] font-black rounded-2xl text-center shadow-lg uppercase tracking-wider"
                                     >
                                         {error}
                                     </motion.div>
@@ -191,103 +201,112 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                                 {/* Destination */}
                                 <div className="space-y-3">
                                     <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2">
-                                        <MapPin size={12} className="text-accent-cobalt" /> DESTINO
+                                        <MapPin size={12} className="text-accent-cobalt" /> {t("ai.destination")}
                                     </label>
                                     <input
                                         type="text"
-                                        placeholder="e.g. Bali, Indonésia"
+                                        placeholder={t("ai.placeholder.destination")}
                                         value={destination}
                                         onChange={(e) => setDestination(e.target.value)}
-                                        className="w-full bg-white/[0.07] border border-white/10 focus:border-accent-cobalt focus:shadow-[0_0_20px_rgba(46,91,255,0.1)] rounded-2xl px-5 py-4 outline-none font-black transition-all text-white placeholder:text-gray-700 text-[14px]"
+                                        className="w-full bg-white/[0.07] border border-white/10 focus:border-accent-cobalt focus:shadow-[0_0_25px_rgba(46,91,255,0.15)] rounded-2xl px-5 py-4.5 outline-none font-black transition-all text-white placeholder:text-gray-700 text-[14px] max-w-full"
                                     />
                                 </div>
 
-                                {/* Date Range - Fluid Grid */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
+                                {/* Date Range - Liquid Grid */}
+                                <div className="grid grid-cols-1 xs:grid-cols-2 gap-5">
+                                    <div className="space-y-2.5">
                                         <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
-                                            <Calendar size={10} className="text-accent-cobalt" /> Start
+                                            <Calendar size={10} className="text-accent-cobalt" /> {t("ai.start")}
                                         </label>
-                                        <input
-                                            type="date"
-                                            value={startDate}
-                                            onChange={(e) => setStartDate(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-2xl px-4 py-3.5 outline-none font-black transition-all text-white text-[12px]"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
-                                            <Calendar size={10} className="text-accent-indigo" /> End
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={endDate}
-                                            onChange={(e) => setEndDate(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 focus:border-accent-indigo rounded-2xl px-4 py-3.5 outline-none font-black transition-all text-white text-[12px]"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Budget & People - Fluid Grid */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
-                                            <Wallet size={10} className="text-emerald-500" /> Budget
-                                        </label>
-                                        <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-black text-xs">€</span>
+                                        <div className="relative group">
+                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none group-focus-within:text-accent-cobalt transition-colors" />
                                             <input
-                                                type="number"
-                                                placeholder="1500"
-                                                value={budget}
-                                                onChange={(e) => setBudget(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-2xl pl-10 pr-4 py-3.5 outline-none font-black text-white text-[12px] placeholder:text-gray-800"
+                                                type="date"
+                                                value={startDate}
+                                                onChange={(e) => setStartDate(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-2xl pl-12 pr-4 py-4 outline-none font-black transition-all text-white text-[13px] appearance-none"
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2.5">
                                         <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
-                                            <Users size={10} className="text-accent-cobalt" /> Guests
+                                            <Calendar size={10} className="text-accent-indigo" /> {t("ai.end")}
                                         </label>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            max="20"
-                                            value={numberOfPeople}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                if (val === "") {
-                                                    setNumberOfPeople("");
-                                                } else {
-                                                    const parsed = parseInt(val);
-                                                    if (!isNaN(parsed)) setNumberOfPeople(parsed);
-                                                }
-                                            }}
-                                            className="w-full bg-white/[0.07] border border-white/10 focus:border-accent-cobalt rounded-2xl px-5 py-4 outline-none font-black text-white text-[14px] appearance-none"
-                                        />
+                                        <div className="relative group">
+                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none group-focus-within:text-accent-indigo transition-colors" />
+                                            <input
+                                                type="date"
+                                                value={endDate}
+                                                onChange={(e) => setEndDate(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 focus:border-accent-indigo rounded-2xl pl-12 pr-4 py-4 outline-none font-black transition-all text-white text-[13px] appearance-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Budget & People - Liquid Grid */}
+                                <div className="grid grid-cols-1 xs:grid-cols-2 gap-5">
+                                    <div className="space-y-2.5">
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
+                                            <Wallet size={10} className="text-emerald-500" /> {t("ai.budget")}
+                                        </label>
+                                        <div className="relative group">
+                                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 font-black text-xs group-focus-within:text-emerald-500 transition-colors">€</span>
+                                            <input
+                                                type="number"
+                                                placeholder={t("ai.placeholder.budget")}
+                                                value={budget}
+                                                onChange={(e) => setBudget(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-2xl pl-12 pr-4 py-4 outline-none font-black text-white text-[13px] placeholder:text-gray-800"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
+                                            <Users size={10} className="text-accent-cobalt" /> {t("ai.guests")}
+                                        </label>
+                                        <div className="relative group">
+                                            <Users size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none group-focus-within:text-accent-cobalt transition-colors" />
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max="20"
+                                                value={numberOfPeople}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (val === "") {
+                                                        setNumberOfPeople("");
+                                                    } else {
+                                                        const parsed = parseInt(val);
+                                                        if (!isNaN(parsed)) setNumberOfPeople(parsed);
+                                                    }
+                                                }}
+                                                className="w-full bg-white/[0.07] border border-white/10 focus:border-accent-cobalt rounded-2xl pl-12 pr-4 py-4 outline-none font-black text-white text-[14px] appearance-none"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* Google Maps List Link */}
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     <label className="flex items-center gap-2 text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em] px-1">
-                                        <MapPin size={10} /> Google Maps Link (Optional)
+                                        <MapPin size={10} /> {t("ai.googleMaps")}
                                     </label>
                                     <input
                                         type="url"
-                                        placeholder="Paste your link here"
+                                        placeholder={t("ai.placeholder.maps")}
                                         value={mapsListUrl}
                                         onChange={(e) => setMapsListUrl(e.target.value)}
-                                        className="w-full bg-emerald-500/10 border border-emerald-500/20 focus:border-emerald-500 rounded-2xl px-5 py-4 outline-none font-black text-emerald-400 placeholder:text-emerald-900/40 transition-all text-[13px]"
+                                        className="w-full bg-emerald-500/10 border border-emerald-500/20 focus:border-emerald-500 rounded-2xl px-5 py-4.5 outline-none font-black text-emerald-400 placeholder:text-emerald-900/40 transition-all text-[13px]"
                                     />
                                 </div>
 
                                 {/* Travel Style - Horizontal Smooth Slider */}
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
-                                        <Compass size={10} className="text-fuchsia-500" /> Travel Style
+                                        <Compass size={10} className="text-fuchsia-500" /> {t("ai.travelStyle")}
                                     </label>
-                                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+                                    <div className="flex gap-2.5 overflow-x-auto pb-4 pt-1 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
                                         {travelStyles.map((style) => (
                                             <button
                                                 key={style.value}
@@ -311,31 +330,31 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                                 </div>
 
                                 {/* Custom Requirements */}
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     <label className="flex items-center gap-2 text-[9px] font-black text-amber-500 uppercase tracking-[0.2em] px-1">
-                                        <Compass size={10} /> Custom Needs
+                                        <Compass size={10} /> {t("ai.customNeeds")}
                                     </label>
                                     <textarea
-                                        placeholder="Ex: Hidden beaches, avoid crowds..."
+                                        placeholder={t("ai.placeholder.needs")}
                                         value={customRequirements}
                                         onChange={(e) => setCustomRequirements(e.target.value)}
-                                        rows={2}
-                                        className="w-full bg-white/5 border border-white/10 focus:border-amber-500 rounded-2xl px-4 py-3.5 outline-none font-bold transition-all text-white resize-none text-[12px] placeholder:text-gray-700"
+                                        rows={3}
+                                        className="w-full bg-white/5 border border-white/10 focus:border-amber-500 rounded-2xl px-5 py-4.5 outline-none font-bold transition-all text-white resize-none text-[13px] placeholder:text-gray-700"
                                     />
                                 </div>
                             </form>
                         )}
                     </div>
 
-                    {/* Fixed Sticky Footer for CTA */}
-                    <div className="shrink-0 p-6 sm:p-8 bg-slate-900/80 backdrop-blur-xl border-t border-white/5 pb-10 sm:pb-8">
+                    {/* Fixed Sticky Footer for CTA with Glassmorphism */}
+                    <div className="shrink-0 p-6 sm:p-8 bg-slate-900/80 backdrop-blur-2xl border-t border-white/10 pb-12 sm:pb-8 sticky bottom-0 z-[100]">
                         <button
                             onClick={handleSubmit}
                             disabled={loading || phase === "generating"}
-                            className="w-full py-4.5 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all hover:shadow-[0_20px_40px_-10px_rgba(139,92,246,0.5)] active:scale-[0.97] text-[13px] uppercase tracking-widest border border-white/20 disabled:opacity-50 group"
+                            className="w-full py-5 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] text-white font-black rounded-2xl flex items-center justify-center gap-4 transition-all hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.5)] active:scale-[0.98] text-[14px] uppercase tracking-widest border border-white/20 disabled:opacity-50 group shadow-2xl"
                         >
-                            <Sparkles size={18} className={`${loading ? "animate-spin" : "group-hover:rotate-12 transition-transform duration-300"}`} />
-                            {loading ? "Planning..." : "Architect Trip"}
+                            <Sparkles size={20} className={`${loading ? "animate-spin" : "group-hover:rotate-12 transition-transform duration-300"}`} />
+                            {loading ? "Planning..." : t("ai.generateBtn")}
                         </button>
                     </div>
                 </motion.div>

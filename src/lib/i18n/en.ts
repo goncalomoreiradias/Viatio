@@ -103,6 +103,25 @@ const en = {
     "landing.features.sync.desc": "No more spreadsheets. Budgets split to the cent, automatically.",
     "landing.features.maps.title": "Collaborative Maps",
     "landing.features.maps.desc": "Plan visually with your friends on a real-time interactive map.",
+
+    // AI Architect Refined
+    "ai.title": "AI Trip Architect",
+    "ai.subtitle": "design unique journeys",
+    "ai.destination": "DESTINATION",
+    "ai.start": "START",
+    "ai.end": "END",
+    "ai.budget": "BUDGET",
+    "ai.guests": "GUESTS",
+    "ai.googleMaps": "GOOGLE MAPS LINK (OPTIONAL)",
+    "ai.travelStyle": "TRAVEL STYLE",
+    "ai.customNeeds": "CUSTOM NEEDS",
+    "ai.placeholder.destination": "Ex: Bali, Indonesia",
+    "ai.placeholder.budget": "1500",
+    "ai.placeholder.maps": "Paste your link here",
+    "ai.placeholder.needs": "Ex: Hidden beaches, avoid crowds...",
+    "ai.generateBtn": "GENERATE TRIP",
+    "ai.generating": "Creating Magic...",
+    "ai.generatingDesc": "Designing your perfect itinerary with exclusive details just for you.",
 };
 
 export default en;
