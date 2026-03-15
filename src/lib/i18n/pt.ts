@@ -86,6 +86,23 @@ const pt = {
     "auth.has_account": "Já tens conta?",
     "auth.signin_link": "Entrar",
     "auth.back": "Voltar",
+
+    // Landing Page
+    "landing.hero.title": "Planeie a viagem perfeita.",
+    "landing.hero.title2": "Em equipa.",
+    "landing.hero.subtitle": "A plataforma definitiva para orquestrar itinerários, dividir custos e localizar os seus amigos em tempo real.",
+    "landing.hero.cta.primary": "Começar Grátis",
+    "landing.hero.cta.secondary": "Entrar no Painel",
+    "landing.social.trusted": "Utilizado por mais de 10.000 viajantes modernos",
+    "landing.mockup.ai": "Encontrei um voo 20% mais barato para o vosso grupo!",
+    "landing.mockup.finance": "Carteira Coletiva",
+    "landing.mockup.live": "Ao vivo no Local",
+    "landing.features.ai.title": "Arquiteto IA",
+    "landing.features.ai.desc": "Deixe que a nossa IA trate da logística. Você cria as memórias.",
+    "landing.features.sync.title": "Sync de Grupo 2.0",
+    "landing.features.sync.desc": "Adeus folhas de Excel. Orçamentos divididos ao cêntimo, automaticamente.",
+    "landing.features.maps.title": "Mapas Colaborativos",
+    "landing.features.maps.desc": "Planeie visualmente com amigos num mapa interativo em tempo real.",
 };
 
 export default pt;

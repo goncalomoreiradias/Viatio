@@ -11,6 +11,7 @@
   --color-accent-magenta: #D946EF;
   --color-accent-emerald: #10B981;
   --color-accent-amber: #F59E0B;
+  --font-serif: var(--font-playfair);
 }
 
 @layer base {
@@ -97,6 +98,27 @@
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .noise-overlay {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mask-image: radial-gradient(circle at center, transparent 0%, black 100%);
+    -webkit-mask-image: radial-gradient(circle at center, transparent 0%, black 100%);
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  @keyframes mesh-pulse {
+    0% { transform: scale(1) translate(0, 0) rotate(0deg); }
+    33% { transform: scale(1.2) translate(10%, -10%) rotate(5deg); }
+    66% { transform: scale(0.8) translate(-5%, 15%) rotate(-5deg); }
+    100% { transform: scale(1) translate(0, 0) rotate(0deg); }
+  }
+
+  .animate-mesh {
+    animation: mesh-pulse 20s infinite ease-in-out;
   }
 }
 

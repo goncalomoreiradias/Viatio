@@ -86,6 +86,23 @@ const en = {
     "auth.has_account": "Already have an account?",
     "auth.signin_link": "Sign In",
     "auth.back": "Back",
+
+    // Landing Page
+    "landing.hero.title": "Plan the perfect trip.",
+    "landing.hero.title2": "Together.",
+    "landing.hero.subtitle": "The extreme travel companion for orchestrating itineraries, splitting costs, and locating your friends in real-time.",
+    "landing.hero.cta.primary": "Start For Free",
+    "landing.hero.cta.secondary": "Sign In to Dashboard",
+    "landing.social.trusted": "Trusted by 10,000+ modern travelers",
+    "landing.mockup.ai": "I found a flight 20% cheaper for your group!",
+    "landing.mockup.finance": "Collective Wallet",
+    "landing.mockup.live": "Live on Location",
+    "landing.features.ai.title": "AI Trip Architect",
+    "landing.features.ai.desc": "Let our AI handle the logistics. You focus on the memories.",
+    "landing.features.sync.title": "Group Sync 2.0",
+    "landing.features.sync.desc": "No more spreadsheets. Budgets split to the cent, automatically.",
+    "landing.features.maps.title": "Collaborative Maps",
+    "landing.features.maps.desc": "Plan visually with your friends on a real-time interactive map.",
 };
 
 export default en;

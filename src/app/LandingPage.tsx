@@ -1,181 +1,313 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { Plane, MapPin, CreditCard, Users, ArrowRight, ShieldCheck } from "lucide-react";
+import { Plane, MapPin, CreditCard, Users, ArrowRight, ShieldCheck, Sparkles, PieChart, Layout, MessageSquare } from "lucide-react";
 import LanguageToggle from "@/components/LanguageToggle";
 import { useI18n } from "@/lib/i18n";
+import { useEffect, useState } from "react";
 
 export default function LandingPage() {
     const { t } = useI18n();
-    return (
-        <div className="min-h-screen bg-brand-bg dark:bg-gray-950 relative overflow-hidden font-outfit selection:bg-brand-primary/30">
-            {/* Dynamic Background Blurs */}
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-primary/10 rounded-full blur-[150px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-secondary/10 rounded-full blur-[120px] pointer-events-none -translate-x-1/3 translate-y-1/3" />
+    const { scrollY } = useScroll();
+    const [isScrolled, setIsScrolled] = useState(false);
 
-            {/* Navigation */}
-            <nav className="relative z-50 flex items-center justify-between p-6 lg:px-12 max-w-7xl mx-auto">
-                <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-brand-primary to-brand-secondary rounded-xl flex items-center justify-center shadow-lg shadow-brand-primary/20">
-                        <Plane size={24} className="text-white -rotate-45" />
+    useEffect(() => {
+        return scrollY.onChange((latest) => {
+            setIsScrolled(latest > 50);
+        });
+    }, [scrollY]);
+
+    const opacity = useTransform(scrollY, [0, 200], [1, 0]);
+    const scale = useTransform(scrollY, [0, 200], [1, 0.95]);
+
+    return (
+        <div className="min-h-screen bg-slate-950 relative overflow-hidden font-outfit selection:bg-accent-indigo/30 text-white">
+            {/* Cinematic Background */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent-indigo/20 rounded-full blur-[120px] animate-mesh" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent-magenta/10 rounded-full blur-[120px] animate-mesh" style={{ animationDelay: '-5s' }} />
+                <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-accent-cobalt/15 rounded-full blur-[100px] animate-mesh" style={{ animationDelay: '-10s' }} />
+                <div className="absolute inset-0 noise-overlay opacity-[0.4] mix-blend-overlay" />
+            </div>
+
+            {/* Glassy Navbar */}
+            <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-4 bg-slate-950/50 backdrop-blur-xl border-b border-white/5' : 'py-8 bg-transparent'}`}>
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+                    <div className="flex items-center gap-3 group cursor-pointer">
+                        <div className="w-12 h-12 bg-gradient-to-br from-accent-cobalt via-accent-indigo to-accent-magenta rounded-2xl flex items-center justify-center shadow-2xl shadow-accent-indigo/20 group-hover:scale-110 transition-transform duration-500 rotate-[-5deg] group-hover:rotate-0">
+                            <Plane size={28} className="text-white -rotate-45" />
+                        </div>
+                        <span className="text-2xl font-black tracking-tighter uppercase italic">Think Tracker</span>
                     </div>
-                    <span className="text-xl font-extrabold text-brand-dark dark:text-white tracking-tight">Viagens Premium</span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <LanguageToggle />
-                    <Link
-                        href="/login"
-                        className="hidden sm:inline-flex px-5 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-200 hover:text-brand-primary dark:hover:text-brand-primary transition-colors"
-                    >
-                        {t("auth.signin_link")}
-                    </Link>
-                    <Link
-                        href="/register"
-                        className="px-6 py-2.5 text-sm font-bold bg-brand-dark dark:bg-white text-white dark:text-brand-dark rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl shadow-black/10 dark:shadow-white/10"
-                    >
-                        {t("auth.register_btn")}
-                    </Link>
+
+                    <div className="flex items-center gap-8">
+                        <LanguageToggle />
+                        <Link
+                            href="/login"
+                            className="hidden md:inline-flex text-sm font-black uppercase tracking-[0.2em] text-gray-400 hover:text-white transition-colors"
+                        >
+                            {t("auth.signin_link")}
+                        </Link>
+                        <Link
+                            href="/register"
+                            className="px-8 py-3.5 bg-white text-slate-950 text-sm font-black rounded-full uppercase tracking-widest hover:bg-accent-indigo hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-[0_20px_40px_-10px_rgba(255,255,255,0.2)]"
+                        >
+                            {t("auth.register_btn")}
+                        </Link>
+                    </div>
                 </div>
             </nav>
 
             {/* Hero Section */}
-            <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 pt-20 pb-32 lg:pt-32">
-                <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
-
+            <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 pt-40 pb-20">
+                <div className="grid lg:grid-cols-2 gap-20 items-center">
+                    
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        style={{ opacity, scale }}
+                        initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                        className="max-w-2xl"
+                        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary font-semibold text-sm mb-6 shadow-inner tracking-wide">
-                            <ShieldCheck size={16} /> Secure Group Travel Management
+                        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-white font-black text-[10px] mb-8 shadow-2xl tracking-[0.3em] uppercase backdrop-blur-md">
+                            <div className="w-2 h-2 bg-accent-magenta rounded-full animate-pulse" />
+                            {t("landing.social.trusted")}
                         </div>
 
-                        <h1 className="text-5xl lg:text-7xl font-extrabold text-brand-dark dark:text-white leading-[1.1] tracking-tight mb-6">
-                            Plan the perfect trip. <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">
-                                Together.
-                            </span>
+                        <h1 className="text-6xl lg:text-[5.5rem] font-serif font-medium leading-[0.95] tracking-tight mb-8">
+                            {t("landing.hero.title")} <br />
+                            <span className="italic font-light text-accent-indigo">{t("landing.hero.title2")}</span>
                         </h1>
 
-                        <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-xl font-inter">
-                            The premium, all-in-one platform to orchestrate itineraries, split group expenses fairly, and pin real-time locations on interactive maps.
+                        <p className="text-xl text-gray-400 mb-12 leading-relaxed max-w-xl font-light tracking-wide lg:pr-12">
+                            {t("landing.hero.subtitle")}
                         </p>
 
-                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-center gap-6">
                             <Link
                                 href="/register"
-                                className="w-full sm:w-auto px-8 py-4 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 shadow-brand-primary/30 flex items-center justify-center gap-2 transition-all text-lg"
+                                className="w-full sm:w-auto px-10 py-5 bg-gradient-to-br from-accent-cobalt to-accent-indigo text-white font-black rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(46,91,255,0.5)] flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs border border-white/20 group relative overflow-hidden"
                             >
-                                Start For Free <ArrowRight size={20} className="ml-1" />
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                                <span className="relative z-10">{t("landing.hero.cta.primary")}</span>
+                                <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
                             </Link>
+
                             <Link
                                 href="/login"
-                                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-800 text-brand-dark dark:text-white font-bold rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-brand-primary dark:hover:border-brand-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-all text-center text-lg shadow-sm"
+                                className="w-full sm:w-auto px-10 py-5 bg-white/5 backdrop-blur-xl text-white font-black rounded-[2rem] border border-white/10 hover:bg-white/10 transition-all uppercase tracking-widest text-xs hover:border-white/20 flex items-center justify-center gap-3"
                             >
-                                Sign In to Dashboard
+                                <Layout size={18} className="opacity-50" />
+                                {t("landing.hero.cta.secondary")}
                             </Link>
                         </div>
+
+                        {/* Social Proof Logos */}
+                        <div className="mt-20 flex flex-wrap items-center gap-10 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
+                             <div className="flex items-center gap-2 font-black text-xl tracking-tighter opacity-50"><MapPin size={24} /> MAPS</div>
+                             <div className="flex items-center gap-2 font-black text-xl tracking-tighter opacity-50"><CreditCard size={24} /> SPLITWISE</div>
+                             <div className="flex items-center gap-2 font-black text-xl tracking-tighter opacity-50 uppercase italic">Booking.com</div>
+                        </div>
                     </motion.div>
 
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9, rotateX: 15 }}
-                        animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                        transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="relative perspective-1000"
-                    >
-                        {/* Minimalist Dashboard Mockup */}
-                        <div className="relative rounded-3xl overflow-hidden glass-card border border-white/20 shadow-2xl dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] bg-white/50 dark:bg-gray-900/60 backdrop-blur-3xl transform rotate-1 lg:rotate-2">
-                            <div className="h-10 border-b border-gray-200/50 dark:border-gray-800/50 flex items-center px-4 gap-2 bg-gray-50/50 dark:bg-black/20">
-                                <div className="flex gap-1.5">
-                                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                                    <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                                </div>
-                            </div>
-                            <div className="p-6">
-                                <div className="flex justify-between items-end mb-8">
-                                    <div>
-                                        <div className="h-4 w-20 bg-gray-200 dark:bg-gray-800 rounded-md mb-2"></div>
-                                        <div className="h-8 w-48 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg"></div>
+                    {/* Mockup App - The Right Side Visual */}
+                    <div className="relative">
+                         <motion.div
+                            initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                            className="relative z-20 perspective-1000"
+                         >
+                            <div className="glass bg-[#0F172A]/80 border border-white/10 rounded-[3rem] shadow-2xl overflow-hidden backdrop-blur-3xl transform rotate-[-2deg] lg:rotate-[-4deg]">
+                                {/* Browser Header */}
+                                <div className="h-12 border-b border-white/5 flex items-center px-6 gap-2 bg-white/5">
+                                    <div className="flex gap-2">
+                                        <div className="w-3 h-3 rounded-full bg-rose-500/30 border border-rose-500/20"></div>
+                                        <div className="w-3 h-3 rounded-full bg-amber-500/30 border border-amber-500/20"></div>
+                                        <div className="w-3 h-3 rounded-full bg-emerald-500/30 border border-emerald-500/20"></div>
                                     </div>
-                                    <div className="h-10 w-24 bg-brand-primary/10 rounded-xl border border-brand-primary/20"></div>
+                                    <div className="flex-1 max-w-[200px] h-6 bg-black/20 rounded-full mx-auto" />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 mb-6">
-                                    <div className="h-32 rounded-2xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-100 dark:border-gray-700/50 p-4 shadow-sm flex flex-col justify-between">
-                                        <MapPin size={24} className="text-gray-400" />
-                                        <div className="space-y-2">
-                                            <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                                            <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
-                                        </div>
+                                {/* Content */}
+                                <div className="p-8 space-y-8">
+                                    {/* Map & Live Pins Section */}
+                                    <div className="relative h-48 bg-slate-800/50 rounded-3xl overflow-hidden border border-white/5 group">
+                                         <div className="absolute inset-0 bg-[#1E293B] flex items-center justify-center opacity-30">
+                                            <div className="w-full h-full noise-overlay opacity-20" />
+                                         </div>
+                                         <div className="absolute inset-0 flex items-center justify-center">
+                                             <div className="relative w-full h-full">
+                                                  {/* Pins with avatars */}
+                                                  <motion.div 
+                                                    animate={{ y: [0, -5, 0] }}
+                                                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                                                    className="absolute top-10 left-[20%] p-1 bg-accent-cobalt rounded-full shadow-2xl border-2 border-slate-950"
+                                                  >
+                                                      <div className="w-8 h-8 rounded-full bg-slate-500 overflow-hidden">
+                                                          <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" alt="Avatar" className="w-full h-full object-cover" />
+                                                      </div>
+                                                  </motion.div>
+                                                  <motion.div 
+                                                    animate={{ y: [0, -5, 0] }}
+                                                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 1 }}
+                                                    className="absolute bottom-12 right-[30%] p-1 bg-accent-magenta rounded-full shadow-2xl border-2 border-slate-950"
+                                                  >
+                                                      <div className="w-8 h-8 rounded-full bg-slate-500 overflow-hidden">
+                                                          <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=random" alt="Avatar" className="w-full h-full object-cover" />
+                                                      </div>
+                                                  </motion.div>
+                                             </div>
+                                         </div>
+                                         <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/5 flex items-center gap-2">
+                                             <div className="w-1.5 h-1.5 bg-accent-emerald rounded-full animate-pulse" />
+                                             {t("landing.mockup.live")}
+                                         </div>
                                     </div>
-                                    <div className="h-32 rounded-2xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-100 dark:border-gray-700/50 p-4 shadow-sm flex flex-col justify-between font-inter relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 p-4 opacity-5">
-                                            <CreditCard size={48} />
-                                        </div>
-                                        <CreditCard size={24} className="text-brand-secondary" />
-                                        <div className="space-y-2">
-                                            <div className="h-3 w-20 bg-brand-secondary/30 rounded-full"></div>
-                                            <div className="h-5 w-24 bg-brand-secondary/80 rounded-full"></div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div className="space-y-3">
-                                    {[1, 2, 3].map((i) => (
-                                        <div key={i} className="h-16 rounded-xl bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700/50 flex items-center px-4 justify-between shadow-sm">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700"></div>
-                                                <div className="space-y-2">
-                                                    <div className="h-3 w-24 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
-                                                    <div className="h-2 w-16 bg-gray-100 dark:bg-gray-700 rounded-full"></div>
+                                    {/* Shared Wallet Visual */}
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="p-6 bg-white/5 border border-white/5 rounded-3xl space-y-4">
+                                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                <span>{t("landing.mockup.finance")}</span>
+                                                <PieChart size={14} className="text-accent-indigo" />
+                                            </div>
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 h-3 bg-white/5 rounded-full overflow-hidden">
+                                                        <motion.div 
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: '65%' }}
+                                                            transition={{ duration: 1, delay: 1 }}
+                                                            className="h-full bg-accent-indigo" 
+                                                        />
+                                                    </div>
+                                                    <span className="text-[10px] font-black">€450</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 h-3 bg-white/5 rounded-full overflow-hidden">
+                                                         <motion.div 
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: '40%' }}
+                                                            transition={{ duration: 1, delay: 1.2 }}
+                                                            className="h-full bg-accent-magenta opacity-50" 
+                                                        />
+                                                    </div>
+                                                    <span className="text-[10px] font-black">€120</span>
                                                 </div>
                                             </div>
-                                            <div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                                         </div>
-                                    ))}
+                                        <div className="p-6 bg-accent-indigo/10 border border-accent-indigo/20 rounded-3xl flex flex-col justify-center">
+                                             <p className="text-[9px] font-black uppercase tracking-widest text-accent-indigo mb-1">Spent Today</p>
+                                             <h4 className="text-3xl font-black tracking-tight text-white italic">€570.80</h4>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Floating Elements overlay */}
-                        <motion.div
-                            animate={{ y: [-10, 10, -10] }}
-                            transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-                            className="absolute -right-8 top-12 glass p-4 rounded-2xl shadow-xl border border-white/20 z-20"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="bg-green-500/20 text-green-500 p-2 rounded-full">
-                                    <ShieldCheck size={20} />
+                            {/* Floating AI Insight Balloon */}
+                            <motion.div
+                                animate={{ y: [-15, 15, -15], rotate: [-1, 1, -1] }}
+                                transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                                className="absolute -top-12 -right-12 z-30 max-w-[220px]"
+                            >
+                                <div className="bg-white text-slate-950 p-6 rounded-[2.5rem] rounded-tr-none shadow-2xl border border-white/50 relative">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="p-2 bg-accent-indigo rounded-xl text-white">
+                                            <Sparkles size={18} />
+                                        </div>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Travel AI</span>
+                                    </div>
+                                    <p className="text-xs font-medium leading-relaxed italic">
+                                        "{t("landing.mockup.ai")}"
+                                    </p>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-bold dark:text-white">Admin Logs</p>
-                                    <p className="text-xs text-gray-500">Fully Protected</p>
-                                </div>
-                            </div>
-                        </motion.div>
+                            </motion.div>
 
-                        <motion.div
-                            animate={{ y: [10, -10, 10] }}
-                            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                            className="absolute -left-8 bottom-24 glass p-4 rounded-2xl shadow-xl border border-white/20 z-20"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="bg-brand-primary/20 text-brand-primary p-2 rounded-full">
-                                    <Users size={20} />
+                            {/* Floating Card: Group Sync */}
+                            <motion.div
+                                animate={{ y: [15, -15, 15] }}
+                                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+                                className="absolute -bottom-10 -left-10 z-30 transform rotate-[3deg]"
+                            >
+                                <div className="glass bg-[#0F172A]/80 p-6 rounded-[2rem] border border-white/10 shadow-2xl backdrop-blur-2xl flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-accent-emerald/20 text-accent-emerald rounded-full flex items-center justify-center">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-accent-emerald">Synced Members</p>
+                                        <p className="text-sm font-black text-white">8 Friends Live</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-bold dark:text-white">Splitting Costs</p>
-                                    <p className="text-xs text-brand-primary font-medium tracking-wide">€45.00 Settled</p>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </motion.div>
+                            </motion.div>
+                         </motion.div>
+                    </div>
                 </div>
+
+                {/* Features Grid */}
+                <section className="mt-40 mb-32">
+                     <div className="text-center mb-24">
+                         <h2 className="text-4xl lg:text-6xl font-serif mb-6 tracking-tight">Elegance in <span className="text-accent-indigo">Every Pixel.</span></h2>
+                         <p className="text-gray-500 uppercase font-black text-[11px] tracking-[0.4em]">Designed for those who demand more from their travels</p>
+                     </div>
+
+                     <div className="grid md:grid-cols-3 gap-10">
+                         {[
+                             {
+                                 title: t("landing.features.ai.title"),
+                                 desc: t("landing.features.ai.desc"),
+                                 icon: <Sparkles className="text-accent-magenta" />,
+                                 bg: "bg-accent-magenta/5",
+                                 border: "border-accent-magenta/10"
+                             },
+                             {
+                                 title: t("landing.features.sync.title"),
+                                 desc: t("landing.features.sync.desc"),
+                                 icon: <CreditCard className="text-accent-indigo" />,
+                                 bg: "bg-accent-indigo/5",
+                                 border: "border-accent-indigo/10"
+                             },
+                             {
+                                 title: t("landing.features.maps.title"),
+                                 desc: t("landing.features.maps.desc"),
+                                 icon: <MapPin className="text-accent-cobalt" />,
+                                 bg: "bg-accent-cobalt/5",
+                                 border: "border-accent-cobalt/10"
+                             }
+                         ].map((feature, idx) => (
+                             <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.2 }}
+                                className={`p-10 rounded-[3rem] ${feature.bg} border ${feature.border} hover:bg-white/5 transition-all duration-500 group cursor-default`}
+                             >
+                                 <div className="mb-8 p-5 bg-white shadow-2xl rounded-[2rem] w-fit transform group-hover:scale-110 transition-transform duration-500">
+                                     {feature.icon ? feature.icon : null}
+                                 </div>
+                                 <h3 className="text-2xl font-black mb-4 tracking-tighter uppercase italic">{feature.title}</h3>
+                                 <p className="text-gray-400 font-light leading-relaxed pr-4">
+                                     {feature.desc}
+                                 </p>
+                             </motion.div>
+                         ))}
+                     </div>
+                </section>
             </main>
+
+            {/* Footer */}
+            <footer className="relative z-10 py-20 border-t border-white/5">
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                            <Plane size={24} className="text-slate-950 -rotate-45" />
+                        </div>
+                        <span className="text-lg font-black tracking-tighter uppercase italic">Think Tracker</span>
+                    </div>
+                    <p className="text-gray-500 font-black text-[10px] uppercase tracking-widest">© 2026 Premium Travel Technologies. All Rights Reserved.</p>
+                </div>
+            </footer>
         </div>
     );
 }
