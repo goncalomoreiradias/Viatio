@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Trip } from "@/types";
-import { motion } from "framer-motion";
-import { Loader2, Plus, Plane, MapPin, Calendar, Users, Sparkles } from "lucide-react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { Loader2, Plus, Plane, MapPin, Calendar, Users, Sparkles, MoreVertical, Edit2, Trash2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -165,17 +165,36 @@ export default function DashboardClient({ session }: Props) {
         { title: "Escapadinha em Roma", desc: "História, massa e vinhos inesquecíveis.", icon: "🇮🇹", color: "from-rose-500 to-magenta-600" }
     ];
 
+    const { scrollY } = useScroll();
+    
+    // Dynamic Header Transforms
+    const headerHeight = useTransform(scrollY, [0, 100], ["auto", "120px"]);
+    const headerPadding = useTransform(scrollY, [0, 100], ["32px", "16px"]);
+    const titleScale = useTransform(scrollY, [0, 100], [1, 0.7]);
+    const titleOpacity = useTransform(scrollY, [0, 100], [1, 0]);
+    const subtitleOpacity = useTransform(scrollY, [0, 80], [1, 0]);
+    const headerBg = useTransform(scrollY, [0, 50], ["rgba(13, 13, 13, 0)", "rgba(13, 13, 13, 0.8)"]);
+
+    const [activeTripMenu, setActiveTripMenu] = useState<string | null>(null);
+
     return (
         <main className="min-h-screen bg-[#0D0D0D] relative pb-24 selection:bg-accent-cobalt selection:text-white">
-            {/* Premium Header */}
-            <header className="sticky top-0 z-40 glass border-b border-white/5 pt-8 pb-8 px-8 sm:px-12 shadow-2xl">
+            {/* Premium Dynamic Header */}
+            <motion.header 
+                style={{ height: headerHeight, backgroundColor: headerBg }}
+                className="sticky top-0 z-40 backdrop-blur-xl border-b border-white/5 overflow-hidden"
+            >
                 {/* Micro-pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
                 
-                <div className="max-w-7xl mx-auto flex flex-col gap-10 relative z-10">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                        <div className="space-y-4 max-w-2xl">
+                <motion.div 
+                    style={{ padding: headerPadding }}
+                    className="max-w-7xl mx-auto flex flex-col relative z-10 transition-all"
+                >
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="space-y-2 md:space-y-4 max-w-2xl">
                             <motion.div
+                                style={{ opacity: subtitleOpacity }}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="inline-flex items-center gap-2 px-3 py-1 bg-accent-cobalt/10 border border-accent-cobalt/20 rounded-full"
@@ -185,41 +204,43 @@ export default function DashboardClient({ session }: Props) {
                                     {t("dash.hello")}, {session.name || "Viajante"}
                                 </span>
                             </motion.div>
-                            <motion.h1
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="text-4xl sm:text-7xl font-black font-outfit text-white tracking-tight leading-[0.9]"
-                            >
-                                Planeie, Colabore e Viaje <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cobalt to-accent-magenta">sem Stress.</span>
-                            </motion.h1>
-                            <p className="text-gray-400 text-lg font-medium max-w-xl">
-                                A sua viagem definitiva, otimizada por IA e gerida em grupo. Centralize itinerários, despesas e memórias num só lugar.
-                            </p>
+                            
+                            <div className="relative">
+                                <motion.h1
+                                    style={{ scale: titleScale, originX: 0 }}
+                                    className="text-3xl sm:text-7xl font-black font-outfit text-white tracking-tight leading-[0.9] whitespace-nowrap"
+                                >
+                                    Viatio <span className="hidden sm:inline text-transparent bg-clip-text bg-gradient-to-r from-accent-cobalt to-accent-magenta">Dashboard</span>
+                                </motion.h1>
+                                <motion.p 
+                                    style={{ opacity: subtitleOpacity }}
+                                    className="text-gray-500 text-xs sm:text-lg font-medium max-w-xl mt-2 sm:mt-4 line-clamp-1 sm:line-clamp-none"
+                                >
+                                    A sua viagem definitiva, otimizada por IA.
+                                </motion.p>
+                            </div>
                         </div>
 
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="neumorphic-inset p-1.5 rounded-2xl flex items-center gap-1 bg-black/20">
+                        <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end mt-2 md:mt-0">
+                            <div className="neumorphic-inset p-1 rounded-2xl flex items-center gap-0.5 bg-black/20 flex-1 md:flex-none">
                                 <button 
                                     onClick={() => setViewMode("personal")}
-                                    className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "personal" ? "bg-white text-obsidian shadow-xl" : "text-gray-500 hover:text-white"}`}
+                                    className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "personal" ? "bg-white text-obsidian shadow-xl" : "text-gray-500 hover:text-white"}`}
                                 >
                                     Pessoais
                                 </button>
                                 <button 
                                     onClick={() => setViewMode("group")}
-                                    className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "group" ? "bg-white text-obsidian shadow-xl" : "text-gray-500 hover:text-white"}`}
+                                    className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "group" ? "bg-white text-obsidian shadow-xl" : "text-gray-500 hover:text-white"}`}
                                 >
-                                    Viagens de Grupo
+                                    Grupo
                                 </button>
                             </div>
                             <LanguageToggle />
                         </div>
                     </div>
-
-                    {/* Redundant Buttons Removed as per user request (already have FABs) */}
-                </div>
-            </header>
+                </motion.div>
+            </motion.header>
 
             {/* Main Content Area */}
             <div className="max-w-7xl mx-auto px-8 sm:px-12 py-16">
@@ -282,79 +303,125 @@ export default function DashboardClient({ session }: Props) {
                         {filteredTrips.map((trip, i) => {
                             const prog = getProgress(trip);
                             return (
-                                <Link href={`/trips/${trip.id}`} key={trip.id}>
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 30 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: i * 0.05 }}
-                                        whileHover={{ y: -10, scale: 1.02 }}
-                                        className="group relative bg-[#1A1A1A] rounded-[3rem] p-10 shadow-2xl border border-white/5 transition-all h-full flex flex-col overflow-hidden"
-                                    >
-                                        {/* Background Decor */}
-                                        <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-20 transition-all duration-700 group-hover:rotate-12">
-                                            <Plane size={120} className="text-accent-cobalt -rotate-45" />
-                                        </div>
-
-                                        <div className="relative z-10 flex-1 space-y-6">
-                                            <div className="space-y-2">
-                                                <h2 className="text-3xl font-black font-outfit text-white leading-[1.1] group-hover:text-accent-cobalt transition-colors duration-300 tracking-tight">
-                                                    {trip.title}
-                                                </h2>
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar size={12} className="text-gray-600" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Planeado Recently</span>
-                                                </div>
-                                            </div>
-                                            
-                                            {/* Progress Bar */}
-                                            <div className="space-y-3">
-                                                <div className="flex justify-between items-end">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Preparação</span>
-                                                    <span className="text-[10px] font-black text-accent-cobalt">{prog}%</span>
-                                                </div>
-                                                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                                    <motion.div 
-                                                        initial={{ width: 0 }}
-                                                        animate={{ width: `${prog}%` }}
-                                                        className="h-full bg-accent-cobalt shadow-[0_0_15px_rgba(46,91,255,0.5)]"
-                                                    />
-                                                </div>
+                                <div key={trip.id} className="relative">
+                                    <Link href={`/trips/${trip.id}`}>
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 30 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            onTap={() => setActiveTripMenu(null)}
+                                            onContextMenu={(e) => {
+                                                e.preventDefault();
+                                                setActiveTripMenu(trip.id);
+                                            }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className="group relative bg-[#1A1A1A] rounded-[2rem] p-8 md:p-10 shadow-2xl border border-white/5 transition-all h-full flex flex-col overflow-hidden cursor-pointer"
+                                        >
+                                            {/* Background Decor */}
+                                            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all duration-700 group-hover:rotate-12 pointer-events-none">
+                                                <Plane size={120} className="text-accent-cobalt -rotate-45" />
                                             </div>
 
-                                            {trip.description && (
-                                                <p className="text-gray-500 text-sm font-medium leading-relaxed line-clamp-2">
-                                                    {trip.description}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="relative z-10 pt-10 mt-auto flex items-center justify-between">
-                                            <div className="flex -space-x-3">
-                                                {/* Mock Avatars for Group Trips */}
-                                                {(trip.participants?.length || 1) > 1 ? (
-                                                    [1, 2, 3].map(n => (
-                                                        <div key={n} className="w-9 h-9 rounded-full bg-accent-indigo border-4 border-[#1A1A1A] flex items-center justify-center text-[10px] font-black text-white">
-                                                            P{n}
+                                            <div className="relative z-10 flex-1 space-y-6">
+                                                <div className="flex justify-between items-start gap-4">
+                                                    <div className="space-y-2">
+                                                        <h2 className="text-2xl md:text-3xl font-black font-outfit text-white leading-tight group-hover:text-accent-cobalt transition-colors duration-300 tracking-tight line-clamp-2">
+                                                            {trip.title}
+                                                        </h2>
+                                                        <div className="flex items-center gap-2">
+                                                            <Calendar size={12} className="text-gray-600" />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Updated Recently</span>
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="w-9 h-9 rounded-full bg-accent-cobalt border-4 border-[#1A1A1A] flex items-center justify-center text-[10px] font-black text-white">
-                                                        ME
                                                     </div>
-                                                )}
-                                                { (trip.participants?.length || 0) > 3 && (
-                                                    <div className="w-9 h-9 rounded-full bg-white/10 border-4 border-[#1A1A1A] flex items-center justify-center text-[10px] font-black text-gray-400">
-                                                        +{(trip.participants?.length || 0) - 3}
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            setActiveTripMenu(activeTripMenu === trip.id ? null : trip.id);
+                                                        }}
+                                                        className="p-2 hover:bg-white/5 rounded-xl text-gray-500 hover:text-white transition-all relative z-20"
+                                                    >
+                                                        <MoreVertical size={20} />
+                                                    </button>
+                                                </div>
+                                                
+                                                {/* Progress Bar with Clamp for fluid spacing */}
+                                                <div className="space-y-2">
+                                                    <div className="flex justify-between items-end">
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">Progress</span>
+                                                        <span className="text-[9px] font-black text-accent-cobalt">{prog}%</span>
                                                     </div>
+                                                    <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                                        <motion.div 
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${prog}%` }}
+                                                            className="h-full bg-accent-cobalt shadow-[0_0_15px_rgba(46,91,255,0.5)]"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {trip.description && (
+                                                    <p className="text-gray-500 text-xs font-medium leading-relaxed line-clamp-2 pr-4">
+                                                        {trip.description}
+                                                    </p>
                                                 )}
                                             </div>
-                                            
-                                            <div className="px-6 py-2.5 bg-accent-cobalt/10 rounded-full border border-accent-cobalt/20 group-hover:bg-accent-cobalt group-hover:text-white transition-all">
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Abrir Viagem</span>
+
+                                            <div className="relative z-10 pt-8 mt-auto flex items-center justify-between border-t border-white/5">
+                                                <div className="flex -space-x-2">
+                                                    {/* Mock Avatars */}
+                                                    {(trip.participants?.length || 1) > 1 ? (
+                                                        [1, 2].map(n => (
+                                                            <div key={n} className="w-8 h-8 rounded-full bg-accent-indigo border-2 border-[#1A1A1A] flex items-center justify-center text-[9px] font-black text-white">
+                                                                P{n}
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="w-8 h-8 rounded-full bg-accent-cobalt border-2 border-[#1A1A1A] flex items-center justify-center text-[9px] font-black text-white">
+                                                            ME
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                
+                                                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-accent-cobalt group-hover:translate-x-1 transition-transform">
+                                                    Open Details <ArrowRight size={12} />
+                                                </div>
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                </Link>
+                                        </motion.div>
+                                    </Link>
+
+                                    {/* Context Menu / Management Menu */}
+                                    <AnimatePresence>
+                                        {activeTripMenu === trip.id && (
+                                            <>
+                                                <div 
+                                                    className="fixed inset-0 z-40" 
+                                                    onClick={() => setActiveTripMenu(null)}
+                                                />
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                    className="absolute top-20 right-8 z-50 w-48 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl p-2 backdrop-blur-3xl"
+                                                >
+                                                    <button className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                                                        <Edit2 size={16} /> Edit Info
+                                                    </button>
+                                                    <button 
+                                                        className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            // Logic for delete would go here
+                                                            setActiveTripMenu(null);
+                                                        }}
+                                                    >
+                                                        <Trash2 size={16} /> Delete Trip
+                                                    </button>
+                                                </motion.div>
+                                            </>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             );
                         })}
                         </div>

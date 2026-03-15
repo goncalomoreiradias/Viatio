@@ -28,21 +28,27 @@ export default function LandingPage() {
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent-indigo/20 rounded-full blur-[120px] animate-mesh" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent-magenta/10 rounded-full blur-[120px] animate-mesh" style={{ animationDelay: '-5s' }} />
                 <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-accent-cobalt/15 rounded-full blur-[100px] animate-mesh" style={{ animationDelay: '-10s' }} />
-                <div className="absolute inset-0 noise-overlay opacity-[0.4] mix-blend-overlay" />
+                
+                {/* Visual Glow behind text (Mobile optimization) */}
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full h-[60%] bg-accent-cobalt/10 blur-[150px] sm:hidden" />
+                
+                <div className="absolute inset-0 noise-overlay opacity-[0.05] sm:opacity-[0.4] mix-blend-overlay" />
             </div>
 
             {/* Glassy Navbar */}
-            <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-4 bg-slate-950/50 backdrop-blur-xl border-b border-white/5' : 'py-8 bg-transparent'}`}>
+            <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-4 bg-slate-950/50 backdrop-blur-xl border-b border-white/5' : 'py-6 md:py-8 bg-transparent'}`}>
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
-                    <div className="flex items-center gap-3 group cursor-pointer">
-                        <div className="w-12 h-12 bg-gradient-to-br from-accent-cobalt via-accent-indigo to-accent-magenta rounded-2xl flex items-center justify-center shadow-2xl shadow-accent-indigo/20 group-hover:scale-110 transition-transform duration-500 rotate-[-5deg] group-hover:rotate-0">
-                            <Plane size={28} className="text-white -rotate-45" />
+                    <div className="flex items-center gap-2 md:gap-3 group cursor-pointer">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-accent-cobalt via-accent-indigo to-accent-magenta rounded-xl md:rounded-2xl flex items-center justify-center shadow-2xl shadow-accent-indigo/20 group-hover:scale-110 transition-transform duration-500 rotate-[-5deg] group-hover:rotate-0">
+                            <Plane size={24} className="text-white -rotate-45 md:size-[28px]" />
                         </div>
-                        <span className="text-2xl font-black tracking-tighter uppercase italic">Viatio</span>
+                        <span className="text-xl md:text-2xl font-black tracking-tighter uppercase italic">Viatio</span>
                     </div>
 
-                    <div className="flex items-center gap-8">
-                        <LanguageToggle />
+                    <div className="flex items-center gap-3 md:gap-8">
+                        <div className="scale-75 md:scale-100 origin-right">
+                            <LanguageToggle />
+                        </div>
                         <Link
                             href="/login"
                             className="hidden md:inline-flex text-sm font-black uppercase tracking-[0.2em] text-gray-400 hover:text-white transition-colors"
@@ -51,7 +57,7 @@ export default function LandingPage() {
                         </Link>
                         <Link
                             href="/register"
-                            className="px-8 py-3.5 bg-white text-slate-950 text-sm font-black rounded-full uppercase tracking-widest hover:bg-accent-indigo hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-[0_20px_40px_-10px_rgba(255,255,255,0.2)]"
+                            className="px-5 py-2.5 md:px-8 md:py-3.5 bg-white text-slate-950 text-[10px] md:text-sm font-black rounded-full uppercase tracking-widest hover:bg-accent-indigo hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-[0_20px_40px_-10px_rgba(255,255,255,0.2)] whitespace-nowrap"
                         >
                             {t("auth.register_btn")}
                         </Link>
@@ -60,26 +66,27 @@ export default function LandingPage() {
             </nav>
 
             {/* Hero Section */}
-            <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 pt-40 pb-20">
-                <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 pt-12 md:pt-40 pb-20">
+                <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center min-h-[85dvh] lg:min-h-0">
                     
                     <motion.div
                         style={{ opacity, scale }}
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="mt-20 md:mt-0"
                     >
-                        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-white font-black text-[10px] mb-8 shadow-2xl tracking-[0.3em] uppercase backdrop-blur-md">
-                            <div className="w-2 h-2 bg-accent-magenta rounded-full animate-pulse" />
-                            {t("landing.social.trusted")}
+                        <div className="inline-flex items-center gap-3 px-4 md:px-5 py-2 md:py-2.5 rounded-full bg-white/5 border border-white/10 text-white font-black text-[8px] md:text-[10px] mb-8 md:mb-12 shadow-2xl tracking-[0.2em] md:tracking-[0.3em] uppercase backdrop-blur-md max-w-full">
+                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-accent-magenta rounded-full animate-pulse shadow-[0_0_10px_rgba(217,70,239,0.8)]" />
+                            <span className="truncate">{t("landing.social.trusted")}</span>
                         </div>
 
-                        <h1 className="text-6xl lg:text-[5.5rem] font-serif font-medium leading-[0.95] tracking-tight mb-8">
+                        <h1 className="text-5xl md:text-6xl lg:text-[5.5rem] font-serif font-medium leading-[1.1] md:leading-[0.95] tracking-tight mb-8">
                             {t("landing.hero.title")} <br />
-                            <span className="italic font-light text-accent-indigo">{t("landing.hero.title2")}</span>
+                            <span className="italic font-light text-accent-indigo brightness-125">{t("landing.hero.title2")}</span>
                         </h1>
 
-                        <p className="text-xl text-gray-400 mb-12 leading-relaxed max-w-xl font-light tracking-wide lg:pr-12">
+                        <p className="text-base md:text-xl text-white/80 md:text-gray-400 mb-10 md:mb-12 leading-relaxed md:leading-relaxed max-w-xl font-light tracking-wide lg:pr-12">
                             {t("landing.hero.subtitle")}
                         </p>
 
@@ -300,10 +307,10 @@ export default function LandingPage() {
             <footer className="relative z-10 py-20 border-t border-white/5">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-10">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                            <Plane size={24} className="text-slate-950 -rotate-45" />
+                        <div className="w-10 h-10 bg-gradient-to-br from-accent-cobalt to-accent-indigo rounded-xl flex items-center justify-center shadow-lg">
+                            <Plane size={24} className="text-white -rotate-45" />
                         </div>
-                        <span className="text-lg font-black tracking-tighter uppercase italic">Think Tracker</span>
+                        <span className="text-lg font-black tracking-tighter uppercase italic">Viatio</span>
                     </div>
                     <p className="text-gray-500 font-black text-[10px] uppercase tracking-widest">© 2026 Premium Travel Technologies. All Rights Reserved.</p>
                 </div>

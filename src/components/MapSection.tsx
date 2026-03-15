@@ -14,20 +14,30 @@ interface MapSectionProps {
     selectedDayId?: string | null;
 }
 
-// Inner component to handle automatic map bounds fitting
+// Inner component to handle automatic map bounds fitting and smooth flyTo
 function MapBounds({ locations, L }: { locations: any[], L: any }) { 
     const map = useMap();
+    const [hasInitialFlyTo, setHasInitialFlyTo] = useState(false);
 
     useEffect(() => {
         if (locations.length > 0 && L && map) {
             try {
-                const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lng]));
-                map.fitBounds(bounds, { padding: [70, 70], maxZoom: 15 });
+                if (!hasInitialFlyTo && locations.length === 1) {
+                    // Smooth flyTo for the first added point
+                    map.flyTo([locations[0].lat, locations[0].lng], 14, {
+                        duration: 2,
+                        easeLinearity: 0.25
+                    });
+                    setHasInitialFlyTo(true);
+                } else {
+                    const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lng]));
+                    map.fitBounds(bounds, { padding: [70, 70], maxZoom: 15 });
+                }
             } catch (e) {
                 console.error("Error fitting bounds", e);
             }
         }
-    }, [locations, map, L]);
+    }, [locations, map, L, hasInitialFlyTo]);
 
     return null;
 }
@@ -94,22 +104,33 @@ export default function MapSection({ days, selectedDayId }: MapSectionProps) {
                         return <MapPin size={14} className="text-white" />;
                     };
 
+                    // Dynamic Scaling based on zoom level logic
+                    const zoom = useMap().getZoom();
+                    const scale = zoom > 14 ? 1.2 : zoom < 10 ? 0.7 : 1;
+                    const size = 24 * scale;
+
                     const iconHtml = renderToStaticMarkup(
-                        <div className="relative group flex items-center justify-center">
+                        <div className="relative group flex items-center justify-center transition-all duration-300" style={{ transform: `scale(${scale})` }}>
                             {/* Minimalism: Black/White sleek Apple-style dots */}
-                            <div className="w-7 h-7 bg-obsidian text-white rounded-full border-2 border-white/80 shadow-xl flex items-center justify-center relative z-10 transition-all group-hover:scale-125 group-hover:bg-accent-cobalt group-hover:border-white">
-                                {getIcon(loc.tag)}
+                            <div 
+                                className="bg-obsidian text-white rounded-full border-2 border-white/90 shadow-2xl flex items-center justify-center relative z-10 transition-all group-hover:bg-accent-cobalt group-hover:border-white"
+                                style={{ width: `${size}px`, height: `${size}px` }}
+                            >
+                                <div style={{ transform: `scale(${scale * 0.85})` }}>
+                                    {getIcon(loc.tag)}
+                                </div>
                             </div>
-                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-black/40 blur-[2px] rounded-full z-0"></div>
+                            {/* Shadow leaf */}
+                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-black/40 blur-[2px] rounded-full z-0 group-hover:opacity-0 transition-opacity"></div>
                         </div>
                     );
 
                     const customIcon = L.divIcon({
                         className: 'custom-pin-icon',
                         html: iconHtml,
-                        iconSize: [28, 28],
-                        iconAnchor: [14, 24],
-                        popupAnchor: [0, -28]
+                        iconSize: [size, size],
+                        iconAnchor: [size/2, size],
+                        popupAnchor: [0, -size]
                     });
 
                     return (

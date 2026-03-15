@@ -27,8 +27,8 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [budget, setBudget] = useState("");
-    const [travelStyle, setTravelStyle] = useState("balanced");
-    const [numberOfPeople, setNumberOfPeople] = useState(2);
+    const [travelStyle, setTravelStyle] = useState<string[]>(["balanced"]);
+    const [numberOfPeople, setNumberOfPeople] = useState<number | "">(2);
     const [customRequirements, setCustomRequirements] = useState("");
     const [mapsListUrl, setMapsListUrl] = useState("");
     const [loading, setLoading] = useState(false);
@@ -66,8 +66,8 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                     startDate,
                     endDate,
                     budget: budget ? parseFloat(budget) : undefined,
-                    travelStyle,
-                    numberOfPeople,
+                    travelStyle: travelStyle.join(", "),
+                    numberOfPeople: numberOfPeople === "" ? 2 : numberOfPeople,
                     customRequirements,
                     mapsListUrl,
                     language, // Added language parameter
@@ -120,22 +120,26 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                 >
                     {/* Drag Handle Indicator */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full sm:hidden z-30" />
-                    {/* Header */}
-                    <div className="shrink-0 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] p-6 sm:p-8 pt-10 sm:pt-8 relative shadow-2xl">
+                    {/* Compact Header */}
+                    <div className="shrink-0 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] p-4 sm:p-6 relative shadow-xl overflow-hidden">
+                        {/* Decorative glow */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -rotate-45 translate-x-12 -translate-y-12" />
+                        
                         <button
                             onClick={onClose}
                             disabled={loading}
-                            className="absolute top-8 right-8 p-3 bg-white/10 backdrop-blur-xl rounded-full hover:bg-white/20 transition-all text-white disabled:opacity-50 border border-white/20 z-20 active:scale-95 shadow-lg group"
+                            className="absolute top-4 right-4 p-2.5 bg-white/10 backdrop-blur-xl rounded-full hover:bg-white/20 transition-all text-white disabled:opacity-50 border border-white/20 z-20 active:scale-95 group"
                         >
-                            <X size={20} className="group-hover:rotate-90 transition-transform" />
+                            <X size={18} className="group-hover:rotate-90 transition-transform" />
                         </button>
-                        <div className="flex items-center gap-6">
-                            <div className="w-16 h-16 bg-white/10 backdrop-blur-2xl rounded-[1.5rem] flex items-center justify-center shadow-inner border border-white/20">
-                                <Sparkles className="text-white animate-pulse" size={28} />
+                        
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-white/10 backdrop-blur-2xl rounded-2xl flex items-center justify-center shadow-inner border border-white/10">
+                                <Sparkles className="text-white animate-pulse" size={24} />
                             </div>
-                            <div className="space-y-1">
-                                <h2 className="text-2xl sm:text-3xl font-black text-white font-outfit tracking-tight leading-tight uppercase tracking-widest">AI Planner</h2>
-                                <p className="text-white/80 text-xs sm:text-sm font-black uppercase tracking-[0.2em]">{t("dash.hello")}, viaja com magia</p>
+                            <div className="space-y-0.5">
+                                <h2 className="text-xl sm:text-2xl font-black text-white font-outfit tracking-tighter uppercase">AI Trip Architect</h2>
+                                <p className="text-white/60 text-[9px] font-black uppercase tracking-[0.2em]">{t("dash.hello")}, design unique journeys</p>
                             </div>
                         </div>
                     </div>
@@ -194,85 +198,56 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                                         placeholder="e.g. Bali, Indonésia"
                                         value={destination}
                                         onChange={(e) => setDestination(e.target.value)}
-                                        className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt focus:shadow-[0_0_20px_rgba(46,91,255,0.1)] rounded-[1.5rem] px-6 py-4.5 outline-none font-black transition-all text-white placeholder:text-gray-600 tracking-tight"
+                                        className="w-full bg-white/[0.07] border border-white/10 focus:border-accent-cobalt focus:shadow-[0_0_20px_rgba(46,91,255,0.1)] rounded-2xl px-5 py-4 outline-none font-black transition-all text-white placeholder:text-gray-700 text-[14px]"
                                     />
                                 </div>
 
-                                {/* Date Range */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div className="space-y-3">
-                                        <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2">
-                                            <Calendar size={12} className="text-accent-cobalt" /> INÍCIO
+                                {/* Date Range - Fluid Grid */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
+                                            <Calendar size={10} className="text-accent-cobalt" /> Start
                                         </label>
                                         <input
                                             type="date"
                                             value={startDate}
                                             onChange={(e) => setStartDate(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-[1.5rem] px-5 py-4.5 outline-none font-black transition-all text-white text-sm"
+                                            className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-2xl px-4 py-3.5 outline-none font-black transition-all text-white text-[12px]"
                                         />
                                     </div>
-                                    <div className="space-y-3">
-                                        <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2">
-                                            <Calendar size={12} className="text-accent-indigo" /> FIM
+                                    <div className="space-y-2">
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
+                                            <Calendar size={10} className="text-accent-indigo" /> End
                                         </label>
                                         <input
                                             type="date"
                                             value={endDate}
                                             onChange={(e) => setEndDate(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 focus:border-accent-indigo rounded-[1.5rem] px-5 py-4.5 outline-none font-black transition-all text-white text-sm"
+                                            className="w-full bg-white/5 border border-white/10 focus:border-accent-indigo rounded-2xl px-4 py-3.5 outline-none font-black transition-all text-white text-[12px]"
                                         />
                                     </div>
                                 </div>
 
-                                {/* Google Maps List Link */}
-                                <div className="space-y-3">
-                                    <label className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] px-2">
-                                        <MapPin size={12} /> LISTA GOOGLE MAPS (OPCIONAL)
-                                    </label>
-                                    <input
-                                        type="url"
-                                        placeholder="Cola o link da tua lista aqui"
-                                        value={mapsListUrl}
-                                        onChange={(e) => setMapsListUrl(e.target.value)}
-                                        className="w-full bg-emerald-500/5 border border-emerald-500/20 focus:border-emerald-500 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] rounded-[1.5rem] px-6 py-4.5 outline-none font-black text-emerald-400 placeholder:text-emerald-900/50 transition-all text-sm"
-                                    />
-                                    <p className="text-[10px] font-black uppercase tracking-[0.1em] text-gray-500 px-2 opacity-60">A IA vai dar prioridade aos pontos de interesse da tua lista.</p>
-                                </div>
-
-                                {/* Custom Requirements */}
-                                <div className="space-y-3">
-                                    <label className="flex items-center gap-2 text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] px-2">
-                                        <Compass size={12} /> O QUE PROCURAS?
-                                    </label>
-                                    <textarea
-                                        placeholder="Ex: Quero trilhos, praias selvagens e evitar o crowd turístico..."
-                                        value={customRequirements}
-                                        onChange={(e) => setCustomRequirements(e.target.value)}
-                                        rows={3}
-                                        className="w-full bg-white/5 border border-white/10 focus:border-amber-500 focus:shadow-[0_0_20px_rgba(245,158,11,0.1)] rounded-[1.5rem] px-6 py-4.5 outline-none font-bold transition-all text-white resize-none text-sm placeholder:text-gray-600"
-                                    />
-                                </div>
-
-                                {/* Budget & People */}
-                                <div className="grid grid-cols-2 gap-5">
-                                    <div className="space-y-3">
-                                        <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2">
-                                            <Wallet size={12} className="text-emerald-500" /> ORÇAMENTO
+                                {/* Budget & People - Fluid Grid */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
+                                            <Wallet size={10} className="text-emerald-500" /> Budget
                                         </label>
                                         <div className="relative">
-                                            <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-black">€</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-black text-xs">€</span>
                                             <input
                                                 type="number"
-                                                placeholder="Ex: 1500"
+                                                placeholder="1500"
                                                 value={budget}
                                                 onChange={(e) => setBudget(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-[1.5rem] pl-12 pr-6 py-4.5 outline-none font-black text-white"
+                                                className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-2xl pl-10 pr-4 py-3.5 outline-none font-black text-white text-[12px] placeholder:text-gray-800"
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-3">
-                                        <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2">
-                                            <Users size={12} className="text-accent-cobalt" /> PESSOAS
+                                    <div className="space-y-2">
+                                        <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
+                                            <Users size={10} className="text-accent-cobalt" /> Guests
                                         </label>
                                         <input
                                             type="number"
@@ -280,48 +255,87 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                                             max="20"
                                             value={numberOfPeople}
                                             onChange={(e) => {
-                                                const val = parseInt(e.target.value);
-                                                if (!isNaN(val)) setNumberOfPeople(val);
+                                                const val = e.target.value;
+                                                if (val === "") {
+                                                    setNumberOfPeople("");
+                                                } else {
+                                                    const parsed = parseInt(val);
+                                                    if (!isNaN(parsed)) setNumberOfPeople(parsed);
+                                                }
                                             }}
-                                            className="w-full bg-white/5 border border-white/10 focus:border-accent-cobalt rounded-[1.5rem] px-6 py-4.5 outline-none font-black text-white relative z-[200] cursor-text"
+                                            className="w-full bg-white/[0.07] border border-white/10 focus:border-accent-cobalt rounded-2xl px-5 py-4 outline-none font-black text-white text-[14px] appearance-none"
                                         />
                                     </div>
                                 </div>
 
-                                {/* Travel Style */}
-                                <div className="space-y-3">
-                                    <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
-                                        <Compass size={12} className="text-fuchsia-500" /> ESTILO DE VIAGEM
+                                {/* Google Maps List Link */}
+                                <div className="space-y-2">
+                                    <label className="flex items-center gap-2 text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em] px-1">
+                                        <MapPin size={10} /> Google Maps Link (Optional)
                                     </label>
-                                    <div className="grid grid-cols-3 gap-2 pb-4">
+                                    <input
+                                        type="url"
+                                        placeholder="Paste your link here"
+                                        value={mapsListUrl}
+                                        onChange={(e) => setMapsListUrl(e.target.value)}
+                                        className="w-full bg-emerald-500/10 border border-emerald-500/20 focus:border-emerald-500 rounded-2xl px-5 py-4 outline-none font-black text-emerald-400 placeholder:text-emerald-900/40 transition-all text-[13px]"
+                                    />
+                                </div>
+
+                                {/* Travel Style - Horizontal Smooth Slider */}
+                                <div className="space-y-3">
+                                    <label className="flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-1">
+                                        <Compass size={10} className="text-fuchsia-500" /> Travel Style
+                                    </label>
+                                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
                                         {travelStyles.map((style) => (
                                             <button
                                                 key={style.value}
                                                 type="button"
-                                                onClick={() => setTravelStyle(style.value)}
-                                                className={`py-3 px-2 rounded-2xl text-[9px] font-black tracking-wider uppercase transition-all border ${travelStyle === style.value
-                                                    ? "bg-indigo-600 dark:bg-indigo-500 text-white border-indigo-500 shadow-xl shadow-indigo-500/40 scale-[1.05]"
-                                                    : "bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-white/5 hover:border-indigo-500/40"
+                                                onClick={() => {
+                                                    setTravelStyle(prev => 
+                                                        prev.includes(style.value)
+                                                            ? prev.filter(s => s !== style.value)
+                                                            : [...prev, style.value]
+                                                    );
+                                                }}
+                                                className={`shrink-0 py-2.5 px-4 rounded-xl text-[10px] font-black tracking-wider uppercase transition-all border whitespace-nowrap ${travelStyle.includes(style.value)
+                                                    ? "bg-accent-cobalt text-white border-accent-cobalt shadow-[0_10px_20px_-5px_rgba(46,91,255,0.4)] scale-105"
+                                                    : "bg-white/5 text-gray-500 border-white/5 hover:border-white/10"
                                                     }`}
                                             >
-                                                {style.label}
+                                                {language === 'en' ? style.labelEn : style.label}
                                             </button>
                                         ))}
                                     </div>
+                                </div>
+
+                                {/* Custom Requirements */}
+                                <div className="space-y-3">
+                                    <label className="flex items-center gap-2 text-[9px] font-black text-amber-500 uppercase tracking-[0.2em] px-1">
+                                        <Compass size={10} /> Custom Needs
+                                    </label>
+                                    <textarea
+                                        placeholder="Ex: Hidden beaches, avoid crowds..."
+                                        value={customRequirements}
+                                        onChange={(e) => setCustomRequirements(e.target.value)}
+                                        rows={2}
+                                        className="w-full bg-white/5 border border-white/10 focus:border-amber-500 rounded-2xl px-4 py-3.5 outline-none font-bold transition-all text-white resize-none text-[12px] placeholder:text-gray-700"
+                                    />
                                 </div>
                             </form>
                         )}
                     </div>
 
                     {/* Fixed Sticky Footer for CTA */}
-                    <div className="shrink-0 p-8 sm:p-10 bg-obsidian border-t border-white/5 pb-12 sm:pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+                    <div className="shrink-0 p-6 sm:p-8 bg-slate-900/80 backdrop-blur-xl border-t border-white/5 pb-10 sm:pb-8">
                         <button
                             onClick={handleSubmit}
                             disabled={loading || phase === "generating"}
-                            className="w-full py-6 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] text-white font-black rounded-full flex items-center justify-center gap-4 transition-all hover:scale-[1.03] hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.6)] active:scale-[0.97] text-lg uppercase tracking-[0.2em] border border-white/20 shadow-2xl disabled:opacity-50 group"
+                            className="w-full py-4.5 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all hover:shadow-[0_20px_40px_-10px_rgba(139,92,246,0.5)] active:scale-[0.97] text-[13px] uppercase tracking-widest border border-white/20 disabled:opacity-50 group"
                         >
-                            <Sparkles size={24} className={`${loading ? "animate-spin" : "group-hover:rotate-12 transition-transform duration-300"}`} />
-                            {loading ? "A processar..." : "Gerar Viagem com AI"}
+                            <Sparkles size={18} className={`${loading ? "animate-spin" : "group-hover:rotate-12 transition-transform duration-300"}`} />
+                            {loading ? "Planning..." : "Architect Trip"}
                         </button>
                     </div>
                 </motion.div>
