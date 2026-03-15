@@ -75,6 +75,12 @@ export default function DayCard({ day, onEdit, onToggleLocation, onAddLocation }
 
                         <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-3 flex-wrap">
+                                {loc.timeSlot && (
+                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-accent-cobalt">
+                                        <span className="opacity-50">🕒</span>
+                                        {loc.timeSlot}
+                                    </div>
+                                )}
                                 <h3 className={`font-black text-xl font-outfit ${loc.completed ? 'text-gray-600 line-through' : 'text-white group-hover:text-accent-cobalt transition-colors'}`}>
                                     {loc.name}
                                 </h3>

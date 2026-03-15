@@ -17,6 +17,7 @@ export default function AddLocationSheet({ isOpen, onClose, days, onAdd }: AddLo
     const [location, setLocation] = useState<Partial<Location>>({
         name: "",
         description: "",
+        timeSlot: "",
         mapsUrl: "",
         tag: "",
         lat: -8.409518,
@@ -39,6 +40,7 @@ export default function AddLocationSheet({ isOpen, onClose, days, onAdd }: AddLo
         setLocation({
             name: "",
             description: "",
+            timeSlot: "",
             mapsUrl: "",
             tag: "",
             lat: -8.4,
@@ -114,6 +116,18 @@ export default function AddLocationSheet({ isOpen, onClose, days, onAdd }: AddLo
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-3">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                    HORÁRIO
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="09:00 - 11:00"
+                                    value={location.timeSlot || ""}
+                                    onChange={(e) => setLocation({ ...location, timeSlot: e.target.value })}
+                                    className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] px-5 py-4.5 focus:border-accent-cobalt outline-none transition-all font-black text-accent-cobalt text-[10px] uppercase tracking-widest placeholder:text-gray-700"
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-2 leading-none">
                                     TAG
                                 </label>
                                 <select
@@ -128,18 +142,19 @@ export default function AddLocationSheet({ isOpen, onClose, days, onAdd }: AddLo
                                     <option value="Photo Op" className="bg-obsidian">Photo Op</option>
                                 </select>
                             </div>
-                            <div className="space-y-3">
-                                <label className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] px-2 leading-none">
-                                    MAPS URL
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="https://..."
-                                    value={location.mapsUrl || ""}
-                                    onChange={(e) => setLocation({ ...location, mapsUrl: e.target.value })}
-                                    className="w-full bg-emerald-500/5 border border-emerald-500/10 rounded-[1.5rem] px-5 py-4.5 focus:border-emerald-500 outline-none transition-all font-bold text-emerald-400 placeholder:text-emerald-900/50 text-sm"
-                                />
-                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                MAPS URL
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="https://..."
+                                value={location.mapsUrl || ""}
+                                onChange={(e) => setLocation({ ...location, mapsUrl: e.target.value })}
+                                className="w-full bg-emerald-500/5 border border-emerald-500/10 rounded-[1.5rem] px-5 py-4.5 focus:border-emerald-500 outline-none transition-all font-bold text-emerald-400 placeholder:text-emerald-900/50 text-sm"
+                            />
                         </div>
 
                         <div className="space-y-3">

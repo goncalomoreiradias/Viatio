@@ -2,6 +2,7 @@ export interface Location {
   id: string;
   name: string;
   description?: string;
+  timeSlot?: string;
   lat: number;
   lng: number;
   completed?: boolean;

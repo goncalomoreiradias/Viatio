@@ -20,10 +20,34 @@ export default async function AdminPage() {
 
     // Fetch recent users
     const recentUsers = await prisma.user.findMany({
-        take: 5,
+        take: 10,
         orderBy: { createdAt: "desc" },
-        select: { id: true, name: true, email: true, role: true, plan: true, createdAt: true }
+        select: { 
+            id: true, 
+            name: true, 
+            email: true, 
+            role: true, 
+            plan: true, 
+            createdAt: true,
+            aiUsages: {
+                select: { estimatedCost: true }
+            }
+        }
     });
+
+    const totalAiUsage = await prisma.aiUsage.aggregate({
+        _sum: { estimatedCost: true },
+        _count: { id: true }
+    });
+
+    const totalAiCost = totalAiUsage._sum.estimatedCost || 0;
+    const totalAiRequests = totalAiUsage._count.id || 0;
+
+    // Enhance users with total spend
+    const usersWithSpend = recentUsers.map(user => ({
+        ...user,
+        totalAiSpend: user.aiUsages.reduce((sum, usage) => sum + usage.estimatedCost, 0)
+    }));
 
     // Fetch Admin Logs
     const recentLogs = await prisma.adminLog.findMany({
@@ -89,9 +113,12 @@ export default async function AdminPage() {
                         <div className="p-3 bg-accent-magenta/10 rounded-2xl">
                             <Activity size={24} className="text-accent-magenta" />
                         </div>
-                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Total Expenses</h3>
+                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">AI Spend (Total)</h3>
                     </div>
-                    <p className="text-6xl font-black font-outfit text-white tracking-tighter">{expenseCount}</p>
+                    <div className="flex items-baseline gap-2">
+                        <p className="text-6xl font-black font-outfit text-white tracking-tighter">€{totalAiCost.toFixed(3)}</p>
+                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{totalAiRequests} Req</span>
+                    </div>
                 </div>
             </div>
 
@@ -106,12 +133,12 @@ export default async function AdminPage() {
                             <tr>
                                 <th className="pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">User</th>
                                 <th className="pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Plan</th>
-                                <th className="pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Role</th>
+                                <th className="pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">AI Cost</th>
                                 <th className="pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Joined</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {recentUsers.map(user => (
+                            {usersWithSpend.map(user => (
                                 <tr key={user.id} className="group cursor-default">
                                     <td className="py-5 px-6 bg-white/5 first:rounded-l-[1.5rem] border-y border-white/5 border-l group-hover:bg-white/10 group-hover:border-white/10 transition-all">
                                         <div className="flex flex-col">
@@ -129,13 +156,7 @@ export default async function AdminPage() {
                                         </span>
                                     </td>
                                     <td className="py-5 px-6 bg-white/5 border-y border-white/5 group-hover:bg-white/10 group-hover:border-white/10 transition-all">
-                                        <span className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border ${
-                                            user.role === 'ADMIN' 
-                                                ? 'bg-accent-cobalt/10 text-accent-cobalt border-accent-cobalt/20 shadow-[0_0_15px_rgba(46,91,255,0.1)]' 
-                                                : 'bg-white/10 text-gray-400 border-white/5'
-                                        }`}>
-                                            {user.role}
-                                        </span>
+                                        <span className="text-xs font-black text-white">€{user.totalAiSpend.toFixed(3)}</span>
                                     </td>
                                     <td className="py-5 px-6 bg-white/5 last:rounded-r-[1.5rem] border-y border-white/5 border-r group-hover:bg-white/10 group-hover:border-white/10 transition-all">
                                         <span className="text-xs font-bold text-gray-500">{user.createdAt.toLocaleDateString()}</span>

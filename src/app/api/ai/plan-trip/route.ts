@@ -10,8 +10,8 @@ function validateItinerary(data: any, requestedDays: number): string | null {
     if (!data.title || !data.description) return "Missing title or description";
     if (!Array.isArray(data.days) || data.days.length === 0) return "Missing or empty days array";
     
-    // Check if we have enough days (allow small deviation if AI combined them, but ideally matching)
-    if (data.days.length < Math.min(requestedDays, 2)) return `Insufficient days generated: ${data.days.length}/${requestedDays}`;
+    // Check if we have enough days
+    if (data.days.length < Math.min(requestedDays, 1)) return `Insufficient days generated: ${data.days.length}/${requestedDays}`;
 
     for (const day of data.days) {
         if (!day.locations || !Array.isArray(day.locations) || day.locations.length === 0) {
@@ -84,7 +84,17 @@ export async function POST(request: Request) {
                     ? `IMPORTANT: The user provided a Google Maps List: ${mapsListUrl}. You MUST analyze these locations and prioritize including them or similar spots in the itinerary. This is a primary data source.`
                     : "";
 
-                const prompt = `You are a world-class travel architect. Design a premium ${numberOfDays}-day itinerary for ${destination}.
+                const prompt = `You are an Adaptive Travel Genius, the world's most sophisticated and intelligent travel architect. Design an elite ${numberOfDays}-day itinerary for ${destination}.
+
+INTELLIGENCE & DENSITY:
+1. FLUID ACTIVITY COUNT: Do NOT use a fixed number of locations. Analyze the complexity of each activity. 
+   - If a day involves a time-intensive trek, long-distance travel, or deep relaxation, 1-2 locations is perfect.
+   - If a day is for city exploration or cultural discovery, 4-6 locations may be appropriate if they are geographically clustered.
+   - Quality and Logical Flow always supersede quantity.
+2. EXPERT LOGISTICS: Ensure every transition between locations is physically possible and optimized.
+3. TIME ESTIMATES: Every location MUST have a "timeSlot" (e.g., "09:00 - 11:00").
+4. PERSONA: You are elite, professional, and obsessed with the best user experience.
+
 Context:
 - Dates: ${startDate} to ${endDate}
 - Budget: ${budget ? `€${budget}` : "flexible"}
@@ -99,16 +109,17 @@ ${concisenessInstruction}
 
 Return ONLY a valid JSON object:
 {
-  "title": "Compelling title",
-  "description": "Engaging description",
+  "title": "Elite Journey Title",
+  "description": "Executive summary of the trip strategy",
   "days": [
     {
       "dayNumber": 1,
-      "title": "Theme",
+      "title": "Daily Theme",
       "locations": [
         {
           "name": "Location Name",
-          "description": "Insightful description",
+          "timeSlot": "HH:MM - HH:MM",
+          "description": "Professional insight",
           "lat": 0.0,
           "lng": 0.0,
           "tag": "culture|nature|food|adventure|relaxation|nightlife|shopping",
@@ -162,6 +173,28 @@ Return ONLY a valid JSON object:
                 }
 
                 finalItinerary = itineraryData;
+                
+                // Track Usage & Cost
+                const usage = aiResult.usage;
+                if (usage) {
+                    const promptTokens = usage.prompt_tokens || 0;
+                    const completionTokens = usage.completion_tokens || 0;
+                    // Conservative estimate for Gemini 1.5 Flash Lite via OpenRouter
+                    // Input: $0.075/1M (~0.000000075 / token)
+                    // Output: $0.30/1M (~0.0000003 / token)
+                    const cost = (promptTokens * 0.000000075) + (completionTokens * 0.0000003);
+
+                    await prisma.aiUsage.create({
+                        data: {
+                            userId: session.userId as string,
+                            model: aiResult.model || "google/gemini-3.1-flash-lite-preview",
+                            promptTokens,
+                            completionTokens,
+                            totalTokens: usage.total_tokens || (promptTokens + completionTokens),
+                            estimatedCost: cost,
+                        }
+                    });
+                }
                 break; // Success! Exit retry loop.
 
             } catch (err: any) {
@@ -195,6 +228,7 @@ Return ONLY a valid JSON object:
                             create: (day.locations || []).map((loc: any) => ({
                                 name: loc.name || "Unknown Location",
                                 description: loc.description || "",
+                                timeSlot: loc.timeSlot || null,
                                 lat: parseFloat(loc.lat) || 0,
                                 lng: parseFloat(loc.lng) || 0,
                                 tag: loc.tag || null,

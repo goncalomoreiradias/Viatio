@@ -72,7 +72,14 @@ function SortableLocationItem({ loc, handleLocationChange, removeLocation }: Sor
                             placeholder="Nome do Local"
                             value={loc.name}
                             onChange={(e) => handleLocationChange(loc.id, "name", e.target.value)}
-                            className="flex-1 bg-white/5 px-4 py-3 rounded-xl border border-white/10 focus:border-accent-cobalt outline-none shadow-sm font-black text-white placeholder:text-gray-700 transition-all"
+                            className="flex-1 bg-white/5 px-4 py-3 rounded-xl border border-white/10 focus:border-accent-cobalt outline-none shadow-sm font-black text-white placeholder:text-gray-700 transition-all text-sm"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Horário (ex: 09:00 - 11:00)"
+                            value={loc.timeSlot || ""}
+                            onChange={(e) => handleLocationChange(loc.id, "timeSlot", e.target.value)}
+                            className="w-32 bg-white/5 px-4 py-3 rounded-xl border border-white/10 focus:border-accent-cobalt outline-none shadow-sm text-[10px] font-black uppercase tracking-widest text-accent-cobalt placeholder:text-gray-700 transition-all"
                         />
                         <select
                             value={loc.tag || ""}
