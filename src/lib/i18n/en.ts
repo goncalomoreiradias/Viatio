@@ -6,7 +6,7 @@ const en = {
     "nav.day": "Day",
 
     // Dashboard
-    "dash.title": "Think Tracker",
+    "dash.title": "Viatio",
     "dash.subtitle": "Organize your trips, itineraries, and expenses all in one place.",
     "dash.yourName": "Your Name",
     "dash.enter": "Sign In",

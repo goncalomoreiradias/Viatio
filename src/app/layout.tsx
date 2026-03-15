@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
-  title: 'Bali Trip 2024',
-  description: 'Our personalized 15-day itinerary in Bali',
+  title: 'Viatio',
+  description: 'The extreme travel companion for orchestrating itineraries.',
 };
 
 export const viewport = {

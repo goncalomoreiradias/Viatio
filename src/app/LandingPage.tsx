@@ -38,7 +38,7 @@ export default function LandingPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-accent-cobalt via-accent-indigo to-accent-magenta rounded-2xl flex items-center justify-center shadow-2xl shadow-accent-indigo/20 group-hover:scale-110 transition-transform duration-500 rotate-[-5deg] group-hover:rotate-0">
                             <Plane size={28} className="text-white -rotate-45" />
                         </div>
-                        <span className="text-2xl font-black tracking-tighter uppercase italic">Think Tracker</span>
+                        <span className="text-2xl font-black tracking-tighter uppercase italic">Viatio</span>
                     </div>
 
                     <div className="flex items-center gap-8">
