@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trip, DayPlan, Location as TripLocation, Expense } from "@/types";
 import DayCard from "@/components/DayCard";
 import EditItinerarySheet from "@/components/EditItinerarySheet";
-import { ArrowLeft, Map as MapIcon, Loader2, Plus, Check, Users } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, Map as MapIcon, Loader2, Plus, Check, Users, MoreVertical, Edit2, Copy, Trash2, X } from "lucide-react";
+import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import AddLocationSheet from "@/components/AddLocationSheet";
 import AddExpenseSheet from "@/components/AddExpenseSheet";
 import FinanceSection from "@/components/FinanceSection";
@@ -30,6 +31,7 @@ type ViewMode = "list" | "map";
 export default function TripPage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
   const tripId = unwrappedParams.id;
+  const router = useRouter();
   const [itinerary, setItinerary] = useState<any>(null); // Type loosened to allow inviteToken
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"itinerary" | "finance">("itinerary");
@@ -51,6 +53,13 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [newExpenseInitialParticipant, setNewExpenseInitialParticipant] = useState("");
+
+  // Rebranding Inline Editing State
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [isEditingDesc, setIsEditingDesc] = useState(false);
+  const [editedDesc, setEditedDesc] = useState("");
+  const [isManagementMenuOpen, setIsManagementMenuOpen] = useState(false);
 
   // i18n
   const { t, language } = useI18n();
@@ -75,6 +84,8 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
       if (!res.ok) throw new Error("Trip not found");
       const data = await res.json();
       setItinerary(data);
+      setEditedTitle(data.title);
+      setEditedDesc(data.description || "");
     } catch (error) {
       console.error("Failed to load itinerary", error);
     } finally {
@@ -86,7 +97,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   const saveItinerary = async (newItinerary: Trip) => {
     try {
       setItinerary(newItinerary); // Optimistic UI update
-      await fetch(`/api/trips/${tripId}`, {
+      const response = await fetch(`/api/trips/${tripId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -104,9 +115,41 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
           }),
         }),
       });
+      if (!response.ok) throw new Error("Failed to save");
     } catch (error) {
       console.error("Failed to save itinerary", error);
+      fetchItinerary(); // Rollback on error
     }
+  };
+
+  const handleUpdateTitle = async () => {
+    if (!itinerary || editedTitle.trim() === "") {
+        setIsEditingTitle(false);
+        return;
+    }
+    const updated = { ...itinerary, title: editedTitle };
+    await saveItinerary(updated);
+    setIsEditingTitle(false);
+  };
+
+  const handleUpdateDesc = async () => {
+    if (!itinerary) {
+        setIsEditingDesc(false);
+        return;
+    }
+    const updated = { ...itinerary, description: editedDesc };
+    await saveItinerary(updated);
+    setIsEditingDesc(false);
+  };
+
+  const handleDeleteTrip = async () => {
+      if (!confirm("Tens a certeza que queres eliminar esta viagem? Esta ação é irreversível.")) return;
+      try {
+          const res = await fetch(`/api/trips/${tripId}`, { method: "DELETE" });
+          if (res.ok) router.push("/");
+      } catch (e) {
+          console.error("Delete failed", e);
+      }
   };
 
   const handleDayEdit = (updatedDay: DayPlan) => {
@@ -152,18 +195,33 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   }
 
   return (
-    <main className="min-h-screen bg-obsidian relative pb-24 lg:pb-0 selection:bg-accent-cobalt selection:text-white">      {/* Header */}
-      <header className="relative z-10 glass border-b border-white/5 pt-16 pb-12 px-8 sm:px-12 shadow-2xl">
-        {/* Micro-pattern overlay */}
+    <main className="min-h-screen bg-obsidian relative pb-24 lg:pb-0 selection:bg-accent-cobalt selection:text-white">
+      {/* Header - Compact for Mobile */}
+      <header className="relative z-10 glass border-b border-white/5 md:pt-16 md:pb-12 pt-10 pb-6 px-6 sm:px-12 shadow-2xl">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="flex items-center justify-between mb-8">
-            <Link href="/" className="group p-3 bg-white/5 hover:bg-white/10 rounded-full transition-all border border-white/10 active:scale-95">
-              <ArrowLeft size={24} className="text-white group-hover:-translate-x-1 transition-transform" />
-            </Link>
-            <div className="neumorphic-inset p-1 rounded-2xl">
-                <LanguageToggle />
+          <div className="flex items-center justify-between mb-6 md:mb-8">
+            <div className="flex items-center gap-4">
+                <Link href="/" className="group p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-full transition-all border border-white/10 active:scale-95">
+                  <ArrowLeft size={20} className="text-white md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
+                </Link>
+                <div className="md:hidden">
+                    <LanguageToggle />
+                </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+                <div className="hidden md:block">
+                    <LanguageToggle />
+                </div>
+                {/* Management Ellipsis */}
+                <button 
+                    onClick={() => setIsManagementMenuOpen(true)}
+                    className="p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-all text-gray-400 hover:text-white"
+                >
+                    <MoreVertical size={20} />
+                </button>
             </div>
           </div>
 
@@ -171,35 +229,78 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="flex flex-col md:flex-row md:items-end justify-between gap-8"
+            className="flex flex-col md:flex-row md:items-end justify-between gap-6"
           >
-            <div className="space-y-3">
-              <h1 className="text-4xl sm:text-6xl font-black font-outfit text-white tracking-tight leading-tight">{itinerary.title}</h1>
-              <div className="flex flex-wrap items-center gap-6">
-                <p className="px-5 py-2 bg-accent-cobalt/10 text-accent-cobalt rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-accent-cobalt/20 shadow-lg backdrop-blur-md">
+            <div className="space-y-4 md:space-y-3 flex-1">
+              <div className="group relative">
+                {isEditingTitle ? (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+                        <input
+                            autoFocus
+                            value={editedTitle}
+                            onChange={(e) => setEditedTitle(e.target.value)}
+                            onBlur={handleUpdateTitle}
+                            onKeyDown={(e) => e.key === "Enter" && handleUpdateTitle()}
+                            className="text-2xl sm:text-6xl font-black font-outfit text-white bg-white/5 border-b-2 border-accent-cobalt outline-none w-full px-2 py-1 rounded-t-lg"
+                        />
+                    </motion.div>
+                ) : (
+                    <div className="flex items-center gap-3">
+                        <h1 
+                            onClick={() => setIsEditingTitle(true)}
+                            className="text-2xl sm:text-6xl font-black font-outfit text-white tracking-tight leading-tight cursor-pointer hover:text-accent-cobalt transition-colors"
+                        >
+                            {itinerary.title}
+                        </h1>
+                        <Edit2 size={16} className="text-white/20 group-hover:text-accent-cobalt transition-colors md:w-5 md:h-5" />
+                    </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 md:gap-6">
+                <p className="px-4 py-1.5 md:px-5 md:py-2 bg-accent-cobalt/10 text-accent-cobalt rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] border border-accent-cobalt/20 shadow-lg backdrop-blur-md">
                     {itinerary.startDate && itinerary.endDate
                     ? `${format(new Date(itinerary.startDate), "dd MMM", { locale: dateLocale })} - ${format(new Date(itinerary.endDate), "dd MMM yyyy", { locale: dateLocale })}`
                     : t("common.no_dates")}
                 </p>
-                <div className="lg:scale-90 lg:origin-left">
-                  <CollaborationModule 
-                    participants={(itinerary.participants || []).map((p: any, i: number) => ({
-                      id: p.id || `p-${i}`,
-                      name: p.name || p.email.split('@')[0],
-                      role: i === 0 ? "Owner" : "Editor",
-                      online: i % 2 === 0
-                    }))}
-                    onInvite={() => {
-                      const url = `${window.location.origin}/trips/join/${itinerary.inviteToken}`;
-                      navigator.clipboard.writeText(url);
-                      setCopiedLink(true);
-                      setTimeout(() => setCopiedLink(false), 2000);
-                    }}
-                  />
+                
+                <div className="flex items-center gap-2">
+                    <div className="scale-75 md:scale-90 origin-left">
+                      <CollaborationModule 
+                        participants={(itinerary.participants || []).map((p: any, i: number) => ({
+                          id: p.id || `p-${i}`,
+                          name: p.name || p.email.split('@')[0],
+                          role: i === 0 ? "Owner" : "Editor",
+                          online: i % 2 === 0
+                        }))}
+                        onInvite={() => {
+                          const url = `${window.location.origin}/trips/join/${itinerary.inviteToken}`;
+                          navigator.clipboard.writeText(url);
+                          setCopiedLink(true);
+                          setTimeout(() => setCopiedLink(false), 2000);
+                        }}
+                      />
+                    </div>
+                    
+                    {/* Compact Invite Button for Mobile */}
+                    {itinerary.inviteToken && (
+                        <button
+                            onClick={() => {
+                                const url = `${window.location.origin}/trips/join/${itinerary.inviteToken}`;
+                                navigator.clipboard.writeText(url);
+                                setCopiedLink(true);
+                                setTimeout(() => setCopiedLink(false), 2000);
+                            }}
+                            className="md:hidden flex items-center justify-center w-8 h-8 bg-white/5 border border-white/10 rounded-full text-white active:scale-90 transition-all"
+                        >
+                            {copiedLink ? <Check size={14} className="text-emerald-500" /> : <Plus size={14} />}
+                        </button>
+                    )}
                 </div>
               </div>
             </div>
 
+            {/* Desktop Only Large Invite Button */}
             {itinerary.inviteToken && (
               <button
                 onClick={() => {
@@ -208,7 +309,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                   setCopiedLink(true);
                   setTimeout(() => setCopiedLink(false), 2000);
                 }}
-                className="flex items-center gap-3 px-8 py-4 bg-white text-obsidian hover:bg-gray-100 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-2xl active:scale-95 border border-white/10"
+                className="hidden md:flex items-center gap-3 px-8 py-4 bg-white text-obsidian hover:bg-gray-100 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-2xl active:scale-95 border border-white/10"
               >
                 {copiedLink ? <Check size={18} className="text-emerald-500" /> : <Plus size={18} className="text-accent-cobalt" />}
                 {copiedLink ? "Link Copied!" : "Invite Collaborators"}
@@ -354,27 +455,85 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
         }}
       />
 
-      {/* FAB - Dynamically changes based on Active Tab */}
+      {/* FAB - Desktop Only (Hidden on Mobile as it is now in Navigation) */}
       {activeTab === "itinerary" ? (
         <button
           onClick={() => setIsAddLocationOpen(true)}
-          className="fixed bottom-24 sm:bottom-10 right-8 lg:bottom-12 lg:right-12 z-[100] w-16 h-16 bg-accent-cobalt text-white rounded-full shadow-[0_20px_60px_-10px_rgba(46,91,255,0.7)] flex items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/30 group"
+          className="hidden lg:flex fixed bottom-12 right-12 z-[100] w-16 h-16 bg-accent-cobalt text-white rounded-full shadow-[0_20px_60px_-10px_rgba(46,91,255,0.7)] items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/30 group"
         >
           <Plus size={32} className="group-hover:rotate-90 transition-transform duration-300" />
         </button>
       ) : (
         <button
           onClick={() => setIsAddExpenseOpen(true)}
-          className="fixed bottom-24 sm:bottom-10 right-8 lg:bottom-12 lg:right-12 z-[100] w-16 h-16 bg-accent-indigo text-white rounded-full shadow-[0_20px_60px_-10px_rgba(99,102,241,0.7)] flex items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/30 group"
+          className="hidden lg:flex fixed bottom-12 right-12 z-[100] w-16 h-16 bg-accent-indigo text-white rounded-full shadow-[0_20px_60px_-10px_rgba(99,102,241,0.7)] items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-white/30 group"
         >
           <Plus size={32} className="group-hover:rotate-90 transition-transform duration-300" />
         </button>
       )}
 
-      {/* Navigation - Sticky bottom on mobile, static topish on desktop */}
+      {/* Management Bottom Sheet */}
+      <AnimatePresence>
+          {isManagementMenuOpen && (
+              <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/60 backdrop-blur-sm">
+                  <motion.div 
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                    className="w-full bg-slate-900 rounded-t-[2.5rem] border-t border-white/10 p-8 pb-12 space-y-6 shadow-2xl"
+                  >
+                      <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-black uppercase tracking-widest text-white italic">Gestão da Viagem</h3>
+                          <button onClick={() => setIsManagementMenuOpen(false)} className="p-2 bg-white/5 rounded-full"><X size={20}/></button>
+                      </div>
+                      
+                      <div className="space-y-3">
+                          <button 
+                            onClick={() => { setIsEditingTitle(true); setIsManagementMenuOpen(false); }}
+                            className="w-full bg-white/5 hover:bg-white/10 p-5 rounded-2xl border border-white/5 flex items-center gap-4 transition-all"
+                          >
+                              <div className="w-10 h-10 bg-accent-cobalt/20 rounded-xl flex items-center justify-center text-accent-cobalt">
+                                  <Edit2 size={20} />
+                              </div>
+                              <span className="font-bold text-gray-300">Editar Nome</span>
+                          </button>
+
+                          <button 
+                            onClick={() => { /* Duplicate Logic */ setIsManagementMenuOpen(false); }}
+                            className="w-full bg-white/5 hover:bg-white/10 p-5 rounded-2xl border border-white/5 flex items-center gap-4 transition-all"
+                          >
+                              <div className="w-10 h-10 bg-accent-indigo/20 rounded-xl flex items-center justify-center text-accent-indigo">
+                                  <Copy size={20} />
+                              </div>
+                              <span className="font-bold text-gray-300">Duplicar Roteiro</span>
+                          </button>
+
+                          <button 
+                            onClick={handleDeleteTrip}
+                            className="w-full bg-rose-500/10 hover:bg-rose-500/20 p-5 rounded-2xl border border-rose-500/10 flex items-center gap-4 transition-all"
+                          >
+                              <div className="w-10 h-10 bg-rose-500/20 rounded-xl flex items-center justify-center text-rose-500">
+                                  <Trash2 size={20} />
+                              </div>
+                              <span className="font-bold text-rose-400">Eliminar Viagem</span>
+                          </button>
+                      </div>
+                  </motion.div>
+              </div>
+          )}
+      </AnimatePresence>
+
       <div className="fixed bottom-0 left-0 right-0 sm:sticky sm:bottom-auto sm:top-[400px] lg:top-[500px] z-50 pointer-events-none">
         <div className="pointer-events-auto">
-          <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+          <Navigation 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab} 
+            onAddClick={() => {
+                if (activeTab === "itinerary") setIsAddLocationOpen(true);
+                else setIsAddExpenseOpen(true);
+            }}
+          />
         </div>
       </div>
     </main>

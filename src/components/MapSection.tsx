@@ -1,9 +1,10 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import { DayPlan } from "@/types";
+import { Utensils, Camera, MapPin, Star, Hotel } from "lucide-react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 // Dynamically import react-leaflet components to avoid SSR issues
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
@@ -84,20 +85,31 @@ export default function MapSection({ days, selectedDayId }: MapSectionProps) {
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
                 {locationsToRender.map((loc, idx) => {
+                    const getIcon = (tag?: string) => {
+                        const t = tag?.toLowerCase();
+                        if (t?.includes("food") || t?.includes("restaurante")) return <Utensils size={14} className="text-white" />;
+                        if (t?.includes("photo") || t?.includes("foto")) return <Camera size={14} className="text-white" />;
+                        if (t?.includes("hotel") || t?.includes("dormir")) return <Hotel size={14} className="text-white" />;
+                        if (t?.includes("must")) return <Star size={14} className="text-white" />;
+                        return <MapPin size={14} className="text-white" />;
+                    };
+
+                    const iconHtml = renderToStaticMarkup(
+                        <div className="relative group flex items-center justify-center">
+                            {/* Minimalism: Black/White sleek Apple-style dots */}
+                            <div className="w-7 h-7 bg-obsidian text-white rounded-full border-2 border-white/80 shadow-xl flex items-center justify-center relative z-10 transition-all group-hover:scale-125 group-hover:bg-accent-cobalt group-hover:border-white">
+                                {getIcon(loc.tag)}
+                            </div>
+                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-black/40 blur-[2px] rounded-full z-0"></div>
+                        </div>
+                    );
+
                     const customIcon = L.divIcon({
                         className: 'custom-pin-icon',
-                        html: `
-                            <div class="relative group">
-                                <div class="w-8 h-8 bg-accent-cobalt rounded-full border-4 border-white shadow-[0_0_20px_rgba(46,91,255,0.6)] flex items-center justify-center relative z-10 animate-fade-in group-hover:scale-110 transition-transform">
-                                    <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
-                                </div>
-                                <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-1.5 bg-accent-cobalt/40 blur-[4px] rounded-full z-0"></div>
-                                <div class="absolute inset-0 w-full h-full bg-accent-cobalt/20 rounded-full blur-[15px] animate-pulse"></div>
-                            </div>
-                        `,
-                        iconSize: [32, 40],
-                        iconAnchor: [16, 32],
-                        popupAnchor: [0, -32]
+                        html: iconHtml,
+                        iconSize: [28, 28],
+                        iconAnchor: [14, 24],
+                        popupAnchor: [0, -28]
                     });
 
                     return (

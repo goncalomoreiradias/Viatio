@@ -104,17 +104,24 @@ export default function AIPlannerModal({ isOpen, onClose }: AIPlannerModalProps)
                 {/* Backdrop */}
                 <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
 
-                {/* Modal */}
+                {/* Modal Content */}
                 <motion.div
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                    className="relative w-full max-w-lg glass bg-obsidian/90 sm:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col h-[95vh] sm:h-auto sm:max-h-[90vh] border border-white/10"
+                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                    drag="y"
+                    dragConstraints={{ top: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(_, info) => {
+                        if (info.offset.y > 150) onClose();
+                    }}
+                    className="relative w-full max-w-lg glass bg-slate-900 sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto sm:max-h-[90vh] border-t border-x border-white/10 sm:border"
                 >
+                    {/* Drag Handle Indicator */}
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full sm:hidden z-30" />
                     {/* Header */}
-                    <div className="shrink-0 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] p-6 sm:p-8 relative shadow-2xl">
-                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/20 rounded-full sm:hidden" />
+                    <div className="shrink-0 bg-gradient-to-br from-[#D946EF] via-[#8B5CF6] to-[#6366F1] p-6 sm:p-8 pt-10 sm:pt-8 relative shadow-2xl">
                         <button
                             onClick={onClose}
                             disabled={loading}

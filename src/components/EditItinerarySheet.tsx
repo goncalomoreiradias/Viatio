@@ -206,10 +206,18 @@ export default function EditItinerarySheet({ day, isOpen, onClose, onSave }: Edi
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: "100%", opacity: 0 }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="glass bg-obsidian/95 w-full max-w-lg max-h-[92vh] sm:rounded-[2.5rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-white/10"
+                    drag="y"
+                    dragConstraints={{ top: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(_, info) => {
+                        if (info.offset.y > 150) onClose();
+                    }}
+                    className="glass bg-slate-900 w-full max-w-lg max-h-[92vh] sm:rounded-[2.5rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border-t border-x border-white/10 sm:border"
                 >
+                    {/* Drag Handle Indicator */}
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full sm:hidden z-30" />
                     {/* Header */}
-                    <div className="px-8 py-7 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-accent-cobalt to-accent-indigo text-white shadow-lg">
+                    <div className="px-8 py-7 pt-10 sm:pt-7 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-accent-cobalt to-accent-indigo text-white shadow-lg">
                         <div className="space-y-1">
                             <h2 className="text-2xl font-black uppercase tracking-widest font-outfit leading-tight text-white">Editar Dia {day.dayNumber}</h2>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Refina o teu itinerário</p>
