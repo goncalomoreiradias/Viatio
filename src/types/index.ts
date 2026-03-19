@@ -34,9 +34,10 @@ export interface Itinerary {
   title: string;
   description?: string;
   password?: string;
-  startDate?: string | Date;
-  endDate?: string | Date;
-  participants?: string[];
+  startDate?: string;
+  endDate?: string;
+  bucketListUrl?: string;
+  participants: string[];
   days: DayPlan[];
   expenses?: Expense[];
   budget?: number; // Target budget

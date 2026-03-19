@@ -31,6 +31,8 @@ export default function DashboardClient({ session }: Props) {
     // New Trip Form State
     const [newTripTitle, setNewTripTitle] = useState("");
     const [newTripDesc, setNewTripDesc] = useState("");
+    const [newTripStartDate, setNewTripStartDate] = useState("");
+    const [newTripEndDate, setNewTripEndDate] = useState("");
     const [isCreating, setIsCreating] = useState(false);
 
     // i18n
@@ -89,6 +91,8 @@ export default function DashboardClient({ session }: Props) {
                 body: JSON.stringify({
                     title: newTripTitle,
                     description: newTripDesc,
+                    startDate: newTripStartDate || undefined,
+                    endDate: newTripEndDate || undefined,
                     participants: [session.userId], // Use session.userId
                 }),
             });
@@ -99,6 +103,8 @@ export default function DashboardClient({ session }: Props) {
                 setIsCreateModalOpen(false);
                 setNewTripTitle("");
                 setNewTripDesc("");
+                setNewTripStartDate("");
+                setNewTripEndDate("");
             }
         } catch (error) {
             console.error("Failed to create trip", error);
@@ -560,6 +566,31 @@ export default function DashboardClient({ session }: Props) {
                                     onChange={(e) => setNewTripDesc(e.target.value)}
                                     className="input-surface w-full min-h-[120px] resize-none font-medium leading-relaxed rounded-[2rem]"
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-3">
+                                    <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
+                                        Data Início
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={newTripStartDate}
+                                        onChange={(e) => setNewTripStartDate(e.target.value)}
+                                        className="input-surface w-full p-4 text-xs font-black uppercase tracking-widest text-accent text-center"
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
+                                        Data Fim
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={newTripEndDate}
+                                        onChange={(e) => setNewTripEndDate(e.target.value)}
+                                        className="input-surface w-full p-4 text-xs font-black uppercase tracking-widest text-accent text-center"
+                                    />
+                                </div>
                             </div>
 
                             <div className="pt-4 flex gap-4">

@@ -9,6 +9,7 @@ import { ArrowLeft, Map as MapIcon, Loader2, Plus, Check, Users, MoreVertical, E
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import AddLocationSheet from "@/components/AddLocationSheet";
 import AddExpenseSheet from "@/components/AddExpenseSheet";
+import DatePickerModal from "@/components/DatePickerModal";
 import FinanceSection from "@/components/FinanceSection";
 import Navigation from "@/components/Navigation";
 import { use } from "react";
@@ -66,6 +67,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   }, []);
   // Edit State
   const [editingDay, setEditingDay] = useState<DayPlan | null>(null);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
@@ -78,7 +80,8 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   const [editedDesc, setEditedDesc] = useState("");
   const [isManagementMenuOpen, setIsManagementMenuOpen] = useState(false);
   const [isAIPlannerOpen, setIsAIPlannerOpen] = useState(false);
-  const isAnySheetOpen = !!editingDay || isAddLocationOpen || isAddExpenseOpen || isManagementMenuOpen || isAIPlannerOpen;
+  
+  const isAnySheetOpen = !!editingDay || isAddLocationOpen || isAddExpenseOpen || isManagementMenuOpen || isAIPlannerOpen || isDatePickerOpen;
 
   // DND Sensors
   const sensors = useSensors(
@@ -339,6 +342,17 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                     <LanguageToggle />
                 </div>
             </div>
+            <DatePickerModal 
+                isOpen={isDatePickerOpen}
+                onClose={() => {
+                    setIsDatePickerOpen(false);
+                }}
+                onSave={(start, end) => handleUpdateDates(start, end)}
+                initialStart={itinerary.startDate ? new Date(itinerary.startDate).toISOString().split('T')[0] : ""}
+                initialEnd={itinerary.endDate ? new Date(itinerary.endDate).toISOString().split('T')[0] : ""}
+            />
+
+            {isAnySheetOpen && <div className="fixed inset-0 z-40 bg-black/5" />}
             
             <div className="flex items-center gap-3">
                 <div className="hidden md:flex items-center gap-2">
@@ -350,11 +364,13 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                         <span>AI ARCHITECT</span>
                     </button>
                     <button 
-                         onClick={() => itinerary?.days.length > 0 ? setIsAddLocationOpen(true) : handleAddDay()}
+                         onClick={() => {
+                            setIsDatePickerOpen(true);
+                        }}
                          className="flex items-center gap-2 px-6 py-2.5 bg-surface hover:bg-stroke text-text-high rounded-full border border-stroke transition-all text-[11px] font-black uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95"
                     >
-                        <Plus size={16} />
-                        <span>{t("trip.addLocation") || "Adicionar"}</span>
+                        <Calendar size={16} />
+                        <span>{itinerary.startDate && itinerary.endDate ? `${format(new Date(itinerary.startDate), "dd MMM", { locale: dateLocale })} - ${format(new Date(itinerary.endDate), "dd MMM yyyy", { locale: dateLocale })}` : t("trip.setDates")}</span>
                     </button>
                 </div>
                 <div className="hidden md:block">
@@ -623,7 +639,6 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
           )}
         </div>
       </div>
-
       {/* Editing Drawer */}
       {editingDay && (
         <EditItinerarySheet
@@ -633,6 +648,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
           onClose={() => setEditingDay(null)}
           onSave={handleDayEdit}
           onMoveLocation={handleMoveLocation}
+          bucketListUrl={itinerary.bucketListUrl}
         />
       )}
 

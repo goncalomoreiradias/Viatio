@@ -84,7 +84,7 @@ export default function AddLocationSheet({ isOpen, onClose, days, onAdd }: AddLo
                     </div>
 
                     {/* Form Content */}
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8 hide-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8 scroll-smooth touch-pan-y">
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                 NOME DO LOCAL

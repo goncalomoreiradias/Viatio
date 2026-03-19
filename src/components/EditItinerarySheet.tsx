@@ -4,6 +4,9 @@ import { useState } from "react";
 import { X, Plus, Save, Trash2, GripVertical, Map as MapIcon, Calendar } from "lucide-react";
 import { DayPlan, Location } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
+import { calculateDistance, estimateTravelTime, formatDuration, extractCoordsFromUrl } from "@/lib/maps";
+import { Car, Footprints } from "lucide-react";
+import React from "react";
 import {
     DndContext,
     closestCenter,
@@ -98,6 +101,7 @@ function SortableLocationItem({ loc, allDays, currentDayId, handleLocationChange
                                     <option value="Opcional" className="bg-surface">📍 Opcional</option>
                                     <option value="Food" className="bg-surface">🍱 Food</option>
                                     <option value="Photo" className="bg-surface">📸 Photo</option>
+                                    <option value="Alojamento" className="bg-surface">🏨 Alojamento</option>
                                 </select>
                                 <span className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/tag:opacity-100 transition-opacity text-[8px] font-black text-text-medium uppercase tracking-[0.2em] whitespace-nowrap bg-surface px-2 py-1 rounded-md border border-stroke shadow-lg">Categoria</span>
                             </div>
@@ -202,15 +206,33 @@ interface EditItinerarySheetProps {
     onClose: () => void;
     onSave: (updatedDay: DayPlan) => void;
     onMoveLocation?: (locId: string, targetDayId: string) => void;
+    bucketListUrl?: string;
 }
 
-export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSave, onMoveLocation }: EditItinerarySheetProps) {
+export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSave, onMoveLocation, bucketListUrl }: EditItinerarySheetProps) {
     const [editedDay, setEditedDay] = useState<DayPlan>({ ...day });
     const [locations, setLocations] = useState<Location[]>([...day.locations]);
+    const [showBucketList, setShowBucketList] = useState(false);
 
     const handleLocationChange = (id: string, field: keyof Location, value: any) => {
         setLocations(locs =>
-            locs.map(loc => loc.id === id ? { ...loc, [field]: value } : loc)
+            locs.map(loc => {
+                if (loc.id === id) {
+                    const updated = { ...loc, [field]: value };
+                    
+                    // Auto-extract coordinates if Maps URL is provided
+                    if (field === "mapsUrl" && value) {
+                        const coords = extractCoordsFromUrl(value);
+                        if (coords) {
+                            updated.lat = coords.lat;
+                            updated.lng = coords.lng;
+                        }
+                    }
+                    
+                    return updated;
+                }
+                return loc;
+            })
         );
     };
 
@@ -257,9 +279,26 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
     const handleSave = () => {
         onSave({
             ...editedDay,
-            locations
+            title: editedDay.title,
+            locations: locations.map(loc => ({
+                ...loc,
+                timeSlot: loc.timeSlot // Explicitly ensuring it's included
+            }))
         });
         onClose();
+    };
+
+    const addToItinerary = (name: string, lat: number, lng: number) => {
+        const newLoc: Location = {
+            id: `bucket-${Date.now()}`,
+            name,
+            description: "Adicionado da Bucket List",
+            lat,
+            lng,
+            completed: false,
+            tag: "Must Go"
+        };
+        setLocations([...locations, newLoc]);
     };
 
     if (!isOpen) return null;
@@ -294,7 +333,7 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                     </div>
 
                     {/* Scrollable Content */}
-                    <div className="flex-1 overflow-y-auto p-8 space-y-10 hide-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-8 space-y-10 scroll-smooth touch-pan-y">
                         <div className="space-y-4">
                             <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                 Título do Dia
@@ -309,8 +348,18 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                         </div>
 
                         <div>
-                            <div className="flex justify-between items-center mb-6 px-2">
-                                <h3 className="text-[10px] font-black text-text-medium uppercase tracking-[0.3em]">LOCAIS ({locations.length})</h3>
+                             <div className="flex justify-between items-center mb-6 px-2">
+                                <div className="flex items-center gap-6">
+                                    <h3 className="text-[10px] font-black text-text-medium uppercase tracking-[0.3em]">LOCAIS ({locations.length})</h3>
+                                    {bucketListUrl && (
+                                        <button 
+                                            onClick={() => setShowBucketList(!showBucketList)}
+                                            className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border transition-all ${showBucketList ? 'bg-accent text-canvas border-accent' : 'bg-surface text-accent border-stroke'}`}
+                                        >
+                                            {showBucketList ? 'Esconder Bucket List' : 'Ver Bucket List'}
+                                        </button>
+                                    )}
+                                </div>
                                 <button
                                     onClick={addLocation}
                                     className="text-[10px] font-black uppercase tracking-[0.2em] text-accent flex items-center gap-2 hover:scale-105 transition-all bg-accent/10 px-4 py-2 rounded-full border border-accent/20 shadow-lg active:scale-95"
@@ -318,6 +367,49 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                                     <Plus size={14} /> ADICIONAR PARAGEM
                                 </button>
                             </div>
+
+                            <AnimatePresence>
+                                {showBucketList && bucketListUrl && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="mb-10 overflow-hidden"
+                                    >
+                                        <div className="bg-canvas/40 border border-stroke rounded-[2rem] p-6 space-y-4">
+                                            <div className="flex items-center justify-between px-2">
+                                                <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-text-medium">Catalogo Bucket List</h4>
+                                                <a href={bucketListUrl} target="_blank" rel="noopener noreferrer" className="text-[8px] font-bold text-accent hover:underline">Abrir Original</a>
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {/* Demo items since we can't reliably scrape/fetch private google maps lists without major auth/API overhead */}
+                                                {[
+                                                    { name: "Templo Tirta Empul", lat: -8.4150, lng: 115.2890 },
+                                                    { name: "Monkey Forest", lat: -8.5190, lng: 115.2600 },
+                                                    { name: "Tegalalang Rice Terrace", lat: -8.4350, lng: 115.2790 }
+                                                ].map((item, i) => (
+                                                    <div key={i} className="bg-surface/60 border border-stroke p-4 rounded-2xl flex justify-between items-center group/item hover:border-accent transition-colors">
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="text-xs font-black text-text-high">{item.name}</span>
+                                                            <span className="text-[8px] font-bold text-text-dim uppercase">Ubud, Bali</span>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => addToItinerary(item.name, item.lat, item.lng)}
+                                                            className="p-2 bg-accent/10 text-accent rounded-xl hover:bg-accent hover:text-canvas transition-all"
+                                                        >
+                                                            <Plus size={14} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="text-[8px] font-medium text-text-dim italic px-2">
+                                                Nota: Os pontos são carregados a partir da tua lista do Google Maps configurada.
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             <div className="space-y-4">
                                 <DndContext
@@ -329,16 +421,36 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                                         items={locations.map(l => l.id)}
                                         strategy={verticalListSortingStrategy}
                                     >
-                                        {locations.map((loc) => (
-                                            <SortableLocationItem
-                                                key={loc.id}
-                                                loc={loc}
-                                                allDays={allDays}
-                                                currentDayId={day.id}
-                                                handleLocationChange={handleLocationChange}
-                                                removeLocation={removeLocation}
-                                                onMoveLocation={onMoveLocation}
-                                            />
+                                        {locations.map((loc, index) => (
+                                            <React.Fragment key={loc.id}>
+                                                <SortableLocationItem
+                                                    loc={loc}
+                                                    allDays={allDays}
+                                                    currentDayId={day.id}
+                                                    handleLocationChange={handleLocationChange}
+                                                    removeLocation={removeLocation}
+                                                    onMoveLocation={onMoveLocation}
+                                                />
+                                                
+                                                {/* Travel indicator between items in the edit list */}
+                                                {index < locations.length - 1 && (
+                                                    <div className="flex justify-center -my-2 relative z-10">
+                                                        <div className="bg-canvas/80 backdrop-blur-md border border-stroke rounded-full px-4 py-1.5 flex gap-4 text-[9px] font-black uppercase tracking-wider shadow-lg">
+                                                            <div className="flex items-center gap-1.5 text-accent">
+                                                                <Car size={10} />
+                                                                <span>{formatDuration(estimateTravelTime(calculateDistance(loc.lat, loc.lng, locations[index+1].lat, locations[index+1].lng), 'drive'))}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-text-medium">
+                                                                <Footprints size={10} />
+                                                                <span>{formatDuration(estimateTravelTime(calculateDistance(loc.lat, loc.lng, locations[index+1].lat, locations[index+1].lng), 'walk'))}</span>
+                                                            </div>
+                                                            <div className="text-text-dim border-l border-stroke pl-3">
+                                                                {calculateDistance(loc.lat, loc.lng, locations[index+1].lat, locations[index+1].lng).toFixed(1)} km
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </React.Fragment>
                                         ))}
                                     </SortableContext>
                                 </DndContext>

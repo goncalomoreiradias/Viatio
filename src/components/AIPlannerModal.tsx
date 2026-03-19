@@ -231,12 +231,12 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                             <Calendar size={10} className="text-accent" /> {t("ai.start")}
                                         </label>
                                         <div className="relative group">
-                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors" />
+                                            <Calendar size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors z-10" />
                                             <input
                                                 type="date"
                                                 value={startDate}
                                                 onChange={(e) => setStartDate(e.target.value)}
-                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm appearance-none"
+                                                className="input-surface w-full pl-14 pr-4 py-4 outline-none font-black text-sm appearance-none relative"
                                             />
                                         </div>
                                     </div>
@@ -245,12 +245,12 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                             <Calendar size={10} className="text-accent" /> {t("ai.end")}
                                         </label>
                                         <div className="relative group">
-                                            <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors" />
+                                            <Calendar size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors z-10" />
                                             <input
                                                 type="date"
                                                 value={endDate}
                                                 onChange={(e) => setEndDate(e.target.value)}
-                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm appearance-none"
+                                                className="input-surface w-full pl-14 pr-4 py-4 outline-none font-black text-sm appearance-none relative"
                                             />
                                         </div>
                                     </div>
@@ -263,13 +263,13 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                             <Wallet size={10} className="text-accent" /> {t("ai.budget")}
                                         </label>
                                         <div className="relative group">
-                                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium font-black text-xs group-focus-within:text-accent transition-colors">€</span>
+                                            <span className="absolute left-6 top-1/2 -translate-y-1/2 text-text-medium font-black text-xs group-focus-within:text-accent transition-colors z-10">€</span>
                                             <input
                                                 type="number"
                                                 placeholder={t("ai.placeholder.budget")}
                                                 value={budget}
                                                 onChange={(e) => setBudget(e.target.value)}
-                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm"
+                                                className="input-surface w-full pl-14 pr-4 py-4 outline-none font-black text-sm relative"
                                             />
                                         </div>
                                     </div>
@@ -278,7 +278,7 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                             <Users size={10} className="text-accent" /> {t("ai.guests")}
                                         </label>
                                         <div className="relative group">
-                                            <Users size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors" />
+                                            <Users size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium pointer-events-none group-focus-within:text-accent transition-colors z-10" />
                                             <input
                                                 type="number"
                                                 min="1"
@@ -293,7 +293,7 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                                         if (!isNaN(parsed)) setNumberOfPeople(parsed);
                                                     }
                                                 }}
-                                                className="input-surface w-full pl-12 pr-4 py-4 outline-none font-black text-sm appearance-none"
+                                                className="input-surface w-full pl-14 pr-4 py-4 outline-none font-black text-sm appearance-none relative"
                                             />
                                         </div>
                                     </div>

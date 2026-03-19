@@ -7,7 +7,7 @@ import { Utensils, Camera, MapPin, Star, Hotel } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 // Dynamically import react-leaflet components to avoid SSR issues
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from "react-leaflet";
 
 interface MapSectionProps {
     days: DayPlan[];
@@ -58,7 +58,7 @@ function MapMarkers({ locations, L }: { locations: any[], L: any }) {
         const t = tag?.toLowerCase();
         if (t?.includes("food") || t?.includes("restaurante")) return <Utensils size={14} className="text-white" />;
         if (t?.includes("photo") || t?.includes("foto")) return <Camera size={14} className="text-white" />;
-        if (t?.includes("hotel") || t?.includes("dormir")) return <Hotel size={14} className="text-white" />;
+        if (t?.includes("hotel") || t?.includes("dormir") || t?.includes("alojamento")) return <Hotel size={14} className="text-white" />;
         if (t?.includes("must")) return <Star size={14} className="text-white" />;
         return <MapPin size={14} className="text-white" />;
     };
@@ -72,7 +72,7 @@ function MapMarkers({ locations, L }: { locations: any[], L: any }) {
                 const iconHtml = renderToStaticMarkup(
                     <div className="relative group flex items-center justify-center transition-all duration-300" style={{ transform: `scale(${scale})` }}>
                         <div 
-                            className="bg-obsidian text-white rounded-full border-2 border-white/90 shadow-2xl flex items-center justify-center relative z-10 transition-all group-hover:bg-accent-cobalt group-hover:border-white"
+                            className="bg-rose-500 text-white rounded-full border-2 border-white shadow-2xl flex items-center justify-center relative z-10 transition-all group-hover:bg-rose-600 group-hover:scale-110"
                             style={{ width: `${size}px`, height: `${size}px` }}
                         >
                             <div style={{ transform: `scale(${scale * 0.85})` }}>
@@ -120,6 +120,20 @@ function MapMarkers({ locations, L }: { locations: any[], L: any }) {
                     </Marker>
                 );
             })}
+            
+            {/* Polyline connecting points for the route */}
+            {locations.length > 1 && (
+                <Polyline 
+                    positions={locations.map(loc => [loc.lat, loc.lng])}
+                    pathOptions={{ 
+                        color: "#f43f5e", 
+                        weight: 3, 
+                        opacity: 0.6, 
+                        dashArray: "10, 10",
+                        lineJoin: "round"
+                    }} 
+                />
+            )}
         </>
     );
 }
