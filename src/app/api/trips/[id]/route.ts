@@ -107,6 +107,8 @@ export async function PUT(
                                     completed: loc.completed || false,
                                     tag: loc.tag || null,
                                     mapsUrl: loc.mapsUrl || null,
+                                    notes: loc.notes || null,
+                                    timeSlot: loc.timeSlot || null,
                                 })),
                             },
                         })),

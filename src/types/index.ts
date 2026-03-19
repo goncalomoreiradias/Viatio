@@ -8,6 +8,7 @@ export interface Location {
   completed?: boolean;
   tag?: string;
   mapsUrl?: string;
+  notes?: string; // General notes/links (reels, booking, tips, etc.)
 }
 
 export interface Expense {

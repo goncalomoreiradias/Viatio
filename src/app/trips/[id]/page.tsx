@@ -120,10 +120,107 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
       setItinerary(data);
       setEditedTitle(data.title);
       setEditedDesc(data.description || "");
+
+      // Auto-resolve coordinates for all locations with Maps URLs
+      autoResolveCoordinates(data);
     } catch (error) {
       console.error("Failed to load itinerary", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * Automatically resolves coordinates for all locations with mapsUrl but missing/default coords.
+   * Uses sessionStorage to cache resolved URLs and avoid redundant API calls.
+   */
+  const autoResolveCoordinates = async (tripData: any) => {
+    const cacheKey = `viatio_coords_${tripId}`;
+    let cache: Record<string, { lat: number; lng: number }> = {};
+
+    // Load cache from sessionStorage
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) cache = JSON.parse(cached);
+    } catch {}
+
+    let hasUpdates = false;
+    const updatedDays = await Promise.all(
+      tripData.days.map(async (day: DayPlan) => {
+        const updatedLocations = await Promise.all(
+          day.locations.map(async (loc: TripLocation) => {
+            if (!loc.mapsUrl) return loc;
+
+            // Check if coords are default/invalid
+            const isDefault = (loc.lat === 0 && loc.lng === 0) ||
+              (loc.lat === -8.4 && loc.lng === 115.2) ||
+              (Math.abs(loc.lat) < 0.01 && Math.abs(loc.lng) < 0.01);
+            
+            if (!isDefault) return loc; // Already has valid coords
+
+            // Check cache first
+            if (cache[loc.mapsUrl]) {
+              hasUpdates = true;
+              return { ...loc, lat: cache[loc.mapsUrl].lat, lng: cache[loc.mapsUrl].lng };
+            }
+
+            // Resolve the URL
+            try {
+              let url = loc.mapsUrl;
+              const isShort = url.includes("goo.gl") || url.includes("maps.app") || url.includes("bit.ly");
+              
+              // Try direct extraction first
+              const { extractCoordsFromUrl } = await import("@/lib/maps");
+              let coords = extractCoordsFromUrl(url);
+
+              // If direct fails and it's a short URL, resolve it
+              if (!coords && isShort) {
+                const res = await fetch("/api/resolve-url", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ url })
+                });
+                const data = await res.json();
+                if (data.resolvedUrl) {
+                  coords = extractCoordsFromUrl(data.resolvedUrl);
+                }
+              }
+
+              if (coords) {
+                cache[loc.mapsUrl] = coords;
+                hasUpdates = true;
+                return { ...loc, lat: coords.lat, lng: coords.lng };
+              }
+            } catch (err) {
+              console.warn(`Failed to resolve URL for ${loc.name}:`, err);
+            }
+
+            return loc;
+          })
+        );
+        return { ...day, locations: updatedLocations };
+      })
+    );
+
+    // Save cache
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify(cache));
+    } catch {}
+
+    // Auto-save if any coordinates were updated
+    if (hasUpdates) {
+      const updated = { ...tripData, days: updatedDays };
+      setItinerary(updated);
+      // Persist to DB silently
+      try {
+        await fetch(`/api/trips/${tripId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updated),
+        });
+      } catch (err) {
+        console.error("Failed to auto-save resolved coordinates:", err);
+      }
     }
   };
 

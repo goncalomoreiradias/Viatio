@@ -160,6 +160,11 @@ export default function DayCard({ day, onEdit, onToggleLocation, onAddLocation }
                                         {loc.description}
                                     </p>
                                 )}
+                                {loc.notes && (
+                                    <p className="text-[11px] leading-relaxed font-medium text-text-medium/60 mt-1 whitespace-pre-wrap break-all">
+                                        📎 {loc.notes}
+                                    </p>
+                                )}
                             </div>
 
                             <a

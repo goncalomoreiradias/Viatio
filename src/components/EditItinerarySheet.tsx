@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Plus, Save, Trash2, GripVertical, Map as MapIcon, Calendar } from "lucide-react";
+import { X, Plus, Save, Trash2, GripVertical, Map as MapIcon, Calendar, Link2 } from "lucide-react";
 import { DayPlan, Location } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { calculateDistance, estimateTravelTime, formatDuration, extractCoordsFromUrl, isValidCoord } from "@/lib/maps";
@@ -183,6 +183,25 @@ function SortableLocationItem({ loc, allDays, currentDayId, handleLocationChange
                                 </div>
                             </div>
                         )}
+                    </div>
+
+                    {/* Notes / Extra Links Row */}
+                    <div className="pt-3 border-t border-stroke/30">
+                        <div className="flex items-start gap-2 bg-canvas/30 rounded-xl px-4 py-2 border border-stroke/50 group/notes">
+                            <Link2 size={14} className="text-text-medium/50 group-focus-within/notes:text-accent transition-colors mt-0.5 flex-shrink-0" />
+                            <textarea
+                                placeholder="Notas, links (booking, reels, dicas...)" 
+                                value={loc.notes || ""}
+                                onChange={(e) => handleLocationChange(loc.id, "notes", e.target.value)}
+                                rows={1}
+                                className="flex-1 bg-transparent border-none text-[10px] font-bold text-text-medium placeholder:text-text-medium/20 focus:ring-0 p-0 resize-none"
+                                onInput={(e) => {
+                                    const target = e.target as HTMLTextAreaElement;
+                                    target.style.height = 'auto';
+                                    target.style.height = target.scrollHeight + 'px';
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
 
