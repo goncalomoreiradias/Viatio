@@ -666,6 +666,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
         isOpen={isAddLocationOpen}
         onClose={() => setIsAddLocationOpen(false)}
         days={itinerary?.days || []}
+        bucketListUrl={itinerary?.bucketListUrl}
         onAdd={(dayId, location) => {
           if (!itinerary) return;
           const newDays = itinerary.days.map((d: DayPlan) =>
