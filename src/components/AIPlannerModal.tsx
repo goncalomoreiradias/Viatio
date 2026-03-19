@@ -256,14 +256,14 @@ export default function AIPlannerModal({ isOpen, onClose, initialData }: AIPlann
                                         <label className="flex items-center gap-2 text-[9px] font-black text-text-medium uppercase tracking-[0.2em] px-1 leading-none">
                                             <Wallet size={10} className="text-accent" /> {t("ai.budget")}
                                         </label>
-                                        <div className="relative group">
-                                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-text-medium font-black text-xs group-focus-within:text-accent transition-colors z-10">€</span>
+                                        <div className="input-surface flex items-center gap-2 px-5 py-4">
+                                            <span className="text-text-medium font-black text-sm flex-shrink-0">€</span>
                                             <input
                                                 type="number"
                                                 placeholder={t("ai.placeholder.budget")}
                                                 value={budget}
                                                 onChange={(e) => setBudget(e.target.value)}
-                                                className="input-surface w-full pl-10 pr-4 py-4 outline-none font-black text-sm relative"
+                                                className="w-full bg-transparent border-none outline-none font-black text-sm"
                                             />
                                         </div>
                                     </div>

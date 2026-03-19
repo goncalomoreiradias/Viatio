@@ -386,18 +386,14 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: "100%", opacity: 0 }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    drag="y"
-                    dragConstraints={{ top: 0 }}
-                    dragElastic={0.2}
-                    onDragEnd={(_, info) => {
-                        if (info.offset.y > 150) onClose();
-                    }}
                     className="bg-surface w-full max-w-lg lg:max-w-4xl max-h-[92vh] sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border-t border-x border-stroke sm:border"
                 >
-                    {/* Drag Handle Indicator */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-canvas/20 rounded-full sm:hidden z-50" />
+                    {/* Drag Handle Indicator (visual only) */}
+                    <div className="flex justify-center pt-3 pb-1 sm:hidden">
+                        <div className="w-12 h-1.5 bg-text-medium/20 rounded-full" />
+                    </div>
                     {/* Header */}
-                    <div className="px-8 py-7 pt-10 sm:pt-7 border-b border-stroke flex justify-between items-center bg-accent text-canvas shadow-lg">
+                    <div className="px-8 py-7 sm:pt-7 border-b border-stroke flex justify-between items-center bg-accent text-canvas shadow-lg flex-shrink-0">
                         <div className="space-y-1">
                             <h2 className="text-2xl font-black uppercase tracking-tighter font-outfit leading-tight text-canvas">Editar Dia {day.dayNumber}</h2>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-canvas/70">Refina o teu itinerário</p>
@@ -407,8 +403,8 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                         </button>
                     </div>
 
-                    {/* Scrollable Content */}
-                    <div className="flex-1 overflow-y-auto p-8 space-y-10 scroll-smooth touch-pan-y">
+                    {/* Scrollable Content — touch-optimized */}
+                    <div className="flex-1 overflow-y-auto p-8 space-y-10" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
                         <div className="space-y-4">
                             <label className="flex items-center gap-2 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] px-2 leading-none">
                                 Título do Dia
@@ -460,14 +456,14 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                 {/* Demo items since we can't reliably scrape/fetch private google maps lists without major auth/API overhead */}
                                                 {[
-                                                    { name: "Templo Tirta Empul", lat: -8.4150, lng: 115.2890 },
-                                                    { name: "Monkey Forest", lat: -8.5190, lng: 115.2600 },
-                                                    { name: "Tegalalang Rice Terrace", lat: -8.4350, lng: 115.2790 }
+                                                    { name: "Torre Eiffel", lat: 48.8584, lng: 2.2945, city: "Paris" },
+                                                    { name: "Central Park", lat: 40.7829, lng: -73.9654, city: "New York" },
+                                                    { name: "Coliseu", lat: 41.8902, lng: 12.4922, city: "Roma" }
                                                 ].map((item, i) => (
                                                     <div key={i} className="bg-surface/60 border border-stroke p-4 rounded-2xl flex justify-between items-center group/item hover:border-accent transition-colors">
                                                         <div className="flex flex-col gap-1">
                                                             <span className="text-xs font-black text-text-high">{item.name}</span>
-                                                            <span className="text-[8px] font-bold text-text-dim uppercase">Ubud, Bali</span>
+                                                            <span className="text-[8px] font-bold text-text-dim uppercase">{item.city}</span>
                                                         </div>
                                                         <button 
                                                             onClick={() => addToItinerary(item.name, item.lat, item.lng)}

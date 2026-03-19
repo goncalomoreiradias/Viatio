@@ -22,6 +22,7 @@ model Trip {
   // M:N relationship for invited participants
   participants User[]   @relation("TripParticipants")
   inviteToken  String   @unique @default(cuid())
+  bucketListUrl String?  // Google Maps list URL for the "Bucket List" catalog
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

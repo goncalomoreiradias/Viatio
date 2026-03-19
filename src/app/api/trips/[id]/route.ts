@@ -89,6 +89,7 @@ export async function PUT(
                 where: { id: tripId },
                 data: {
                     title: newItinerary.title,
+                    bucketListUrl: newItinerary.bucketListUrl || null,
                     // If you want to update participants from user IDs you would use connect/disconnect. 
                     // Skipping participants update here unless explicitly sent as user IDs
 

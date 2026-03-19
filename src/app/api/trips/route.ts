@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { title, description, password, startDate, endDate } = body;
+        const { title, description, password, startDate, endDate, bucketListUrl } = body;
 
         const userId = session.userId as string;
 
@@ -55,6 +55,7 @@ export async function POST(request: Request) {
                 password,
                 startDate: startDate ? new Date(startDate) : null,
                 endDate: endDate ? new Date(endDate) : null,
+                bucketListUrl: bucketListUrl || null,
                 ownerId: userId,
                 // Automatically add the creator as a participant as well for easier querying
                 participants: {

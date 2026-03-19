@@ -762,6 +762,28 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                               <span className="font-bold text-text-medium">{t("trip.duplicate")}</span>
                           </button>
 
+                          {/* Bucket List URL */}
+                          <div className="w-full bg-emerald-500/5 p-5 rounded-2xl border border-emerald-500/20 space-y-3">
+                              <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                                      📍
+                                  </div>
+                                  <span className="font-bold text-text-medium">Bucket List (Maps)</span>
+                              </div>
+                              <input
+                                  type="url"
+                                  placeholder="Cola o link da lista do Google Maps..."
+                                  defaultValue={itinerary.bucketListUrl || ""}
+                                  onBlur={(e) => {
+                                      const val = e.target.value;
+                                      if (val !== (itinerary.bucketListUrl || "")) {
+                                          saveItinerary({ ...itinerary, bucketListUrl: val || undefined });
+                                      }
+                                  }}
+                                  className="w-full bg-canvas/50 border border-stroke rounded-xl px-4 py-3 text-xs font-bold text-text-medium placeholder:text-text-dim/40 focus:ring-1 focus:ring-emerald-500/30 outline-none"
+                              />
+                          </div>
+
                           <button 
                             onClick={handleDeleteTrip}
                             className="w-full bg-rose-500/10 hover:bg-rose-500/20 p-5 rounded-2xl border border-rose-500/10 flex items-center gap-4 transition-all"

@@ -33,6 +33,7 @@ export default function DashboardClient({ session }: Props) {
     const [newTripDesc, setNewTripDesc] = useState("");
     const [newTripStartDate, setNewTripStartDate] = useState("");
     const [newTripEndDate, setNewTripEndDate] = useState("");
+    const [newTripBucketListUrl, setNewTripBucketListUrl] = useState("");
     const [isCreating, setIsCreating] = useState(false);
 
     // i18n
@@ -93,7 +94,8 @@ export default function DashboardClient({ session }: Props) {
                     description: newTripDesc,
                     startDate: newTripStartDate || undefined,
                     endDate: newTripEndDate || undefined,
-                    participants: [session.userId], // Use session.userId
+                    bucketListUrl: newTripBucketListUrl || undefined,
+                    participants: [session.userId],
                 }),
             });
 
@@ -179,10 +181,10 @@ export default function DashboardClient({ session }: Props) {
             id: 'bali', 
             name: t("dash.template.bali.title"), 
             desc: t("dash.template.bali.desc"), 
-            icon: "🌴", 
-            color: "from-emerald-500 to-teal-600",
-            destination: "Bali, Indonésia",
-            travelStyle: ["adventure", "relaxation"]
+            icon: "🍣", 
+            color: "from-indigo-500 to-purple-600",
+            destination: "Tóquio, Japão",
+            travelStyle: ["culture", "foodie"]
         },
         { 
             id: 'rome', 
@@ -591,6 +593,23 @@ export default function DashboardClient({ session }: Props) {
                                         className="input-surface w-full p-4 text-xs font-black uppercase tracking-widest text-accent text-center"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Bucket List URL */}
+                            <div className="space-y-3">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] px-2 leading-none">
+                                    📍 Bucket List (Google Maps)
+                                </label>
+                                <input
+                                    type="url"
+                                    placeholder="Cola o link da tua lista do Google Maps..."
+                                    value={newTripBucketListUrl}
+                                    onChange={(e) => setNewTripBucketListUrl(e.target.value)}
+                                    className="input-surface w-full p-4 text-xs font-bold bg-emerald-500/5 border-emerald-500/20 placeholder:text-emerald-500/30"
+                                />
+                                <p className="text-[8px] font-medium text-text-dim px-2">
+                                    Adiciona um link de lista do Google Maps para teres um catálogo de pontos de interesse na edição do roteiro.
+                                </p>
                             </div>
 
                             <div className="pt-4 flex gap-4">
