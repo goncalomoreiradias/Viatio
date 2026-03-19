@@ -78,6 +78,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   const [editedDesc, setEditedDesc] = useState("");
   const [isManagementMenuOpen, setIsManagementMenuOpen] = useState(false);
   const [isAIPlannerOpen, setIsAIPlannerOpen] = useState(false);
+  const isAnySheetOpen = !!editingDay || isAddLocationOpen || isAddExpenseOpen || isManagementMenuOpen || isAIPlannerOpen;
 
   // DND Sensors
   const sensors = useSensors(
@@ -731,21 +732,30 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
           )}
       </AnimatePresence>
 
-      <div className="fixed bottom-0 left-0 right-0 sm:sticky sm:bottom-auto sm:top-[400px] lg:top-[500px] z-50 pointer-events-none">
-        <div className="pointer-events-auto">
-          <Navigation 
-            activeTab={activeTab} 
-            onTabChange={setActiveTab} 
-            onAddClick={() => {
-                if (activeTab === "itinerary") {
-                    if (itinerary?.days.length > 0) setIsAddLocationOpen(true);
-                    else handleAddDay();
-                }
-                else setIsAddExpenseOpen(true);
-            }}
-          />
-        </div>
-      </div>
+      <AnimatePresence>
+        {!isAnySheetOpen && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-0 left-0 right-0 sm:sticky sm:bottom-auto sm:top-[400px] lg:top-[500px] z-50 pointer-events-none"
+          >
+            <div className="pointer-events-auto">
+              <Navigation 
+                activeTab={activeTab} 
+                onTabChange={setActiveTab} 
+                onAddClick={() => {
+                    if (activeTab === "itinerary") {
+                        if (itinerary?.days.length > 0) setIsAddLocationOpen(true);
+                        else handleAddDay();
+                    }
+                    else setIsAddExpenseOpen(true);
+                }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AIPlannerModal 
           isOpen={isAIPlannerOpen}

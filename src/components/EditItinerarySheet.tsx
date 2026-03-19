@@ -65,7 +65,7 @@ function SortableLocationItem({ loc, allDays, currentDayId, handleLocationChange
 
                 <div className="flex-1 space-y-6">
                     {/* Primary Row: Name & Options */}
-                    <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex flex-col lg:flex-row gap-6">
                         <div className="flex-1">
                             <input
                                 type="text"
@@ -75,7 +75,7 @@ function SortableLocationItem({ loc, allDays, currentDayId, handleLocationChange
                                 className="w-full bg-transparent border-none text-xl font-black font-outfit text-text-high placeholder:text-text-medium/20 focus:ring-0 p-0"
                             />
                         </div>
-                        <div className="flex gap-2 h-fit">
+                        <div className="flex flex-wrap gap-2 h-fit">
                             <div className="relative group/time">
                                 <input
                                     type="text"
@@ -120,9 +120,10 @@ function SortableLocationItem({ loc, allDays, currentDayId, handleLocationChange
                         />
                     </div>
 
-                    {/* Tertiary Row: Links & Coordinates */}
-                    <div className="flex flex-col md:flex-row gap-4 pt-4 border-t border-stroke/50">
-                        <div className="flex-1">
+                    {/* Tertiary Row: Links, Coordinates & Move Action */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 border-t border-stroke/50">
+                        {/* Maps Link */}
+                        <div className="lg:col-span-5">
                             <div className="flex items-center gap-2 bg-canvas/30 rounded-xl px-4 py-2 border border-stroke/50 group/maps">
                                 <MapIcon size={14} className="text-text-medium group-focus-within/maps:text-accent transition-colors" />
                                 <input
@@ -135,49 +136,50 @@ function SortableLocationItem({ loc, allDays, currentDayId, handleLocationChange
                             </div>
                         </div>
                         
-                        <div className="flex gap-2">
-                             <div className="flex items-center gap-2 bg-canvas/30 rounded-xl px-4 py-2 border border-stroke/50">
+                        {/* Lat/Lng */}
+                        <div className="lg:col-span-3 flex gap-2">
+                             <div className="flex-1 flex items-center gap-2 bg-canvas/30 rounded-xl px-3 py-2 border border-stroke/50">
                                 <span className="text-[9px] font-black text-text-medium/50 uppercase">Lat</span>
                                 <input
                                     type="number"
                                     step="any"
                                     value={loc.lat || 0}
                                     onChange={(e) => handleLocationChange(loc.id, "lat", parseFloat(e.target.value))}
-                                    className="w-16 bg-transparent border-none text-[10px] font-mono font-bold text-text-medium focus:ring-0 p-0"
+                                    className="w-full bg-transparent border-none text-[10px] font-mono font-bold text-text-medium focus:ring-0 p-0"
                                 />
                             </div>
-                             <div className="flex items-center gap-2 bg-canvas/30 rounded-xl px-4 py-2 border border-stroke/50">
+                             <div className="flex-1 flex items-center gap-2 bg-canvas/30 rounded-xl px-3 py-2 border border-stroke/50">
                                 <span className="text-[9px] font-black text-text-medium/50 uppercase">Lng</span>
                                 <input
                                     type="number"
                                     step="any"
                                     value={loc.lng || 0}
                                     onChange={(e) => handleLocationChange(loc.id, "lng", parseFloat(e.target.value))}
-                                    className="w-16 bg-transparent border-none text-[10px] font-mono font-bold text-text-medium focus:ring-0 p-0"
+                                    className="w-full bg-transparent border-none text-[10px] font-mono font-bold text-text-medium focus:ring-0 p-0"
                                 />
                             </div>
                         </div>
-                    </div>
 
-                    {/* Move to Day Trigger */}
-                    {allDays.length > 1 && (
-                        <div className="flex items-center gap-3 pt-4 border-t border-stroke/50">
-                            <span className="text-[9px] font-black text-text-medium uppercase tracking-widest whitespace-nowrap">Mover local para:</span>
-                            <div className="flex-1 flex gap-2 overflow-x-auto py-1 hide-scrollbar">
-                                {allDays.map(d => (
-                                    <button
-                                        key={d.id}
-                                        type="button"
-                                        onClick={() => onMoveLocation?.(loc.id, d.id)}
-                                        className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${d.id === currentDayId ? 'bg-accent text-canvas border-accent' : 'bg-surface border border-stroke text-text-medium hover:text-text-high'}`}
-                                        disabled={d.id === currentDayId}
-                                    >
-                                        Dia {d.dayNumber}
-                                    </button>
-                                ))}
+                        {/* Move Trigger */}
+                        {allDays.length > 1 && (
+                            <div className="lg:col-span-4 flex items-center gap-3 bg-canvas/10 rounded-xl px-4 py-1.5 border border-dashed border-stroke/50">
+                                <span className="text-[8px] font-black text-text-medium uppercase tracking-widest whitespace-nowrap">Mover:</span>
+                                <div className="flex-1 flex gap-2 overflow-x-auto py-1 hide-scrollbar">
+                                    {allDays.map(d => (
+                                        <button
+                                            key={d.id}
+                                            type="button"
+                                            onClick={() => onMoveLocation?.(loc.id, d.id)}
+                                            className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${d.id === currentDayId ? 'bg-accent text-canvas' : 'bg-surface border border-stroke text-text-medium hover:text-text-high'}`}
+                                            disabled={d.id === currentDayId}
+                                        >
+                                            D{d.dayNumber}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 {/* Remove Action */}
@@ -276,7 +278,7 @@ export default function EditItinerarySheet({ day, allDays, isOpen, onClose, onSa
                     onDragEnd={(_, info) => {
                         if (info.offset.y > 150) onClose();
                     }}
-                    className="bg-surface w-full max-w-lg max-h-[92vh] sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border-t border-x border-stroke sm:border"
+                    className="bg-surface w-full max-w-lg lg:max-w-4xl max-h-[92vh] sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl flex flex-col overflow-hidden border-t border-x border-stroke sm:border"
                 >
                     {/* Drag Handle Indicator */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-canvas/20 rounded-full sm:hidden z-50" />
