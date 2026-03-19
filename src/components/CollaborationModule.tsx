@@ -19,8 +19,8 @@ interface CollaborationModuleProps {
 export default function CollaborationModule({ participants, onInvite }: CollaborationModuleProps) {
     const { t } = useI18n();
     return (
-        <div className="flex items-center gap-6 bg-[#141820]/80 p-4 rounded-full border border-white/5 shadow-2xl backdrop-blur-xl group hover:border-accent-cobalt/30 transition-all">
-            <div className="flex -space-x-3 px-2">
+        <div className="flex items-center gap-3 md:gap-6 bg-surface/50 p-2 md:p-3 rounded-full border border-stroke shadow-2xl backdrop-blur-xl group transition-all">
+            <div className="flex -space-x-2 md:-space-x-3 px-1 md:px-2">
                 {participants.map((p, i) => (
                     <motion.div
                         key={p.id}
@@ -29,7 +29,7 @@ export default function CollaborationModule({ participants, onInvite }: Collabor
                         transition={{ delay: i * 0.1 }}
                         className="relative group/avatar"
                     >
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-cobalt to-accent-indigo border-4 border-[#141820] flex items-center justify-center text-[10px] font-black text-white shadow-xl cursor-help">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent text-canvas border-2 md:border-4 border-surface flex items-center justify-center text-[8px] md:text-[10px] font-black shadow-xl cursor-help">
                             {p.name.charAt(0).toUpperCase()}
                         </div>
                         
@@ -56,10 +56,11 @@ export default function CollaborationModule({ participants, onInvite }: Collabor
 
             <button
                 onClick={onInvite}
-                className="flex items-center gap-2 px-6 py-2 bg-accent-cobalt text-white rounded-full font-black uppercase tracking-widest text-[9px] hover:shadow-[0_10px_20px_-5px_alpha(46,91,255,0.4)] transition-all active:scale-95"
+                className="flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-2 bg-accent text-canvas rounded-full font-black uppercase tracking-widest text-[8px] md:text-[9px] transition-all active:scale-95 whitespace-nowrap"
             >
-                <UserPlus size={14} />
-                {t("collab.invite")}
+                <UserPlus size={12} className="md:w-[14px] md:h-[14px]" />
+                <span className="hidden xs:inline">{t("collab.invite")}</span>
+                <span className="xs:hidden">+</span>
             </button>
         </div>
     );

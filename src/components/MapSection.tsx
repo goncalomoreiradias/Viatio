@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import { DayPlan } from "@/types";
-import { Utensils, Camera, MapPin, Star, Hotel } from "lucide-react";
+import { Utensils, Camera, MapPin, Star, Hotel, ArrowUpRight } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 // Dynamically import react-leaflet components to avoid SSR issues
@@ -98,22 +98,30 @@ function MapMarkers({ locations, L }: { locations: any[], L: any }) {
                         icon={customIcon}
                     >
                         <Popup className="premium-popup">
-                            <div className="p-4 min-w-[200px] bg-obsidian border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-cobalt to-accent-indigo" />
-                                <h4 className="font-black text-white m-0 mb-2 font-outfit text-base tracking-tight leading-tight">{loc.name}</h4>
-                                <p className="text-xs text-gray-400 m-0 leading-relaxed line-clamp-3 font-medium">{loc.description}</p>
-                                <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                            <div className="p-4 min-w-[220px] bg-surface rounded-2xl overflow-hidden shadow-2xl relative">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent/50 to-accent/5" />
+                                <div className="flex items-start justify-between mb-3">
+                                    <h4 className="font-extrabold text-text-high m-0 font-outfit text-sm tracking-tight leading-tight flex-1 pr-4">{loc.name}</h4>
+                                    {loc.tag && loc.tag !== 'Visit' && loc.tag !== 'Sem Tag' && (
+                                        <span className="px-2 py-0.5 bg-accent/10 border border-accent/20 rounded-md text-[7px] font-black text-accent uppercase tracking-widest whitespace-nowrap">
+                                            {loc.tag}
+                                        </span>
+                                    )}
+                                </div>
+                                {loc.description && (
+                                    <p className="text-[10px] text-text-medium m-0 leading-relaxed line-clamp-3 font-medium mb-4">
+                                        {loc.description}
+                                    </p>
+                                )}
+                                <div className="pt-3 border-t border-stroke flex items-center justify-between">
                                     <a
                                         href={loc.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(loc.name)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-accent-cobalt hover:text-white transition-colors"
+                                        className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-accent hover:opacity-70 transition-all font-outfit"
                                     >
-                                        Ver no Maps →
+                                        VER NO MAPS <ArrowUpRight size={10} />
                                     </a>
-                                    <div className="px-2 py-1 bg-white/5 rounded-md text-[8px] font-black text-gray-500 uppercase tracking-widest">
-                                        {loc.tag || 'Visit'}
-                                    </div>
                                 </div>
                             </div>
                         </Popup>

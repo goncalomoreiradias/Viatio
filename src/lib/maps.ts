@@ -34,13 +34,26 @@ export function formatDuration(minutes: number): string {
 }
 
 export function extractCoordsFromUrl(url: string): { lat: number; lng: number } | null {
-  const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
-  const match = url.match(regex);
-  if (match) {
-    return {
-      lat: parseFloat(match[1]),
-      lng: parseFloat(match[2])
-    };
+  // Pattern 1: @lat,lng
+  const pattern1 = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+  const match1 = url.match(pattern1);
+  if (match1) {
+    return { lat: parseFloat(match1[1]), lng: parseFloat(match1[2]) };
   }
+
+  // Pattern 2: !3dlat!4dlng (Long URLs)
+  const pattern2 = /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/;
+  const match2 = url.match(pattern2);
+  if (match2) {
+    return { lat: parseFloat(match2[1]), lng: parseFloat(match2[2]) };
+  }
+
+  // Pattern 3: ll=lat,lng or q=lat,lng
+  const pattern3 = /[?&](?:ll|q)=(-?\d+\.\d+),(-?\d+\.\d+)/;
+  const match3 = url.match(pattern3);
+  if (match3) {
+    return { lat: parseFloat(match3[1]), lng: parseFloat(match3[2]) };
+  }
+
   return null;
 }

@@ -329,11 +329,11 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   return (
     <main className="min-h-screen bg-canvas relative pb-24 lg:pb-0 selection:bg-accent/20 selection:text-accent">
       {/* Header - Compact for Mobile */}
-      <header className="relative z-10 bg-surface/50 backdrop-blur-md border-b border-stroke md:pt-16 md:pb-12 pt-10 pb-6 px-6 sm:px-12 shadow-2xl">
+      <header className="relative z-10 bg-surface/50 backdrop-blur-md border-b border-stroke md:pt-10 md:pb-8 pt-8 pb-6 px-6 sm:px-12 shadow-2xl">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(var(--text-high)_1px,transparent_1px)] [background-size:20px_20px]" />
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="flex items-center justify-between mb-6 md:mb-8">
+          <div className="flex items-center justify-between mb-4 md:mb-6">
             <div className="flex items-center gap-4">
                 <Link href="/" className="group p-2 md:p-3 bg-surface/50 hover:bg-surface rounded-full transition-all border border-stroke active:scale-95">
                   <ArrowLeft size={20} className="text-text-high md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
@@ -478,28 +478,12 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                             {copiedLink ? <Check size={14} className="text-accent" /> : <Plus size={14} />}
                         </button>
                     )}
-                </div>
               </div>
             </div>
-
-            {/* Desktop Only Large Invite Button */}
-            {itinerary.inviteToken && (
-              <button
-                onClick={() => {
-                  const url = `${window.location.origin}/trips/join/${itinerary.inviteToken}`;
-                  navigator.clipboard.writeText(url);
-                  setCopiedLink(true);
-                  setTimeout(() => setCopiedLink(false), 2000);
-                }}
-                className="hidden md:flex items-center gap-3 px-8 py-4 bg-text-high text-canvas hover:brightness-90 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-2xl active:scale-95 border border-stroke"
-              >
-                {copiedLink ? t("trip.linkCopied") : <Plus size={18} className="text-accent" />}
-                {copiedLink ? t("trip.linkCopied") : t("trip.inviteCollaborators")}
-              </button>
-            )}
-          </motion.div>
-        </div>
-      </header>
+          </div>
+        </motion.div>
+      </div>
+    </header>
 
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row relative">
