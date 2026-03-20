@@ -72,75 +72,128 @@ export async function POST(
             sourceUrl: string;
         }> = [];
 
-        for (const url of trip.bucketListUrls) {
+        // 1. Helper to resolve short URLs and find the data endpoint
+        const resolveFinalUrl = async (url: string, depth = 0): Promise<string> => {
+            if (depth > 5) return url;
             try {
-                // 1. Fetch the content of each URL
-                let resolvedUrl = url;
-                try {
-                    const resolveRes = await fetch(`${getBaseUrl(request)}/api/resolve-url`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ url })
-                    });
-                    if (resolveRes.ok) {
-                        const data = await resolveRes.json();
-                        resolvedUrl = data.resolvedUrl || url;
+                // Use a simple UA for the initial jump to bypass splash screens that prefer modern browsers
+                const initialUA = url.includes("maps.app.goo.gl") ? "curl/7.64.1" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+                
+                const res = await fetch(url, {
+                    method: "GET",
+                    redirect: "manual",
+                    headers: {
+                        "User-Agent": initialUA,
                     }
-                } catch (e) { 
-                    console.error("Resolve error:", e);
+                });
+
+                if (res.status >= 300 && res.status < 400) {
+                    const location = res.headers.get("location");
+                    if (location) return resolveFinalUrl(new URL(location, url).toString(), depth + 1);
                 }
 
-                // Fetch the page HTML
-                const pageRes = await fetch(resolvedUrl, {
+                if (res.status === 200) {
+                    const text = await res.text();
+                    // Detect WIZ/Splash redirect in body
+                    const mapsUrlMatch = text.match(/https:\/\/www\.google\.com\/maps\/[^"'\\]+/);
+                    if (mapsUrlMatch) {
+                        let longUrl = mapsUrlMatch[0];
+                        // Cleanup encoded characters
+                        longUrl = longUrl
+                            .replace(/\\u0026/g, "&")
+                            .replace(/&amp;/g, "&")
+                            .replace(/%3D/g, "=")
+                            .replace(/%3F/g, "?")
+                            .replace(/%26/g, "&")
+                            .replace(/%40/g, "@")
+                            .replace(/\\/g, "");
+                        
+                        if (longUrl !== url) return resolveFinalUrl(longUrl, depth + 1);
+                    }
+                }
+                return res.url;
+            } catch (e) {
+                return url;
+            }
+        };
+
+        for (const url of trip.bucketListUrls) {
+            try {
+                process.stdout.write(`\n--- Sincronizando: ${url} ---\n`);
+                
+                // A. Resolve short URLs
+                const targetUrl = await resolveFinalUrl(url);
+                process.stdout.write(`Resolvido para: ${targetUrl}\n`);
+
+                // B. Fetch the initial HTML to find the RPC data link
+                const shellRes = await fetch(targetUrl, {
                     headers: {
                         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                         "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8",
-                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
                     },
                 });
 
-                if (!pageRes.ok) {
-                    console.error(`Failed to fetch URL: ${resolvedUrl} (${pageRes.status})`);
+                if (!shellRes.ok) {
+                    process.stdout.write(`Erro ao buscar shell (${shellRes.status})\n`);
                     continue;
                 }
 
-                const html = await pageRes.text();
+                const shellHtml = await shellRes.text();
                 
-                // Truncate HTML smartly. 
-                // Google Maps data is often in window.APP_INITIALIZATION_STATE or similar inside script tags.
-                // We remove style/svg but keep large inline scripts that might contain data.
-                const cleanedHtml = html
-                    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
-                    .replace(/<svg[^>]*>[\s\S]*?<\/svg>/gi, "")
-                    .replace(/<link[^>]*>/gi, "")
-                    .replace(/<path[^>]*>/gi, "")
-                    .replace(/<meta[^>]*>/gi, "")
-                    // We remove external scripts but keep inline ones as they often contain the list data
-                    .replace(/<script[^>]*src=[^>]*>[\s\S]*?<\/script>/gi, "")
-                    .replace(/\s+/g, " ")
-                    .substring(0, 50000); 
+                // C. Extract the getlist RPC URL
+                // Format: /maps/preview/entitylist/getlist?hl=...&pb=...
+                const rpcMatch = shellHtml.match(/["']([^"']*\/maps\/preview\/entitylist\/getlist\?[^"']+)["']/);
+                let rpcUrl = rpcMatch ? rpcMatch[1] : null;
 
-                // 2. Use AI to extract places from the HTML
-                const prompt = `Analisa o seguinte conteúdo HTML de uma página Google Maps que contém uma lista de locais guardados. 
-Extrai TODOS os locais/pontos de interesse mencionados na página.
+                if (rpcUrl && !rpcUrl.startsWith("http")) {
+                    rpcUrl = `https://www.google.com${rpcUrl.replace(/&amp;/g, "&")}`;
+                }
 
-Para cada local extraído, devolve:
+                let dataToParse = "";
+                if (rpcUrl) {
+                    process.stdout.write(`RPC Encontrado: ${rpcUrl.substring(0, 100)}...\n`);
+                    // Fetch the actual list data
+                    const rpcRes = await fetch(rpcUrl, {
+                        headers: {
+                            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                            "Referer": "https://www.google.com/maps/",
+                        }
+                    });
+                    if (rpcRes.ok) {
+                        dataToParse = await rpcRes.text();
+                    }
+                }
+
+                // Fallback: If no RPC found, use cleaned HTML (but RPC is much better)
+                if (!dataToParse) {
+                    process.stdout.write(`Aviso: RPC não encontrado, usando shell HTML como fallback.\n`);
+                    dataToParse = shellHtml
+                        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+                        .replace(/<svg[^>]*>[\s\S]*?<\/svg>/gi, "")
+                        .substring(0, 50000);
+                }
+
+                // 2. Use AI to extract places from the data
+                const prompt = `Analisa os seguintes dados brutos de uma lista do Google Maps. 
+Estes dados contêm uma lista de locais/pontos de interesse.
+
+Extrai TODOS os locais encontrados. Para cada local, identifica:
 - name: nome do local
-- lat: latitude (se disponível, senão 0)
-- lng: longitude (se disponível, senão 0)  
-- category: categoria (Restaurante, Café, Hotel, Templo, Praia, Bar, Museu, Natureza, Loja, etc.)
-- address: morada ou localização
+- lat: latitude (número float)
+- lng: longitude (número float)  
+- category: categoria (Restaurante, Café, Hotel, Templo, Praia, Bar, Cascata, Miradouro, Natureza, Loja, etc.)
+- address: morada ou localização descritiva
 
-IMPORTANTE: Extrai o MÁXIMO de locais possíveis. Não ignores nenhum.
-Se encontrares coordenadas no HTML (em URLs, data attributes, etc.), usa-as.
+IMPORTANTE: 
+1. Os dados podem estar num formato de array aninhado (JSON-like). Procura nomes de locais e coordenadas próximas.
+2. Extrai o MÁXIMO de locais possíveis. Não ignores nenhum.
+3. Ignora locais que não tenham nome claro.
 
 Devolve APENAS um JSON válido no formato:
 { "places": [ { "name": "...", "lat": 0.0, "lng": 0.0, "category": "...", "address": "..." } ] }
 
-Se não conseguires encontrar locais, devolve: { "places": [] }
-
-HTML:
-${cleanedHtml}`;
+Dados:
+${dataToParse.substring(0, 80000)}`; // Increased limit for RPC data (AI can handle large JSON strings)
 
                 const aiRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
