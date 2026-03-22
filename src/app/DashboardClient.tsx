@@ -241,7 +241,7 @@ export default function DashboardClient({ session }: Props) {
             {/* Premium Dynamic Header */}
             <motion.header 
                 style={{ backgroundColor: headerBg, borderColor: headerBorder }}
-                className="sticky top-0 z-40 backdrop-blur-xl border-b overflow-hidden transition-all duration-500"
+                className="sticky top-0 z-40 backdrop-blur-xl border-b overflow-visible transition-all duration-500"
             >
                 {/* Micro-pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(var(--text-high)_1px,transparent_1px)] [background-size:20px_20px]" />

@@ -731,9 +731,9 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="w-full bg-surface rounded-t-[2.5rem] border-t border-stroke p-8 pb-12 space-y-6 shadow-2xl"
+                    className="w-full max-w-lg bg-surface rounded-t-[2.5rem] border-t border-stroke p-6 pb-12 space-y-6 shadow-2xl max-h-[85vh] overflow-y-auto scrollbar-hide"
                   >
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center justify-between mb-2">
                           <h3 className="text-lg font-black uppercase tracking-widest text-text-high italic">{t("trip.management")}</h3>
                           <button onClick={() => setIsManagementMenuOpen(false)} className="p-2 bg-surface hover:bg-stroke rounded-full transition-colors"><X size={20} className="text-text-high"/></button>
                       </div>
@@ -741,53 +741,53 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                       <div className="space-y-3">
                           <button 
                             onClick={() => { setIsAIPlannerOpen(true); setIsManagementMenuOpen(false); }}
-                            className="w-full bg-gradient-to-r from-brand-indigo/10 to-brand-purple/10 hover:from-brand-indigo/20 hover:to-brand-purple/20 p-5 rounded-2xl border border-brand-indigo/20 flex items-center gap-4 transition-all"
+                            className="w-full bg-gradient-to-r from-brand-indigo/10 to-brand-purple/10 hover:from-brand-indigo/20 hover:to-brand-purple/20 p-4 rounded-2xl border border-brand-indigo/20 flex items-center gap-4 transition-all"
                           >
-                              <div className="w-10 h-10 bg-gradient-to-br from-brand-indigo to-brand-purple rounded-xl flex items-center justify-center text-white">
+                              <div className="w-10 h-10 bg-gradient-to-br from-brand-indigo to-brand-purple rounded-xl flex items-center justify-center text-white shrink-0">
                                   <Sparkles size={20} />
                               </div>
-                              <span className="font-bold text-text-high">AI Architect</span>
+                              <span className="font-bold text-text-high text-sm">AI Architect</span>
                           </button>
 
                           <button 
                             onClick={() => { setIsDatePickerOpen(true); setIsManagementMenuOpen(false); }}
-                            className="w-full bg-canvas hover:bg-stroke p-5 rounded-2xl border border-stroke flex items-center gap-4 transition-all md:hidden"
+                            className="w-full bg-canvas hover:bg-stroke p-4 rounded-2xl border border-stroke flex items-center gap-4 transition-all md:hidden"
                           >
-                              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent border border-accent/20">
+                              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent border border-accent/20 shrink-0">
                                   <Calendar size={20} />
                               </div>
-                              <span className="font-bold text-text-medium">{itinerary.startDate && itinerary.endDate ? `${format(new Date(itinerary.startDate), "dd MMM", { locale: dateLocale })} - ${format(new Date(itinerary.endDate), "dd MMM yyyy", { locale: dateLocale })}` : t("trip.setDates")}</span>
+                              <span className="font-bold text-text-medium text-sm text-left leading-tight">{itinerary.startDate && itinerary.endDate ? `${format(new Date(itinerary.startDate), "dd MMM", { locale: dateLocale })} - ${format(new Date(itinerary.endDate), "dd MMM yyyy", { locale: dateLocale })}` : t("trip.setDates")}</span>
                           </button>
 
                           <button 
                             onClick={() => { setIsEditingTitle(true); setIsManagementMenuOpen(false); }}
-                            className="w-full bg-canvas hover:bg-stroke p-5 rounded-2xl border border-stroke flex items-center gap-4 transition-all"
+                            className="w-full bg-canvas hover:bg-stroke p-4 rounded-2xl border border-stroke flex items-center gap-4 transition-all"
                           >
-                              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent border border-accent/20">
+                              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent border border-accent/20 shrink-0">
                                   <Edit2 size={20} />
                               </div>
-                              <span className="font-bold text-text-medium">{t("trip.editName")}</span>
+                              <span className="font-bold text-text-medium text-sm">{t("trip.editName")}</span>
                           </button>
 
                           <button 
                             onClick={() => { /* Duplicate Logic */ setIsManagementMenuOpen(false); }}
-                            className="w-full bg-canvas hover:bg-stroke p-5 rounded-2xl border border-stroke flex items-center gap-4 transition-all"
+                            className="w-full bg-canvas hover:bg-stroke p-4 rounded-2xl border border-stroke flex items-center gap-4 transition-all"
                           >
-                              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent border border-accent/20">
+                              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent border border-accent/20 shrink-0">
                                   <Copy size={20} />
                               </div>
-                              <span className="font-bold text-text-medium">{t("trip.duplicate")}</span>
+                              <span className="font-bold text-text-medium text-sm">{t("trip.duplicate")}</span>
                           </button>
 
                           {/* Bucket List URLs */}
-                          <div className="w-full bg-emerald-500/5 p-5 rounded-2xl border border-emerald-500/20 space-y-3">
+                          <div className="w-full bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/20 space-y-3">
                               <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                                  <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 border border-emerald-500/20 shrink-0">
                                       📍
                                   </div>
                                   <div>
-                                      <span className="font-bold text-text-medium block">Bucket List (Maps)</span>
-                                      <span className="text-[8px] text-text-dim font-bold">Um link por linha</span>
+                                      <span className="font-bold text-text-medium text-sm block">Bucket List (Maps)</span>
+                                      <span className="text-[9px] text-emerald-500/80 font-bold uppercase tracking-widest">Um link por linha</span>
                                   </div>
                               </div>
                               <textarea
@@ -802,19 +802,19 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                               />
                               {(itinerary.bucketListUrls?.length > 0) && (
                                   <div className="flex items-center gap-2">
-                                      <span className="text-[8px] font-bold text-emerald-500">{itinerary.bucketListItems?.length || 0} pontos carregados</span>
+                                      <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">{itinerary.bucketListItems?.length || 0} pontos carregados</span>
                                   </div>
                               )}
                           </div>
 
                           <button 
                             onClick={handleDeleteTrip}
-                            className="w-full bg-rose-500/10 hover:bg-rose-500/20 p-5 rounded-2xl border border-rose-500/10 flex items-center gap-4 transition-all"
+                            className="w-full bg-rose-500/10 hover:bg-rose-500/20 p-4 rounded-2xl border border-rose-500/10 flex items-center gap-4 transition-all"
                           >
-                              <div className="w-10 h-10 bg-rose-500/20 rounded-xl flex items-center justify-center text-rose-500">
+                              <div className="w-10 h-10 bg-rose-500/20 rounded-xl flex items-center justify-center text-rose-500 shrink-0">
                                   <Trash2 size={20} />
                               </div>
-                              <span className="font-bold text-rose-400">{t("trip.delete")}</span>
+                              <span className="font-bold text-rose-400 text-sm">{t("trip.delete")}</span>
                           </button>
                       </div>
                   </motion.div>
