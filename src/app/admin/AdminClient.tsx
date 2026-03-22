@@ -17,13 +17,29 @@ export default function AdminClient({ initialUsers, initialLogs, initialCoupons,
     const [searchQuery, setSearchQuery] = useState("");
     const [planFilter, setPlanFilter] = useState("ALL");
     const [tickets, setTickets] = useState(initialTickets);
+    const [users, setUsers] = useState(initialUsers);
 
-    const filteredUsers = initialUsers.filter(user => {
+    const filteredUsers = users.filter((user: any) => {
         const matchesSearch = user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                               user.email.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesPlan = planFilter === "ALL" || user.plan === planFilter;
         return matchesSearch && matchesPlan;
     });
+
+    const handleToggleBan = async (id: string, currentStatus: boolean) => {
+        try {
+            const res = await fetch(`/api/admin/users/${id}/ban`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isBanned: !currentStatus })
+            });
+            if (res.ok) {
+                setUsers(users.map((u: any) => u.id === id ? { ...u, isBanned: !currentStatus } : u));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const handleResolveTicket = async (id: string, currentStatus: string) => {
         const newStatus = currentStatus === "RESOLVED" ? "OPEN" : "RESOLVED";
@@ -51,7 +67,7 @@ export default function AdminClient({ initialUsers, initialLogs, initialCoupons,
 
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16 relative z-10">
                 <div className="flex items-center gap-6">
-                    <Link href="/dashboard" className="group p-4 bg-surface border border-stroke rounded-full hover:bg-stroke transition-all shadow-2xl active:scale-90">
+                    <Link href="/" className="group p-4 bg-surface border border-stroke rounded-full hover:bg-stroke transition-all shadow-2xl active:scale-90">
                         <ArrowLeft size={22} className="text-text-medium group-hover:text-text-high transition-colors" />
                     </Link>
                     <div>
@@ -132,12 +148,12 @@ export default function AdminClient({ initialUsers, initialLogs, initialCoupons,
                                     className="w-full sm:w-64 bg-canvas border border-stroke rounded-full py-3.5 pl-12 pr-6 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
                             </div>
-                            <div className="flex bg-canvas border border-stroke rounded-full p-1">
-                                {["ALL", "FREE", "PREMIUM", "MONTHLY"].map(p => (
+                            <div className="flex bg-canvas border border-stroke rounded-full p-1 overflow-x-auto hidden-scrollbar">
+                                {["ALL", "FREE", "SINGLE_TRIP", "MONTHLY", "YEARLY"].map(p => (
                                     <button
                                         key={p}
                                         onClick={() => setPlanFilter(p)}
-                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${planFilter === p ? "bg-accent/10 text-accent" : "text-text-medium hover:text-text-high"}`}
+                                        className={`px-4 py-2 rounded-full text-[10px] whitespace-nowrap font-black uppercase tracking-widest transition-all ${planFilter === p ? "bg-accent/10 text-accent" : "text-text-medium hover:text-text-high"}`}
                                     >
                                         {p}
                                     </button>
@@ -155,14 +171,19 @@ export default function AdminClient({ initialUsers, initialLogs, initialCoupons,
                                     <th className="pb-4 px-6 text-[10px] font-black text-text-medium uppercase tracking-[0.3em]">Trips</th>
                                     <th className="pb-4 px-6 text-[10px] font-black text-text-medium uppercase tracking-[0.3em]">AI Cost</th>
                                     <th className="pb-4 px-6 text-[10px] font-black text-text-medium uppercase tracking-[0.3em]">Joined</th>
+                                    <th className="pb-4 px-6 text-[10px] font-black text-text-medium uppercase tracking-[0.3em] text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredUsers.map((user: any) => (
-                                    <tr key={user.id} className="group cursor-default">
-                                        <td className="py-5 px-6 bg-canvas first:rounded-l-[1.5rem] border-y border-stroke border-l group-hover:bg-stroke transition-all">
+                                    <tr key={user.id} className={`group ${user.isBanned ? 'opacity-50' : 'cursor-default'}`}>
+                                        <td className="py-5 px-6 bg-canvas first:rounded-l-[1.5rem] border-y border-stroke border-l group-hover:bg-stroke transition-all relative">
+                                            {user.isBanned && <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500 rounded-l-[1.5rem]" />}
                                             <div className="flex flex-col">
-                                                <span className="font-black text-text-high tracking-tight">{user.name || "Anonymous"}</span>
+                                                <span className="font-black text-text-high tracking-tight flex items-center gap-2">
+                                                    {user.name || "Anonymous"}
+                                                    {user.isBanned && <span className="text-[8px] font-black bg-rose-500/20 text-rose-500 px-2 py-0.5 rounded-sm uppercase tracking-widest">Banned</span>}
+                                                </span>
                                                 <span className="text-[11px] font-medium text-text-medium">{user.email}</span>
                                             </div>
                                         </td>
@@ -179,10 +200,22 @@ export default function AdminClient({ initialUsers, initialLogs, initialCoupons,
                                             <span className="text-sm font-black text-text-high">{user.tripCount}</span>
                                         </td>
                                         <td className="py-5 px-6 bg-canvas border-y border-stroke group-hover:bg-stroke transition-all">
-                                            <span className="text-sm font-black text-accent tracking-tighter">€{user.totalAiSpend.toFixed(3)}</span>
+                                            <span className="text-sm font-black text-accent tracking-tighter">€{user.totalAiSpend?.toFixed(3) || "0.000"}</span>
                                         </td>
-                                        <td className="py-5 px-6 bg-canvas last:rounded-r-[1.5rem] border-y border-stroke border-r group-hover:bg-stroke transition-all">
+                                        <td className="py-5 px-6 bg-canvas border-y border-stroke group-hover:bg-stroke transition-all">
                                             <span className="text-xs font-bold text-text-medium opacity-50">{new Date(user.createdAt).toLocaleDateString()}</span>
+                                        </td>
+                                        <td className="py-5 px-6 bg-canvas last:rounded-r-[1.5rem] border-y border-stroke border-r group-hover:bg-stroke transition-all text-right">
+                                            <button
+                                                onClick={() => handleToggleBan(user.id, user.isBanned)}
+                                                className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                                                    user.isBanned 
+                                                        ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20' 
+                                                        : 'bg-rose-500/10 text-rose-500 hover:bg-rose-500/20'
+                                                }`}
+                                            >
+                                                {user.isBanned ? 'Unban' : 'Suspend'}
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

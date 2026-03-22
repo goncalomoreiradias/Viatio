@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { Plane, MapPin, CreditCard, Users, ArrowRight, ShieldCheck, Sparkles, PieChart, Layout, MessageSquare } from "lucide-react";
+import { Plane, MapPin, CreditCard, Users, ArrowRight, ShieldCheck, Sparkles, PieChart, Layout, MessageSquare, CheckCircle } from "lucide-react";
 import LanguageToggle from "@/components/LanguageToggle";
 import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
@@ -251,55 +251,226 @@ export default function LandingPage() {
                     </div>
                 </div>
 
-                {/* Features Grid */}
-                <section className="mt-40 mb-32">
-                     <div className="text-center mb-24">
-                         <h2 className="text-4xl lg:text-6xl font-serif mb-6 tracking-tight">Elegance in <span className="text-accent-indigo">Every Pixel.</span></h2>
-                         <p className="text-gray-500 uppercase font-black text-[11px] tracking-[0.4em]">Designed for those who demand more from their travels</p>
-                     </div>
+                {/* App Showcase Section */}
+                <section className="mt-40 mb-32 relative z-10">
+                    <div className="text-center mb-24 max-w-3xl mx-auto">
+                        <span className="text-accent-indigo font-black text-[10px] tracking-[0.4em] uppercase mb-4 block">A Experiência Viatio</span>
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif mb-6 tracking-tight">
+                            Planeamento Elevado à <span className="text-accent-magenta italic font-light">Perfeição</span>.
+                        </h2>
+                        <p className="text-gray-400 font-light text-lg lg:text-xl leading-relaxed">
+                            Esqueça folhas de cálculo e blocos de notas caóticos. O nosso Arquiteto de Inteligência Artificial desenha, organiza e otimiza cada segundo da sua viagem em tempo recorde.
+                        </p>
+                    </div>
 
-                     <div className="grid md:grid-cols-3 gap-10">
-                         {[
-                             {
-                                 title: t("landing.features.ai.title"),
-                                 desc: t("landing.features.ai.desc"),
-                                 icon: <Sparkles className="text-accent-magenta" />,
-                                 bg: "bg-accent-magenta/5",
-                                 border: "border-accent-magenta/10"
-                             },
-                             {
-                                 title: t("landing.features.sync.title"),
-                                 desc: t("landing.features.sync.desc"),
-                                 icon: <CreditCard className="text-accent-indigo" />,
-                                 bg: "bg-accent-indigo/5",
-                                 border: "border-accent-indigo/10"
-                             },
-                             {
-                                 title: t("landing.features.maps.title"),
-                                 desc: t("landing.features.maps.desc"),
-                                 icon: <MapPin className="text-accent-cobalt" />,
-                                 bg: "bg-accent-cobalt/5",
-                                 border: "border-accent-cobalt/10"
-                             }
-                         ].map((feature, idx) => (
-                             <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: idx * 0.2 }}
-                                className={`p-10 rounded-[3rem] ${feature.bg} border ${feature.border} hover:bg-white/5 transition-all duration-500 group cursor-default`}
-                             >
-                                 <div className="mb-8 p-5 bg-white shadow-2xl rounded-[2rem] w-fit transform group-hover:scale-110 transition-transform duration-500">
-                                     {feature.icon ? feature.icon : null}
-                                 </div>
-                                 <h3 className="text-2xl font-black mb-4 tracking-tighter uppercase italic">{feature.title}</h3>
-                                 <p className="text-gray-400 font-light leading-relaxed pr-4">
-                                     {feature.desc}
-                                 </p>
-                             </motion.div>
-                         ))}
-                     </div>
+                    <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center mb-40">
+                        {/* Planner Mockup */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.8 }}
+                            className="relative group perspective-1000"
+                        >
+                            <div className="absolute inset-0 bg-accent-indigo/20 blur-[100px] rounded-full scale-75 group-hover:scale-100 transition-transform duration-700" />
+                            <div className="glass bg-[#0F172A]/90 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden backdrop-blur-3xl transform rotate-2 hover:rotate-0 transition-transform duration-700">
+                                <div className="h-10 border-b border-white/5 flex items-center px-4 bg-white/5">
+                                    <div className="flex gap-2">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                                    </div>
+                                </div>
+                                <div className="p-6 md:p-10 space-y-6">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase text-accent-indigo mb-1">Dia 1 • Cultural</p>
+                                            <h4 className="text-2xl font-black font-outfit text-white">Exploração em Ubud</h4>
+                                        </div>
+                                        <div className="bg-white/10 p-3 rounded-2xl">
+                                            <Sparkles size={20} className="text-accent-indigo" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        {[
+                                            { time: "09:00", title: "Sacred Monkey Forest", detail: "Santuário Natural • 2h" },
+                                            { time: "11:30", title: "Campuhan Ridge Walk", detail: "Caminhada Panorâmica • 1.5h" },
+                                            { time: "13:30", title: "Locavore", detail: "Restaurante Estrela Michelin" }
+                                        ].map((item, i) => (
+                                            <motion.div 
+                                                initial={{ opacity: 0, y: 10 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: i * 0.2 }}
+                                                key={i} 
+                                                className="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 items-center hover:bg-white/10 transition-colors"
+                                            >
+                                                <span className="text-xs font-black text-gray-500 w-12">{item.time}</span>
+                                                <div>
+                                                    <p className="font-bold text-white text-sm">{item.title}</p>
+                                                    <p className="text-[10px] font-medium text-gray-400 mt-1">{item.detail}</p>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        <div>
+                            <div className="w-14 h-14 bg-gradient-to-br from-accent-indigo to-accent-magenta rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(139,92,246,0.5)]">
+                                <Sparkles size={28} className="text-white" />
+                            </div>
+                            <h3 className="text-3xl md:text-4xl font-black tracking-tight mb-6">Arquiteto AI <br/><span className="italic font-light text-gray-400">O seu tempo é precioso.</span></h3>
+                            <p className="text-gray-400 leading-relaxed mb-8">
+                                Insira as datas, o destino e as suas preferências logísticas. O Arquiteto constrói roteiros detalhados, clusterizando pontos geograficamente próximos, calculando tempos de deslocação reais e considerando as horas de ponta.
+                            </p>
+                            <ul className="space-y-4">
+                                {["Geração em Segundos", "Agrupamento por Zonas Geográficas", "Sincronizado na Cloud", "Ajustes Flexíveis Drag & Drop"].map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-3">
+                                        <ShieldCheck size={18} className="text-accent-indigo" />
+                                        <span className="font-bold text-sm tracking-wide text-gray-300">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Bucket List Section */}
+                    <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center flex-col-reverse lg:flex-row-reverse mb-40">
+                        <motion.div
+                            initial={{ opacity: 0, x: 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.8 }}
+                            className="relative group perspective-1000 order-1 lg:order-none"
+                        >
+                            <div className="absolute inset-0 bg-accent-emerald/10 blur-[100px] rounded-full scale-75 group-hover:scale-100 transition-transform duration-700" />
+                            <div className="glass bg-[#0F172A]/90 border border-emerald-500/20 rounded-[2.5rem] shadow-2xl p-8 backdrop-blur-3xl transform rotate-[-2deg] hover:rotate-0 transition-transform duration-700">
+                                <div className="border border-stroke/20 bg-black/40 rounded-xl p-4 mb-6 shadow-inner">
+                                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                                        <MapPin size={12} /> Colar Link Google Maps
+                                    </p>
+                                    <p className="text-xs text-gray-400 truncate font-mono">https://maps.app.goo.gl/xyz123...</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { name: "Sushiteca", cat: "Restaurante" },
+                                        { name: "Miradouro do Sol", cat: "Ponto de Interesse" },
+                                        { name: "Praia Secreta", cat: "Praia" },
+                                        { name: "Museu de Arte", cat: "Cultura" }
+                                    ].map((item, i) => (
+                                        <motion.div 
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            whileInView={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: i * 0.15 }}
+                                            key={i} 
+                                            className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl hover:bg-emerald-500/20 transition-all cursor-pointer"
+                                        >
+                                            <MapPin size={16} className="text-emerald-500 mb-3" />
+                                            <p className="font-bold text-white text-xs truncate">{item.name}</p>
+                                            <p className="text-[9px] text-emerald-500/80 font-black uppercase mt-1">{item.cat}</p>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        <div className="order-2 lg:order-none">
+                            <div className="w-14 h-14 bg-emerald-500/20 border border-emerald-500/30 rounded-2xl flex items-center justify-center mb-8">
+                                <MapPin size={28} className="text-emerald-500" />
+                            </div>
+                            <h3 className="text-3xl md:text-4xl font-black tracking-tight mb-6">Bucket Lists Mágicas <br/><span className="italic font-light text-gray-400">Do Google para a sua App.</span></h3>
+                            <p className="text-gray-400 leading-relaxed mb-8">
+                                Tem dezenas de locais guardados no Google Maps ao longo de anos? Basta colar os URLs partilhados das suas listas e a nossa plataforma extrai todos os locais num catálogo imersivo para os distribuir pelos dias da viagem.
+                            </p>
+                            <Link
+                                href="/register"
+                                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-500/30 transition-all font-black text-xs uppercase tracking-widest text-white group"
+                            >
+                                Experimentar Agora <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-emerald-500" />
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+
+                {/* PRICING SECTION */}
+                <section id="pricing" className="mt-40 mb-32 relative z-10 pt-20 border-t border-white/5">
+                    <div className="text-center mb-24 max-w-3xl mx-auto">
+                         <span className="text-amber-500 font-black text-[10px] tracking-[0.4em] uppercase mb-4 block">Planos e Preços</span>
+                         <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif mb-6 tracking-tight">O Investimento na Sua <br/> <span className="italic font-light text-amber-500">Paz de Espírito</span>.</h2>
+                         <p className="text-gray-400 font-light text-lg">Pague o justo. Escolha entre criar roteiros manuais de forma gratuita, um passe para uma expedição única, ou um passaporte anual ilimitado.</p>
+                    </div>
+
+                    <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
+                        {/* FREE */}
+                        <div className="bg-surface/30 border border-white/5 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl hover:border-white/20 transition-all flex flex-col">
+                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2">Basic</h3>
+                            <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-8">Viagens Manuais</p>
+                            <div className="mb-10 flex items-baseline gap-2">
+                                <span className="text-5xl font-black text-white">€0</span>
+                                <span className="text-sm font-black text-gray-500 uppercase tracking-widest">/ para sempre</span>
+                            </div>
+                            <ul className="space-y-5 mb-12 flex-1">
+                                {["Até 3 Viagens Simultâneas", "Convite Ilimitado de Amigos", "Planeador Manual (Drag & drop)", "Gestão Financeira & Split"].map((f,i) => (
+                                    <li key={i} className="flex items-start gap-4">
+                                        <CheckCircle size={20} className="text-gray-400 shrink-0" />
+                                        <span className="text-sm font-medium text-gray-300">{f}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-black uppercase tracking-widest">
+                                Começar Grátis
+                            </Link>
+                        </div>
+
+                        {/* SINGLE TRIP */}
+                        <div className="bg-gradient-to-br from-accent-cobalt/20 to-accent-indigo/20 border border-accent-indigo/30 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl relative overflow-hidden flex flex-col transform lg:scale-105 shadow-2xl shadow-accent-indigo/10">
+                            <div className="absolute top-0 right-0 py-2 px-6 bg-accent-indigo text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-bl-3xl">Mais Popular</div>
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--accent-indigo)_0%,transparent_50%)] opacity-20 pointer-events-none" />
+                            
+                            <div className="relative z-10">
+                                <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2 text-white">Única</h3>
+                                <p className="text-sm font-bold text-accent-indigo uppercase tracking-widest mb-8">Passe Expedição</p>
+                                <div className="mb-10 flex items-baseline gap-2">
+                                    <span className="text-5xl font-black text-white">€4<span className="text-2xl">.99</span></span>
+                                    <span className="text-sm font-black text-gray-400 uppercase tracking-widest">/ Roteiro</span>
+                                </div>
+                                <ul className="space-y-5 mb-12 flex-1">
+                                    {["Tudo do plano Basic", "1 Geração Completa por IA", "Importação Google Maps", "Alterações Manuais Ilimitadas", "Exportar para PDF"].map((f,i) => (
+                                        <li key={i} className="flex items-start gap-4">
+                                            <Sparkles size={20} className="text-accent-indigo shrink-0" />
+                                            <span className="text-sm font-medium text-white shadow-black drop-shadow-md">{f}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white text-slate-950 hover:bg-gray-200 transition-all text-xs font-black uppercase tracking-widest shadow-xl">
+                                    Comprar Roteiro
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* YEARLY */}
+                        <div className="bg-surface/50 border border-white/5 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl hover:border-white/20 transition-all flex flex-col">
+                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2">Infinity</h3>
+                            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-8">Passaporte Anual</p>
+                            <div className="mb-10 flex items-baseline gap-2">
+                                <span className="text-5xl font-black text-white">€29<span className="text-2xl">.99</span></span>
+                                <span className="text-sm font-black text-gray-500 uppercase tracking-widest">/ por ano</span>
+                            </div>
+                            <ul className="space-y-5 mb-12 flex-1">
+                                {["Tudo do plano Única", "Viagens Ilimitadas", "Gerações IA Ilimitadas", "Suporte Prioritário"].map((f,i) => (
+                                    <li key={i} className="flex items-start gap-4">
+                                        <CheckCircle size={20} className="text-accent-magenta shrink-0" />
+                                        <span className="text-sm font-medium text-gray-300">{f}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/5 border border-white/10 hover:border-accent-magenta/50 transition-all text-xs font-black uppercase tracking-widest group">
+                                <span className="group-hover:text-accent-magenta transition-colors">Assinar Plano</span>
+                            </Link>
+                        </div>
+                    </div>
                 </section>
             </main>
 

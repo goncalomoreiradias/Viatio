@@ -83,6 +83,7 @@ model User {
   role      Role     @default(USER)
   googleId  String?  @unique
   appleId   String?  @unique
+  isBanned  Boolean  @default(false)
   
   // Subscriptions
   plan      PlanTier @default(FREE)

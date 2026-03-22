@@ -27,7 +27,8 @@ export default async function AdminPage() {
             name: true, 
             email: true, 
             role: true, 
-            plan: true, 
+            plan: true,
+            isBanned: true,
             createdAt: true,
             _count: { select: { ownedTrips: true } },
             aiUsages: {
@@ -51,9 +52,10 @@ export default async function AdminPage() {
         email: user.email,
         role: user.role,
         plan: user.plan,
+        isBanned: user.isBanned,
         createdAt: user.createdAt,
         tripCount: user._count.ownedTrips,
-        totalAiSpend: user.aiUsages.reduce((sum, usage) => sum + usage.estimatedCost, 0)
+        totalAiSpend: user.aiUsages.reduce((sum: number, usage: any) => sum + usage.estimatedCost, 0)
     }));
 
     // Fetch Admin Logs

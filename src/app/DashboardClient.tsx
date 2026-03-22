@@ -718,6 +718,14 @@ export default function DashboardClient({ session }: Props) {
                     setIsAIPlannerOpen(true);
                 }}
             />
+
+            {/* Settings Modal */}
+            <SettingsModal
+                isOpen={isSettingsModalOpen}
+                onClose={() => setIsSettingsModalOpen(false)}
+                session={session}
+                userPlan={userPlan}
+            />
         </main>
     );
 }
