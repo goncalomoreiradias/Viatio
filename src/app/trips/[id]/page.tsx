@@ -709,7 +709,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
       {activeTab === "itinerary" ? (
         <button
           onClick={() => itinerary?.days.length > 0 ? setIsAddLocationOpen(true) : handleAddDay()}
-          className="lg:flex fixed bottom-12 right-12 z-[100] w-16 h-16 bg-accent text-canvas rounded-full shadow-2xl items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-canvas/30 group"
+          className="hidden lg:flex fixed bottom-12 right-12 z-[100] w-16 h-16 bg-accent text-canvas rounded-full shadow-2xl items-center justify-center transition-all hover:scale-110 hover:-translate-y-2 active:scale-95 border-2 border-canvas/30 group"
         >
           <Plus size={32} className="group-hover:rotate-90 transition-transform duration-300" />
         </button>

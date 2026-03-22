@@ -11,7 +11,7 @@ export default function Navigation({ activeTab, onTabChange, onAddClick }: Navig
   const { t } = useI18n();
 
   return (
-    <div className="glass bg-surface/50 border-t sm:border border-stroke pb-safe z-50 flex justify-around items-center h-20 px-6 sm:h-auto sm:w-fit sm:mx-auto sm:rounded-full sm:p-2 sm:mb-12 shadow-2xl backdrop-blur-md">
+    <div className="glass bg-surface/80 border-t sm:border border-stroke pb-[env(safe-area-inset-bottom)] z-50 flex justify-between px-2 sm:px-6 items-center h-[72px] sm:h-auto sm:w-fit sm:mx-auto sm:rounded-full sm:p-2 sm:mb-12 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] backdrop-blur-xl">
       <button
         onClick={() => onTabChange("itinerary")}
         className={`flex flex-col sm:flex-row items-center gap-2 px-8 sm:px-6 py-2.5 sm:py-3 rounded-2xl sm:rounded-full transition-all flex-1 sm:flex-none justify-center relative group active:scale-90 ${activeTab === "itinerary"

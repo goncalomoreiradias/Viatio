@@ -49,7 +49,7 @@ export default function AIPlannerTrigger({ onClick }: AIPlannerTriggerProps) {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3 px-8 py-4 bg-white text-obsidian rounded-full font-black uppercase tracking-widest text-xs transition-all group-hover:gap-5 shadow-xl">
+                <div className="flex items-center gap-3 px-8 py-4 bg-white text-[#0D0D0D] rounded-full font-black uppercase tracking-widest text-xs transition-all group-hover:gap-5 shadow-xl">
                     Começar Agora
                     <ArrowRight size={16} />
                 </div>
