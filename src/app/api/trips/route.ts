@@ -48,6 +48,20 @@ export async function POST(request: Request) {
 
         const userId = session.userId as string;
 
+        // Check Free Tier Limit
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { plan: true, _count: { select: { ownedTrips: true } } }
+        });
+
+        if (!user) {
+             return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        if (user.plan === "FREE" && user._count.ownedTrips >= 3) {
+             return NextResponse.json({ error: "Free tier limit reached (max 3 trips). Please upgrade." }, { status: 403 });
+        }
+
         // Normalize: accept string or array for backwards compat
         const urls = Array.isArray(bucketListUrls)
             ? bucketListUrls.filter((u: string) => u && u.trim())

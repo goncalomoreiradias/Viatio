@@ -503,7 +503,13 @@ export default function DashboardClient({ session }: Props) {
                     <Sparkles size={28} />
                 </button>
                 <button
-                    onClick={() => setIsCreateModalOpen(true)}
+                    onClick={() => {
+                        if (userPlan === "FREE" && trips.length >= 3) {
+                            setIsUpgradeOpen(true);
+                        } else {
+                            setIsCreateModalOpen(true);
+                        }
+                    }}
                     className="w-16 h-16 bg-accent text-canvas rounded-full shadow-2xl flex items-center justify-center transition-all active:scale-90 border border-canvas"
                 >
                     <Plus size={32} />
@@ -599,17 +605,20 @@ export default function DashboardClient({ session }: Props) {
                             {/* Bucket List URLs */}
                             <div className="space-y-3">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] px-2 leading-none">
-                                    📍 Bucket List (Google Maps)
+                                    📍 Bucket List <span className="text-[8px] bg-emerald-500/10 text-emerald-500 tracking-widest px-1.5 py-0.5 rounded-sm">{userPlan === 'FREE' ? 'PREMIUM' : 'INCLUÍDO'}</span>
                                 </label>
                                 <textarea
-                                    placeholder={"Cola links de listas do Maps...\nUm link por linha"}
+                                    disabled={userPlan === "FREE"}
+                                    placeholder={userPlan === "FREE" ? "Funcionalidade premium. Faz upgrade para importar as tuas listas do Maps." : "Cola links de listas do Maps...\nUm link por linha"}
                                     value={newTripBucketListUrls}
                                     onChange={(e) => setNewTripBucketListUrls(e.target.value)}
                                     rows={3}
-                                    className="input-surface w-full p-6 text-xs font-bold resize-none bg-emerald-500/5 border-emerald-500/20 placeholder:text-emerald-500/30"
+                                    className={`input-surface w-full p-6 text-xs font-bold resize-none border-emerald-500/20 ${userPlan === "FREE" ? "bg-emerald-500/5 opacity-50 cursor-not-allowed hidden-scrollbar" : "bg-emerald-500/5 placeholder:text-emerald-500/30"}`}
                                 />
                                 <p className="text-[8px] font-bold text-text-dim px-2 uppercase tracking-widest leading-relaxed">
-                                    Adiciona um link por linha. A nossa AI vai extrair os pontos automaticamente para o teu catálogo.
+                                    {userPlan === "FREE" 
+                                        ? "Faz upgrade para extraírmos os pontos das tuas listas do Google Maps automaticamente."
+                                        : "Adiciona um link por linha. Vamos extrair os pontos automaticamente para o teu catálogo."}
                                 </p>
                             </div>
 

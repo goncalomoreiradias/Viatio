@@ -20,6 +20,7 @@ export async function GET(
         const trip = await prisma.trip.findUnique({
             where: { id },
             include: {
+                owner: { select: { plan: true } },
                 participants: { select: { id: true, name: true, email: true } },
                 bucketListItems: { orderBy: { createdAt: 'asc' } },
                 days: {

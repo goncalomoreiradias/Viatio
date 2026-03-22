@@ -657,8 +657,8 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
           onClose={() => setEditingDay(null)}
           onSave={handleDayEdit}
           onMoveLocation={handleMoveLocation}
-          bucketListUrls={itinerary.bucketListUrls}
-          bucketListItems={itinerary.bucketListItems || []}
+          bucketListUrls={itinerary.owner?.plan === "FREE" ? [] : itinerary.bucketListUrls}
+          bucketListItems={itinerary.owner?.plan === "FREE" ? [] : (itinerary.bucketListItems || [])}
           onRefreshBucketList={async () => {
             const res = await fetch(`/api/trips/${tripId}/bucket-list`, { method: 'POST' });
             if (res.ok) {
@@ -674,8 +674,8 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
         isOpen={isAddLocationOpen}
         onClose={() => setIsAddLocationOpen(false)}
         days={itinerary?.days || []}
-        bucketListUrls={itinerary?.bucketListUrls}
-        bucketListItems={itinerary?.bucketListItems || []}
+        bucketListUrls={itinerary?.owner?.plan === "FREE" ? [] : itinerary?.bucketListUrls}
+        bucketListItems={itinerary?.owner?.plan === "FREE" ? [] : (itinerary?.bucketListItems || [])}
         onRefreshBucketList={async () => {
           const res = await fetch(`/api/trips/${tripId}/bucket-list`, { method: 'POST' });
           if (res.ok) {
