@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
         const ticket = await prisma.supportTicket.create({
             data: {
-                userId: session.userId,
+                userId: String(session.userId),
                 subject,
                 message,
                 status: "OPEN"
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
         // Only allow admins to fetch ALL tickets. Users fetch only their own.
         // For /api/tickets, we will just return the current user's tickets.
         const tickets = await prisma.supportTicket.findMany({
-            where: { userId: session.userId },
+            where: { userId: String(session.userId) },
             orderBy: { createdAt: "desc" }
         });
 
