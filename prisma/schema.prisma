@@ -58,6 +58,24 @@ enum PlanTier {
   YEARLY
 }
 
+model PricingConfig {
+  id              String   @id @default("singleton")
+  
+  singleTripPrice Float    @default(0.99)
+  singleTripAiMax Float    @default(0.20)
+  singleTripBList Boolean  @default(false)
+  
+  monthlyPrice    Float    @default(2.99)
+  monthlyAiMax    Float    @default(1.00)
+  monthlyBList    Boolean  @default(true)
+  
+  yearlyPrice     Float    @default(9.99)
+  yearlyAiMax     Float    @default(5.00)
+  yearlyBList     Boolean  @default(true)
+
+  updatedAt       DateTime @updatedAt
+}
+
 model Coupon {
   id           String   @id @default(cuid())
   code         String   @unique
@@ -86,7 +104,8 @@ model User {
   isBanned  Boolean  @default(false)
   
   // Subscriptions
-  plan      PlanTier @default(FREE)
+  plan          PlanTier @default(FREE)
+  planUpdatedAt DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

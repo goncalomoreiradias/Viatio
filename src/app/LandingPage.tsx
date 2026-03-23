@@ -7,7 +7,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 
-export default function LandingPage() {
+export default function LandingPage({ pricingConfig }: { pricingConfig?: any }) {
     const { t } = useI18n();
     const { scrollY } = useScroll();
     const [isScrolled, setIsScrolled] = useState(false);
@@ -402,72 +402,91 @@ export default function LandingPage() {
                          <p className="text-gray-400 font-light text-lg">Pague o justo. Escolha entre criar roteiros manuais de forma gratuita, um passe para uma expedição única, ou um passaporte anual ilimitado.</p>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
+                    <div className="grid lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
                         {/* FREE */}
-                        <div className="bg-surface/30 border border-white/5 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl hover:border-white/20 transition-all flex flex-col">
+                        <div className="bg-surface/30 border border-white/5 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl hover:border-white/20 transition-all flex flex-col">
                             <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2">Basic</h3>
-                            <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-8">Viagens Manuais</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-8">Viagens Manuais</p>
                             <div className="mb-10 flex items-baseline gap-2">
                                 <span className="text-5xl font-black text-white">€0</span>
-                                <span className="text-sm font-black text-gray-500 uppercase tracking-widest">/ para sempre</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">/ para sempre</span>
                             </div>
-                            <ul className="space-y-5 mb-12 flex-1">
-                                {["Até 3 Viagens Simultâneas", "Convite Ilimitado de Amigos", "Planeador Manual (Drag & drop)", "Gestão Financeira & Split"].map((f,i) => (
-                                    <li key={i} className="flex items-start gap-4">
-                                        <CheckCircle size={20} className="text-gray-400 shrink-0" />
-                                        <span className="text-sm font-medium text-gray-300">{f}</span>
+                            <ul className="space-y-4 mb-12 flex-1">
+                                {["Planeador Manual", "Até 3 Viagens", "Convites Ilimitados"].map((f,i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                        <CheckCircle size={16} className="text-gray-400 shrink-0 mt-0.5" />
+                                        <span className="text-xs font-medium text-gray-300">{f}</span>
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-black uppercase tracking-widest">
+                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-widest">
                                 Começar Grátis
                             </Link>
                         </div>
 
                         {/* SINGLE TRIP */}
-                        <div className="bg-gradient-to-br from-accent-cobalt/20 to-accent-indigo/20 border border-accent-indigo/30 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl relative overflow-hidden flex flex-col transform lg:scale-105 shadow-2xl shadow-accent-indigo/10">
-                            <div className="absolute top-0 right-0 py-2 px-6 bg-accent-indigo text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-bl-3xl">Mais Popular</div>
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--accent-indigo)_0%,transparent_50%)] opacity-20 pointer-events-none" />
-                            
-                            <div className="relative z-10">
+                        <div className="bg-gradient-to-br from-accent-cobalt/20 to-accent-indigo/20 border border-accent-indigo/30 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl relative overflow-hidden flex flex-col transform lg:scale-105 shadow-2xl shadow-accent-indigo/10 z-10">
+                            <div className="absolute top-0 right-0 py-2 px-6 bg-accent-indigo text-white text-[8px] font-black uppercase tracking-[0.3em] rounded-bl-3xl">Popular</div>
+                            <div className="relative z-10 flex flex-col h-full">
                                 <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2 text-white">Única</h3>
-                                <p className="text-sm font-bold text-accent-indigo uppercase tracking-widest mb-8">Passe Expedição</p>
+                                <p className="text-[10px] font-bold text-accent-indigo uppercase tracking-widest mb-8">Passe Expedição</p>
                                 <div className="mb-10 flex items-baseline gap-2">
-                                    <span className="text-5xl font-black text-white">€4<span className="text-2xl">.99</span></span>
-                                    <span className="text-sm font-black text-gray-400 uppercase tracking-widest">/ Roteiro</span>
+                                    <span className="text-5xl font-black text-white">€{(pricingConfig?.singleTripPrice ?? 0.99).toString().split('.')[0]}<span className="text-2xl">.{(pricingConfig?.singleTripPrice ?? 0.99).toFixed(2).split('.')[1]}</span></span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">/ Roteiro</span>
                                 </div>
-                                <ul className="space-y-5 mb-12 flex-1">
-                                    {["Tudo do plano Basic", "1 Geração Completa por IA", "Importação Google Maps", "Alterações Manuais Ilimitadas", "Exportar para PDF"].map((f,i) => (
-                                        <li key={i} className="flex items-start gap-4">
-                                            <Sparkles size={20} className="text-accent-indigo shrink-0" />
-                                            <span className="text-sm font-medium text-white shadow-black drop-shadow-md">{f}</span>
+                                <ul className="space-y-4 mb-12 flex-1">
+                                    {["Tudo do Basic", "1 Geração Completa por IA", "Pendente de Config Bucketlist"].map((f,i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <Sparkles size={16} className="text-accent-indigo shrink-0 mt-0.5" />
+                                            <span className="text-xs font-medium text-white">{f}</span>
                                         </li>
                                     ))}
                                 </ul>
-                                <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white text-slate-950 hover:bg-gray-200 transition-all text-xs font-black uppercase tracking-widest shadow-xl">
-                                    Comprar Roteiro
+                                <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white text-slate-950 hover:bg-gray-200 transition-all text-[10px] font-black uppercase tracking-widest shadow-xl">
+                                    Comprar
                                 </Link>
                             </div>
                         </div>
 
-                        {/* YEARLY */}
-                        <div className="bg-surface/50 border border-white/5 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl hover:border-white/20 transition-all flex flex-col">
-                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2">Infinity</h3>
-                            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-8">Passaporte Anual</p>
+                        {/* MONTHLY */}
+                        <div className="bg-surface/50 border border-white/10 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl hover:border-white/30 transition-all flex flex-col">
+                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2">Mensal</h3>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-8">Passaporte Mensal</p>
                             <div className="mb-10 flex items-baseline gap-2">
-                                <span className="text-5xl font-black text-white">€29<span className="text-2xl">.99</span></span>
-                                <span className="text-sm font-black text-gray-500 uppercase tracking-widest">/ por ano</span>
+                                <span className="text-5xl font-black text-white">€{(pricingConfig?.monthlyPrice ?? 2.99).toString().split('.')[0]}<span className="text-2xl">.{(pricingConfig?.monthlyPrice ?? 2.99).toFixed(2).split('.')[1]}</span></span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">/ mês</span>
                             </div>
-                            <ul className="space-y-5 mb-12 flex-1">
-                                {["Tudo do plano Única", "Viagens Ilimitadas", "Gerações IA Ilimitadas", "Suporte Prioritário"].map((f,i) => (
-                                    <li key={i} className="flex items-start gap-4">
-                                        <CheckCircle size={20} className="text-accent-magenta shrink-0" />
-                                        <span className="text-sm font-medium text-gray-300">{f}</span>
+                            <ul className="space-y-4 mb-12 flex-1">
+                                {["Tudo do plano Única", `Até €${(pricingConfig?.monthlyAiMax ?? 1.00).toFixed(2)} em Consumo IA`, "Acesso a Bucketlist Google", "Múltiplos Roteiros"].map((f,i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                        <CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+                                        <span className="text-xs font-medium text-gray-300">{f}</span>
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/5 border border-white/10 hover:border-accent-magenta/50 transition-all text-xs font-black uppercase tracking-widest group">
-                                <span className="group-hover:text-accent-magenta transition-colors">Assinar Plano</span>
+                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 hover:border-emerald-500/50 transition-all text-[10px] font-black uppercase tracking-widest">
+                                Assinar Mensal
+                            </Link>
+                        </div>
+
+                        {/* YEARLY */}
+                        <div className="bg-surface/50 border border-emerald-500/20 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl hover:border-emerald-500/40 transition-all flex flex-col">
+                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2 text-emerald-500">Anual</h3>
+                            <p className="text-[10px] font-bold text-emerald-500/70 uppercase tracking-widest mb-8">Acesso Completo</p>
+                            <div className="mb-10 flex items-baseline gap-2">
+                                <span className="text-5xl font-black text-white">€{(pricingConfig?.yearlyPrice ?? 9.99).toString().split('.')[0]}<span className="text-2xl">.{(pricingConfig?.yearlyPrice ?? 9.99).toFixed(2).split('.')[1]}</span></span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">/ por ano</span>
+                            </div>
+                            <ul className="space-y-4 mb-12 flex-1">
+                                {["Tudo do plano Mensal", `Tolerância Premium AI (€${(pricingConfig?.yearlyAiMax ?? 5.00).toFixed(2)})`, "Preço Reduzido Anual", "Suporte Prioritário"].map((f,i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                        <CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+                                        <span className="text-xs font-medium text-gray-300">{f}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-emerald-500 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest">
+                                Assinar Anual
                             </Link>
                         </div>
                     </div>

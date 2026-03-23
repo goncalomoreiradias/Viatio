@@ -77,12 +77,18 @@ export default async function AdminPage() {
         orderBy: { createdAt: "desc" }
     });
 
+    let config = await prisma.pricingConfig.findFirst();
+    if (!config) {
+        config = await prisma.pricingConfig.create({ data: { id: "singleton" } });
+    }
+
     return (
         <AdminClient 
             initialUsers={usersWithSpendAndCount}
             initialLogs={recentLogs}
             initialCoupons={activeCoupons}
             initialTickets={tickets}
+            initialConfig={config}
             stats={{ userCount, tripCount, expenseCount, totalAiCost, totalAiRequests }}
         />
     );

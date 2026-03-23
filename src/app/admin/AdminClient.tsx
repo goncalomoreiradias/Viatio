@@ -9,15 +9,44 @@ interface AdminClientProps {
     initialLogs: any[];
     initialCoupons: any[];
     initialTickets: any[];
+    initialConfig: any;
     stats: any;
 }
 
-export default function AdminClient({ initialUsers, initialLogs, initialCoupons, initialTickets, stats }: AdminClientProps) {
-    const [activeTab, setActiveTab] = useState<"users" | "tickets" | "logs">("users");
+export default function AdminClient({ initialUsers, initialLogs, initialCoupons, initialTickets, initialConfig, stats }: AdminClientProps) {
+    const [activeTab, setActiveTab] = useState<"users" | "tickets" | "logs" | "config">("users");
     const [searchQuery, setSearchQuery] = useState("");
     const [planFilter, setPlanFilter] = useState("ALL");
     const [tickets, setTickets] = useState(initialTickets);
     const [users, setUsers] = useState(initialUsers);
+
+    // Config state
+    const [config, setConfig] = useState(initialConfig);
+    const [isSavingConfig, setIsSavingConfig] = useState(false);
+    const [configMessage, setConfigMessage] = useState("");
+    
+    const handleSaveConfig = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSavingConfig(true);
+        setConfigMessage("");
+        try {
+            const res = await fetch("/api/admin/config", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(config)
+            });
+            if (res.ok) {
+                setConfigMessage("Configurações guardadas com sucesso! ✅");
+                setTimeout(() => setConfigMessage(""), 3000);
+            } else {
+                setConfigMessage("Erro ao guardar as configurações.");
+            }
+        } catch (error) {
+            setConfigMessage("Erro na ligação à API.");
+        } finally {
+            setIsSavingConfig(false);
+        }
+    };
 
     const filteredUsers = users.filter((user: any) => {
         const matchesSearch = user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -79,15 +108,15 @@ export default function AdminClient({ initialUsers, initialLogs, initialCoupons,
                 </div>
 
                 <div className="flex bg-surface border border-stroke rounded-full p-1 shadow-lg">
-                    {(["users", "tickets", "logs"] as const).map(tab => (
+                    {(["users", "tickets", "logs", "config"] as const).map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
+                            className={`px-4 md:px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
                                 activeTab === tab ? "bg-text-high text-canvas shadow-md" : "text-text-medium hover:text-text-high"
                             }`}
                         >
-                            {tab}
+                            {tab === "config" ? "Preços & AI" : tab}
                         </button>
                     ))}
                 </div>
@@ -227,6 +256,105 @@ export default function AdminClient({ initialUsers, initialLogs, initialCoupons,
                             </div>
                         )}
                     </div>
+                </div>
+            )}
+
+            {/* TAB: CONFIGURATIONS */}
+            {activeTab === "config" && (
+                <div className="bg-surface p-6 sm:p-10 rounded-[3rem] border border-stroke shadow-2xl mb-12 relative z-10">
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-black font-outfit text-text-high uppercase tracking-tight">Preços & Algoritmos de AI</h2>
+                        <p className="text-sm font-medium text-text-medium mt-1">Gere os parâmetros financeiros cobrados aos utilizadores e as margens de tolerância de Custo da API da OpenAI dependendo do plano associado.</p>
+                    </div>
+
+                    <form onSubmit={handleSaveConfig} className="space-y-12">
+                        {/* SINGLE TRIP */}
+                        <div className="p-8 rounded-[2rem] bg-canvas border border-stroke flex flex-col md:flex-row gap-8">
+                            <div className="md:w-1/3">
+                                <h3 className="text-lg font-black uppercase tracking-widest text-text-high">Plano Única</h3>
+                                <p className="text-xs font-medium text-text-medium mt-2">Dá direito a apenas 1 Geração completa. Volta depois ao plano FREE.</p>
+                            </div>
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Preço Cobrado (€)</label>
+                                    <input type="number" step="0.01" value={config.singleTripPrice} onChange={e => setConfig({ ...config, singleTripPrice: parseFloat(e.target.value) })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-accent" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Limite Gasto AI (€)</label>
+                                    <input type="number" step="0.01" value={config.singleTripAiMax} onChange={e => setConfig({ ...config, singleTripAiMax: parseFloat(e.target.value) })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-accent" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Ativar Bucketlist?</label>
+                                    <select value={config.singleTripBList ? "true" : "false"} onChange={e => setConfig({ ...config, singleTripBList: e.target.value === "true" })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-accent appearance-none">
+                                        <option value="true">Sim, Acesso Total</option>
+                                        <option value="false">Não, Bloquear</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* MONTHLY */}
+                        <div className="p-8 rounded-[2rem] bg-canvas border border-stroke flex flex-col md:flex-row gap-8">
+                            <div className="md:w-1/3">
+                                <h3 className="text-lg font-black uppercase tracking-widest text-text-high">Plano Mensal</h3>
+                                <p className="text-xs font-medium text-text-medium mt-2">Subscrição recorrente para acesso moderado mensal com arquitetura AI completa.</p>
+                            </div>
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Mensalidade (€)</label>
+                                    <input type="number" step="0.01" value={config.monthlyPrice} onChange={e => setConfig({ ...config, monthlyPrice: parseFloat(e.target.value) })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-accent" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Limite Gasto AI (€)</label>
+                                    <input type="number" step="0.01" value={config.monthlyAiMax} onChange={e => setConfig({ ...config, monthlyAiMax: parseFloat(e.target.value) })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-accent" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Ativar Bucketlist?</label>
+                                    <select value={config.monthlyBList ? "true" : "false"} onChange={e => setConfig({ ...config, monthlyBList: e.target.value === "true" })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-accent appearance-none">
+                                        <option value="true">Sim, Acesso Total</option>
+                                        <option value="false">Não, Bloquear</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* YEARLY */}
+                        <div className="p-8 rounded-[2rem] bg-canvas border border-stroke flex flex-col md:flex-row gap-8 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none"><Activity size={64} className="text-emerald-500" /></div>
+                            <div className="md:w-1/3">
+                                <h3 className="text-lg font-black uppercase tracking-widest text-emerald-500">Plano Anual</h3>
+                                <p className="text-xs font-medium text-text-medium mt-2">Plano de fidelização longa. Oferece o maior plafond de tolerância para APIs da plataforma.</p>
+                            </div>
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6 relative z-10">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Anuidade (€)</label>
+                                    <input type="number" step="0.01" value={config.yearlyPrice} onChange={e => setConfig({ ...config, yearlyPrice: parseFloat(e.target.value) })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-emerald-500" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Limite Gasto AI (€)</label>
+                                    <input type="number" step="0.01" value={config.yearlyAiMax} onChange={e => setConfig({ ...config, yearlyAiMax: parseFloat(e.target.value) })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-emerald-500" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-medium">Ativar Bucketlist?</label>
+                                    <select value={config.yearlyBList ? "true" : "false"} onChange={e => setConfig({ ...config, yearlyBList: e.target.value === "true" })} className="w-full bg-surface border border-stroke rounded-xl px-4 py-3 font-bold text-text-high outline-none focus:border-emerald-500 appearance-none">
+                                        <option value="true">Sim, Acesso Total</option>
+                                        <option value="false">Não, Bloquear</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between border-t border-stroke pt-8">
+                            <p className="text-sm font-bold text-emerald-500">{configMessage}</p>
+                            <button
+                                type="submit"
+                                disabled={isSavingConfig}
+                                className="px-8 py-4 bg-text-high text-canvas font-black uppercase tracking-widest text-xs rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all outline-none"
+                            >
+                                {isSavingConfig ? "A Guardar..." : "Guardar Alterações Finais"}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             )}
 

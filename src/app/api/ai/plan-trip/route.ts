@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
         const user = await prisma.user.findUnique({
             where: { id: session.userId as string },
-            select: { plan: true }
+            select: { plan: true, planUpdatedAt: true, id: true }
         });
 
         if (!user || user.plan === "FREE") {
@@ -41,9 +41,51 @@ export async function POST(request: Request) {
             );
         }
 
+        const config = await prisma.pricingConfig.findFirst();
+        if (!config) {
+             return NextResponse.json({ error: "Pricing Configuration is missing from the server." }, { status: 500 });
+        }
+
+        // Calculate AI Spend since last plan update
+        const usageAmount = await prisma.aiUsage.aggregate({
+             where: {
+                 userId: user.id,
+                 createdAt: { gte: user.planUpdatedAt }
+             },
+             _sum: { estimatedCost: true }
+        });
+        const currentSpend = usageAmount._sum.estimatedCost || 0;
+
+        let aiMax = 0;
+        let isBListAllowed = false;
+        if (user.plan === "SINGLE_TRIP") {
+            aiMax = config.singleTripAiMax;
+            isBListAllowed = config.singleTripBList;
+        } else if (user.plan === "MONTHLY") {
+            aiMax = config.monthlyAiMax;
+            isBListAllowed = config.monthlyBList;
+        } else if (user.plan === "YEARLY") {
+            aiMax = config.yearlyAiMax;
+            isBListAllowed = config.yearlyBList;
+        }
+
+        if (currentSpend >= aiMax) {
+            return NextResponse.json({ 
+                error: `Atingiu o limite de plafond de Inteligência Artificial para o seu plano (€${aiMax.toFixed(2)}). Por favor atualize o seu plano.`, 
+                requiresUpgrade: true 
+            }, { status: 403 });
+        }
+
         // 2. Parse request
         const body = await request.json();
         const { destination, startDate, endDate, budget, travelStyle, numberOfPeople, customRequirements, mapsListUrl, language } = body;
+
+        if (mapsListUrl && !isBListAllowed) {
+             return NextResponse.json({ 
+                 error: "O seu plano atual não permite integrar listas do Google Maps (Bucketlist).", 
+                 requiresUpgrade: true 
+             }, { status: 403 });
+        }
 
         const isPT = language === "pt";
         const langName = isPT ? "Portuguese (pt-PT)" : "English (En-US)";
@@ -239,6 +281,14 @@ DEVOLVE APENAS UM OBJECTO JSON VÁLIDO SEGUINDO ESTE ESQUEMA:
                 }
             }
         });
+
+        // 5. Automatic Downgrade for SINGLE_TRIP Users
+        if (user.plan === "SINGLE_TRIP") {
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { plan: "FREE", planUpdatedAt: new Date() }
+            });
+        }
 
         return NextResponse.json({ tripId: trip.id, title: trip.title });
 
