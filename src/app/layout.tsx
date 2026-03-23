@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Outfit, Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/lib/i18n';
@@ -12,8 +12,12 @@ export const metadata: Metadata = {
   description: 'The extreme travel companion for orchestrating itineraries.',
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   themeColor: '#81B29A',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
