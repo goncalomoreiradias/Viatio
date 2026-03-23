@@ -81,16 +81,16 @@ export default function LandingPage({ pricingConfig }: { pricingConfig?: any }) 
                             <span className="truncate">{t("landing.social.trusted")}</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-6xl lg:text-[5.5rem] font-serif font-medium leading-[1.1] md:leading-[0.95] tracking-tight mb-8">
+                        <h1 className="text-center lg:text-left text-5xl md:text-6xl lg:text-[5.5rem] font-serif font-medium leading-[1.1] md:leading-[0.95] tracking-tight mb-8">
                             {t("landing.hero.title")} <br />
                             <span className="italic font-light text-accent-indigo brightness-125">{t("landing.hero.title2")}</span>
                         </h1>
 
-                        <p className="text-base md:text-xl text-white/80 md:text-gray-400 mb-10 md:mb-12 leading-relaxed md:leading-relaxed max-w-xl font-light tracking-wide lg:pr-12">
+                        <p className="text-center lg:text-left text-base md:text-xl text-white/80 md:text-gray-400 mb-10 md:mb-12 leading-relaxed md:leading-relaxed max-w-xl font-light tracking-wide lg:pr-12">
                             {t("landing.hero.subtitle")}
                         </p>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 w-full">
+                        <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 md:gap-6 w-full">
                             <Link
                                 href="/register"
                                 className="w-full sm:w-auto px-10 py-5 bg-gradient-to-br from-accent-cobalt to-accent-indigo text-white font-black rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(46,91,255,0.5)] flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs border border-white/20 group relative overflow-hidden"
@@ -397,24 +397,27 @@ export default function LandingPage({ pricingConfig }: { pricingConfig?: any }) 
 
                     <div className="grid lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
                         {/* FREE */}
-                        <div className="bg-surface/30 border border-white/5 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl hover:border-white/20 transition-all flex flex-col">
-                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2">Basic</h3>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-8">Viagens Manuais</p>
-                            <div className="mb-10 flex items-baseline gap-2">
-                                <span className="text-5xl font-black text-white">€0</span>
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">/ para sempre</span>
+                        {/* FREE */}
+                        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/20 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl relative overflow-hidden flex flex-col transition-all">
+                            <div className="relative z-10 flex flex-col h-full">
+                                <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2 text-white">Basic</h3>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-8">Viagens Manuais</p>
+                                <div className="mb-10 flex items-baseline gap-2">
+                                    <span className="text-5xl font-black text-white">€0</span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">/ para sempre</span>
+                                </div>
+                                <ul className="space-y-4 mb-12 flex-1">
+                                    {["Planeador Manual", "Até 3 Viagens", "Convites Ilimitados"].map((f, i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <Sparkles size={16} className="text-gray-400 shrink-0 mt-0.5" />
+                                            <span className="text-xs font-medium text-white">{f}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-white text-[10px] font-black uppercase tracking-widest border border-white/10">
+                                    Começar Grátis
+                                </Link>
                             </div>
-                            <ul className="space-y-4 mb-12 flex-1">
-                                {["Planeador Manual", "Até 3 Viagens", "Convites Ilimitados"].map((f, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle size={16} className="text-gray-400 shrink-0 mt-0.5" />
-                                        <span className="text-xs font-medium text-gray-300">{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-widest">
-                                Começar Grátis
-                            </Link>
                         </div>
 
                         {/* SINGLE TRIP */}
@@ -442,45 +445,50 @@ export default function LandingPage({ pricingConfig }: { pricingConfig?: any }) 
                         </div>
 
                         {/* MONTHLY */}
-                        <div className="bg-surface/50 border border-white/10 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl hover:border-white/30 transition-all flex flex-col">
-                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2">Mensal</h3>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-8">Passaporte Mensal</p>
-                            <div className="mb-10 flex items-baseline gap-2">
-                                <span className="text-5xl font-black text-white">€{(pricingConfig?.monthlyPrice ?? 2.99).toString().split('.')[0]}<span className="text-2xl">.{(pricingConfig?.monthlyPrice ?? 2.99).toFixed(2).split('.')[1]}</span></span>
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">/ mês</span>
+                        <div className="bg-gradient-to-br from-accent-magenta/10 to-accent-magenta/20 border border-accent-magenta/30 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl relative overflow-hidden flex flex-col transition-all">
+                            <div className="relative z-10 flex flex-col h-full">
+                                <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2 text-white">Mensal</h3>
+                                <p className="text-[10px] font-bold text-accent-magenta uppercase tracking-widest mb-8">Passaporte Mensal</p>
+                                <div className="mb-10 flex items-baseline gap-2">
+                                    <span className="text-5xl font-black text-white">€{(pricingConfig?.monthlyPrice ?? 2.99).toString().split('.')[0]}<span className="text-2xl">.{(pricingConfig?.monthlyPrice ?? 2.99).toFixed(2).split('.')[1]}</span></span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">/ mês</span>
+                                </div>
+                                <ul className="space-y-4 mb-12 flex-1">
+                                    {["Tudo do plano Única", "Gerações por IA", "Acesso a Bucketlist Google", "Múltiplos Roteiros"].map((f, i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <Sparkles size={16} className="text-accent-magenta shrink-0 mt-0.5" />
+                                            <span className="text-xs font-medium text-white">{f}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white text-slate-950 hover:bg-gray-200 transition-all text-[10px] font-black uppercase tracking-widest shadow-xl">
+                                    Assinar Mensal
+                                </Link>
                             </div>
-                            <ul className="space-y-4 mb-12 flex-1">
-                                {["Tudo do plano Única", "Gerações por IA", "Acesso a Bucketlist Google", "Múltiplos Roteiros"].map((f, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                                        <span className="text-xs font-medium text-gray-300">{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 hover:border-emerald-500/50 transition-all text-[10px] font-black uppercase tracking-widest">
-                                Assinar Mensal
-                            </Link>
                         </div>
 
                         {/* YEARLY */}
-                        <div className="bg-surface/50 border border-emerald-500/20 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl hover:border-emerald-500/40 transition-all flex flex-col">
-                            <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2 text-emerald-500">Anual</h3>
-                            <p className="text-[10px] font-bold text-emerald-500/70 uppercase tracking-widest mb-8">Acesso Completo</p>
-                            <div className="mb-10 flex items-baseline gap-2">
-                                <span className="text-5xl font-black text-white">€{(pricingConfig?.yearlyPrice ?? 9.99).toString().split('.')[0]}<span className="text-2xl">.{(pricingConfig?.yearlyPrice ?? 9.99).toFixed(2).split('.')[1]}</span></span>
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">/ por ano</span>
+                        <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/20 border border-emerald-500/30 p-6 md:p-8 rounded-[3rem] backdrop-blur-xl relative overflow-hidden flex flex-col transition-all">
+                            <div className="absolute top-0 right-0 py-2 px-6 bg-emerald-500 text-slate-900 text-[8px] font-black uppercase tracking-[0.3em] rounded-bl-3xl">Melhor Valor</div>
+                            <div className="relative z-10 flex flex-col h-full">
+                                <h3 className="text-3xl font-black font-outfit uppercase tracking-tighter mb-2 text-white">Anual</h3>
+                                <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-8">Acesso Completo</p>
+                                <div className="mb-10 flex items-baseline gap-2">
+                                    <span className="text-5xl font-black text-white">€{(pricingConfig?.yearlyPrice ?? 9.99).toString().split('.')[0]}<span className="text-2xl">.{(pricingConfig?.yearlyPrice ?? 9.99).toFixed(2).split('.')[1]}</span></span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">/ por ano</span>
+                                </div>
+                                <ul className="space-y-4 mb-12 flex-1">
+                                    {["Tudo do plano Mensal", "Gerações por IA", "Preço Reduzido Anual", "Suporte Prioritário"].map((f, i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <Sparkles size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+                                            <span className="text-xs font-medium text-white">{f}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-white text-slate-950 hover:bg-gray-200 transition-all text-[10px] font-black uppercase tracking-widest shadow-xl">
+                                    Assinar Anual
+                                </Link>
                             </div>
-                            <ul className="space-y-4 mb-12 flex-1">
-                                {["Tudo do plano Mensal", "Gerações por IA", "Preço Reduzido Anual", "Suporte Prioritário"].map((f, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                                        <span className="text-xs font-medium text-gray-300">{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link href="/register" className="w-full py-4 text-center rounded-2xl bg-emerald-500 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest">
-                                Assinar Anual
-                            </Link>
                         </div>
                     </div>
                 </section>
