@@ -99,9 +99,14 @@ function SortableLocationItem({ loc, allDays, currentDayId, handleLocationChange
                                     <option value="" className="bg-surface">Sem Tag</option>
                                     <option value="Must Go" className="bg-surface">⭐ Must Go</option>
                                     <option value="Opcional" className="bg-surface">📍 Opcional</option>
-                                    <option value="Food" className="bg-surface">🍱 Food</option>
-                                    <option value="Photo" className="bg-surface">📸 Photo</option>
                                     <option value="Alojamento" className="bg-surface">🏨 Alojamento</option>
+                                    <option value="Food" className="bg-surface">🍱 Gastronomia</option>
+                                    <option value="Transporte" className="bg-surface">✈️ Transporte</option>
+                                    <option value="Natureza" className="bg-surface">🌿 Natureza</option>
+                                    <option value="Cultura" className="bg-surface">🏛️ Cultura</option>
+                                    <option value="Lazer" className="bg-surface">🏖️ Lazer</option>
+                                    <option value="Photo" className="bg-surface">📸 Photo Spot</option>
+                                    <option value="Vida Noturna" className="bg-surface">🍸 Vida Noturna</option>
                                 </select>
                                 <span className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/tag:opacity-100 transition-opacity text-[8px] font-black text-text-medium uppercase tracking-[0.2em] whitespace-nowrap bg-surface px-2 py-1 rounded-md border border-stroke shadow-lg">Categoria</span>
                             </div>

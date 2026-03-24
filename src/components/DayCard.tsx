@@ -124,6 +124,8 @@ export default function DayCard({ day, onEdit, onToggleLocation, onAddLocation }
 
                         <motion.div
                             variants={itemVariants}
+                            initial="hidden"
+                            animate="visible"
                             onClick={() => onEdit(day)}
                             className="flex items-start gap-6 p-5 rounded-[1.5rem] hover:bg-canvas transition-all group cursor-pointer border border-transparent hover:border-stroke relative"
                         >
@@ -147,11 +149,16 @@ export default function DayCard({ day, onEdit, onToggleLocation, onAddLocation }
                                     </h3>
                                     {loc.tag && (
                                         <span className={`px-4 py-1 rounded-full text-[9px] font-black tracking-[0.1em] uppercase border ${
-                                            loc.tag === 'TRANSPORTE' ? 'bg-accent/10 text-accent border-accent/20' :
-                                            loc.tag === 'CULTURA' ? 'bg-accent/10 text-accent border-accent/20' :
+                                            loc.tag === 'Transporte' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                            loc.tag === 'Natureza' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                                            loc.tag === 'Cultura' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                            loc.tag === 'Vida Noturna' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
+                                            loc.tag === 'Alojamento' ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' :
+                                            loc.tag === 'Lazer' ? 'bg-teal-500/10 text-teal-500 border-teal-500/20' :
+                                            loc.tag === 'Must Go' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
                                             'bg-accent/10 text-accent border-accent/20'
                                         }`}>
-                                            {loc.tag}
+                                            {loc.tag === 'Food' ? 'Gastronomia' : loc.tag}
                                         </span>
                                     )}
                                 </div>

@@ -118,9 +118,13 @@ export async function POST(request: Request) {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 const isLongTrip = numberOfDays > 10;
-                const concisenessInstruction = isLongTrip 
-                    ? "As this is a long trip, keep location descriptions very concise (1 short sentence) to ensure the complete itinerary fits in one response." 
-                    : "Provide detailed and engaging descriptions.";
+                let concisenessInstruction = "";
+                
+                if (attempt > 1 || isLongTrip) {
+                    concisenessInstruction = "MENSAGEM DE SISTEMA CRÍTICA: EXTREMA CONCISÃO OBRIGATÓRIA. Para evitar limites de tokens, restringe as descrições de atividades a no máximo 5 palavras. Sem frases completas, apenas palavras-chave.";
+                } else {
+                    concisenessInstruction = "Podes fornecer descrições detalhadas e cativantes (máximo 2 pequenas frases por local).";
+                }
 
                 const mapsInstruction = mapsListUrl 
                     ? `REGRA DE CONSUMO TOTAL: O utilizador forneceu uma lista de locais / links (${mapsListUrl}). Deves garantir que 100% destes locais são integrados no roteiro. Analisa a localização e agrupa-os de forma lógica.`
@@ -133,10 +137,11 @@ DETERMINISMO TEMPORAL (OBRIGATÓRIO):
 2. INTEGRIDADE HORÁRIA: Preenche o horário das 09:00 às 21:00 (mínimo). Proibido janelas vazias > 2h. Se necessário, sugere miradouros, café, paragens para fotografia ou "buffer time".
 3. REALISMO: Tempos de visita realistas (1h igrejas, 3h museus grandes). Cada atividade deve considerar a deslocação do ponto anterior.
 
-REGRAS DE PLANEAMENTO:
+REGRAS DE PLANEAMENTO E DADOS:
 1. DENSIDADE: Mínimo de 4 atividades principais por dia + sugestões de refeições (pequeno-almoço e jantar).
 2. LOGÍSTICA: Agrupa locais por proximidade geográfica para minimizar deslocações inúteis.
-3. PERSONALIDADE: Profissional, inspirador e extremamente organizado.
+3. PRECISÃO GEOGRÁFICA (CRÍTICO): Os nomes dos locais na chave "name" devem OBRIGATORIAMENTE ser nomes exatos de locais reais, físicos e pesquisáveis no Google Maps (ex: "Coliseu", "Restaurante Da Enzo", "Bairro de Trastevere"). NUNCA gerar frases genéricas como "Zona para jantar" ou "Bairro animado com bares". Se não tiveres um local exato, sugere o nome EXATO do bairro ou de uma rua emblemática.
+4. PERSONALIDADE E TAMANHO: Profissional, inspirador e extremamente organizado. ${concisenessInstruction}
 ${mapsInstruction}
 
 LÍNGUA E TOM:
