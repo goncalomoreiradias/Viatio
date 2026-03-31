@@ -20,6 +20,7 @@ import { useI18n } from "@/lib/i18n";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
 import CollaborationModule from "@/components/CollaborationModule";
+import ShareModal from "@/components/ShareModal";
 import { 
   DndContext, 
   closestCenter,
@@ -81,8 +82,9 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
   const [isManagementMenuOpen, setIsManagementMenuOpen] = useState(false);
   const [isAIPlannerOpen, setIsAIPlannerOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   
-  const isAnySheetOpen = !!editingDay || isAddLocationOpen || isAddExpenseOpen || isManagementMenuOpen || isAIPlannerOpen || isDatePickerOpen || isDeleteDialogOpen;
+  const isAnySheetOpen = !!editingDay || isAddLocationOpen || isAddExpenseOpen || isManagementMenuOpen || isAIPlannerOpen || isDatePickerOpen || isDeleteDialogOpen || isShareModalOpen;
 
   // DND Sensors
   const sensors = useSensors(
@@ -518,12 +520,7 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
                 role: i === 0 ? "Owner" : "Editor",
                 online: i % 2 === 0
               }))}
-              onInvite={() => {
-                const url = `${window.location.origin}/trips/join/${itinerary.inviteToken}`;
-                navigator.clipboard.writeText(url);
-                setCopiedLink(true);
-                setTimeout(() => setCopiedLink(false), 2000);
-              }}
+              onInvite={() => setIsShareModalOpen(true)}
             />
           </div>
 
@@ -931,6 +928,18 @@ export default function TripPage({ params }: { params: Promise<{ id: string }> }
           isOpen={isAIPlannerOpen}
           onClose={() => setIsAIPlannerOpen(false)}
           initialData={{ destination: itinerary.title }}
+      />
+
+      <ShareModal 
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          inviteLink={typeof window !== "undefined" ? `${window.location.origin}/trips/join/${itinerary.inviteToken}` : ""}
+          participants={(itinerary.participants || []).map((p: any, i: number) => ({
+              id: p.id || `p-${i}`,
+              name: p.name || p.email.split('@')[0],
+              role: i === 0 ? "Owner" : "Editor",
+              online: i % 2 === 0
+          }))}
       />
     </main>
   );
